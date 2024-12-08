@@ -1,0 +1,38 @@
+entityType: "RoleUserMap"
+entityLabel: "Role User Mapping"
+uniqueProperties:
+  primary:
+    - "usr_id"
+    - "rol_id"
+labelProperties:
+  - "usr_id"
+  - "rol_id"
+entityOverview:
+  usr_id:
+  rol_id:
+extendedEntityOverview:
+  usr_id:
+  rol_id:
+database:
+  baseTable: "role_user_map"
+properties:
+  usr_id:
+    preDefined: "Integer"
+    column: "usr_id"
+    label: "User-ID"
+    handler:
+      entityReferenceItemHandler:
+        CommonEntityReferenceItemHandler:
+          target_entity_type: "User"
+          target_property: "usr_id"
+      preRenderingItemHandler: "EntityReferencePreRenderingItemHandler"
+  rol_id:
+    preDefined: "Integer"
+    column: "rol_id"
+    label: "Role-ID"
+    handler:
+      entityReferenceItemHandler:
+        CommonEntityReferenceItemHandler:
+          target_entity_type: "Role"
+          target_property: "rol_id"
+      preRenderingItemHandler: "EntityReferencePreRenderingItemHandler"

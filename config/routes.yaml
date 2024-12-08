@@ -1,0 +1,47 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+when@dev:
+    # database
+    dev_db_connection:
+        path: /dev/db/connection
+        controller: App\Development\Controller\Database::connection
+    dev_db_test_data:
+        path: /dev/db/test-data
+        controller: App\Development\Controller\Database::testDb
+    dev_db_fetch_data:
+        path: /dev/db/fetch-data
+        controller: App\Development\Controller\Database::fetchData
+    dev_db_fetch_entity_list:
+        path: /dev/db/fetch-entity-list
+        controller: App\Development\Controller\Database::fetchEntityList
+
+    # sqlFilter
+    dev_filter_hash:
+        path: /dev/filter/hash
+        controller: App\Development\Controller\SqlFilter::filterHash
+
+    # entities
+    dev_entities_get_entities:
+        path: /dev/entities/get-entities
+        controller: App\Development\Controller\Entities::getEntities
+    dev_entities_entity_by_key:
+        path: /dev/entities/get-entity-by-key
+        controller: App\Development\Controller\Entities::getEntityByEntityKey
+    dev_entities_pre_render:
+        path: /dev/entities/pre-render
+        controller: App\Development\Controller\Entities::preRenderEntity
+    dev_entities_search_ext_overview:
+        path: /dev/entities/search-ext-overview
+        controller: App\Development\Controller\Entities::searchExtendedEntityOverview
+
+    # services
+    dev_services_locator:
+        path: /dev/services/locator
+        controller: App\Development\Controller\Services::locator
+    dev_services_type_reader:
+        path: /dev/services/type-reader
+        controller: App\Development\Controller\Services::entityTypeReader

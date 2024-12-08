@@ -1,0 +1,81 @@
+ALL:
+  abbreviation: "ALL"
+  codes:
+    1000:
+      message: "NULL nicht erlaubt"
+      description: ""
+      categories:
+        - "Datenbank"
+      level: "warning"
+    1001:
+      message: "NULL nicht erlaubt"
+      description: ""
+      categories:
+        - "Datenbank"
+      level: "critical"
+    2000:
+      message: "Primäre ID fehlerhaft"
+      description: ""
+      categories:
+        - "Entität"
+      level: "critical"
+    2100:
+      message: "referenzierte Entität fehlt oder ist fehlerhaft"
+      description: ""
+      categories:
+        - "Entität"
+        - "Entity Reference"
+      level: "info"
+    2101:
+      message: "referenzierte Entität fehlt oder ist fehlerhaft"
+      description: ""
+      categories:
+        - "Entität"
+        - "Entity Reference"
+      level: "notice"
+    2102:
+      message: "referenzierte Entität fehlt oder ist fehlerhaft"
+      description: ""
+      categories:
+        - "Entität"
+        - "Entity Reference"
+      level: "critical"
+    2200:
+      message: "JSON fehlerhaft"
+      description: ""
+      categories:
+        - "JSON"
+      level: "critical"
+    2201:
+      message: "JSON fehlerhaft"
+      description: ""
+      categories:
+        - "JSON"
+      level: "warning"
+    3000:
+      message: "Unbekannte Option"
+      description: ""
+      categories:
+        - "OptionsItemHandler"
+      level: "warning"
+    3001:
+      message: "Unbekannte Option"
+      description: ""
+      categories:
+        - "OptionsItemHandler"
+      level: "critical"
+INTERN:
+  abbreviation: "INT"
+  codes:
+    1000:
+      message: "Angegebene property gibt es nicht in der Entität"
+      description: ""
+      categories:
+        - "Konfiguration"
+      level: "critical"
+    2000:
+      message: "Fehlercode fehlt"
+      description: ""
+      categories:
+        - "Konfiguration"
+      level: "critical"
