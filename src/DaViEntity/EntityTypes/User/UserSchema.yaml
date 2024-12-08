@@ -1,0 +1,53 @@
+entityType: "User"
+entityLabel: "User"
+uniqueProperties:
+  primary:
+    - "usr_id"
+labelProperties:
+  - "firstname"
+  - "lastname"
+entityOverview:
+  usr_id:
+  firstname:
+  lastname:
+extendedEntityOverview:
+  usr_id:
+  firstname:
+  lastname:
+database:
+  baseTable: "usr_data"
+properties:
+  usr_id:
+    preDefined: "Integer"
+    column: "usr_id"
+    label: "User-ID"
+  firstname:
+    preDefined: "String"
+    column: "firstname"
+    label: "Firstname"
+  lastname:
+    preDefined: "String"
+    column: "lastname"
+    label: "Lastname"
+  email:
+    preDefined: "String"
+    column: "email"
+    label: "Mail"
+  active:
+    preDefined: "Integer"
+    column: "active"
+    label: "Active"
+    settings:
+      options:
+        0:
+          label: 'inactive'
+        1:
+          label: 'active'
+    handler:
+      valueFormatterItemHandler: "OptionsValueFormatterItemHandler"
+  inactivation_date:
+    preDefined: "Date"
+    column: "inactivation_date"
+    label: "Inactivation date"
+    handler:
+      valueFormatterItemHandler: "DateTimeValueFormatterItemHandler"

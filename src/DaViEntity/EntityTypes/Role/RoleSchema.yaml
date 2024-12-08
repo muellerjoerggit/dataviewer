@@ -1,0 +1,30 @@
+entityType: "Role"
+entityLabel: "Role"
+uniqueProperties:
+  primary:
+    - "rol_id"
+labelProperties:
+  - "title"
+entityOverview:
+  rol_id:
+  title:
+  description:
+extendedEntityOverview:
+  rol_id:
+  title:
+  description:
+database:
+  baseTable: "role"
+properties:
+  rol_id:
+    preDefined: "Integer"
+    column: "rol_id"
+    label: "Role-ID"
+  title:
+    preDefined: "String"
+    column: "title"
+    label: "Role title"
+  description:
+    preDefined: "String"
+    column: "description"
+    label: "Description"

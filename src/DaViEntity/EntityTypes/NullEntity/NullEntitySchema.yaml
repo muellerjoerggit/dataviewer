@@ -1,0 +1,10 @@
+entityType: "Null"
+entityLabel: "Null Entity"
+uniqueProperties:
+  primary:
+    - "id"
+properties:
+  id:
+    class: "PropertyItem"
+    preDefined: "Integer"
+    label: "ID"

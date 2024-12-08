@@ -1,0 +1,30 @@
+Integer:
+  dataType: "Integer"
+  cardinality: "single"
+  handler:
+    preRenderingItemHandler: "CommonPreRenderingItemHandler"
+String:
+  dataType: "String"
+  cardinality: "single"
+  generatedFilter:
+    text:
+      title: "Textfilter"
+      handler: "CommonTextFilterHandler"
+    nullCheck:
+      title: "Nullfilter"
+      handler: "NullCheckFilterHandler"
+  handler:
+    preRenderingItemHandler: "CommonPreRenderingItemHandler"
+Date:
+  dataType: "Date"
+  cardinality: "single"
+  generatedFilter:
+    date:
+      title: "Datumsfilter"
+      handler: "DateTimeFilterHandler"
+    nullCheck:
+      title: "Nullfilter"
+      handler: "NullCheckFilterHandler"
+  handler:
+    preRenderingItemHandler: "CommonPreRenderingItemHandler"
+    valueFormatterItemHandler: "DateValueFormatterItemHandler"
