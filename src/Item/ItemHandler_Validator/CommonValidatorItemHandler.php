@@ -4,8 +4,6 @@ namespace App\Item\ItemHandler_Validator;
 
 use App\DaViEntity\EntityInterface;
 use App\Item\ItemConfigurationInterface;
-use App\Logger\LogItems\LogItemInterface;
-use App\Logger\LogItems\ValidationLogItem;
 use App\Logger\Logger;
 use App\Services\AppNamespaces;
 use App\Services\Validation\ErrorCodes;
@@ -17,13 +15,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * yaml configuration
  * <code>
- * 	CommonValidatorItemHandler:
- * 		not_null:
- * 			logTitle: "NULL, 0 und negative Werte nicht erlaubt"
- * 			logLevel: "warning"
- * 			constraints:
- * 				Positive: []
- * 				NotNull: []
+ *  CommonValidatorItemHandler:
+ *    not_null:
+ *      logTitle: "NULL, 0 und negative Werte nicht erlaubt"
+ *      logLevel: "warning"
+ *      constraints:
+ *        Positive: []
+ *        NotNull: []
  * </code>
  *
  * <code>
@@ -32,95 +30,93 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *            logTitle: "E-Mail hier nicht erlaubt"
  *            logLevel: "warning"
  *            not_constraints:
- *            	Email: []
+ *              Email: []
  *  </code>
  *
  */
-class CommonValidatorItemHandler extends AbstractValidatorItemHandler  implements ValidatorItemHandlerInterface {
+class CommonValidatorItemHandler extends AbstractValidatorItemHandler implements ValidatorItemHandlerInterface {
 
-	private ValidatorInterface $validator;
+  private ValidatorInterface $validator;
 
-	public function __construct(
-		ValidatorInterface $validator,
-		ErrorCodes $errorCodes,
-		Logger $logger
-	) {
-		parent::__construct($logger, $errorCodes);
-		$this->validator = $validator;
-	}
+  public function __construct(
+    ValidatorInterface $validator,
+    ErrorCodes $errorCodes,
+    Logger $logger
+  ) {
+    parent::__construct($logger, $errorCodes);
+    $this->validator = $validator;
+  }
 
-	public function validateItemFromGivenEntity(EntityInterface $entity, string $property): void {
-		if($entity->hasPropertyItem($property)) {
-			$item = $entity->getPropertyItem($property);
-		} else {
-			return;
-		}
+  public function validateItemFromGivenEntity(EntityInterface $entity, string $property): void {
+    if ($entity->hasPropertyItem($property)) {
+      $item = $entity->getPropertyItem($property);
+    } else {
+      return;
+    }
 
-		foreach ($item->getValuesAsArray() as $value) {
-			$this->validateValue($entity, $property, $value);
-		}
-	}
+    foreach ($item->getValuesAsArray() as $value) {
+      $this->validateValue($entity, $property, $value);
+    }
+  }
 
-	protected function validateValue(EntityInterface $entity, string $property, mixed $value): void {
-		$itemConfiguration = $entity->getPropertyItem($property)->getConfiguration();
-		$settings = $itemConfiguration->getValidatorItemHandlerSettings(static::class);
+  protected function validateValue(EntityInterface $entity, string $property, mixed $value): void {
+    $itemConfiguration = $entity->getPropertyItem($property)
+      ->getConfiguration();
+    $settings = $itemConfiguration->getValidatorItemHandlerSettings(static::class);
 
-		foreach ($settings as $key => $handlerSetting) {
+    foreach ($settings as $key => $handlerSetting) {
+      if (
+        !$this->checkConstraints($handlerSetting, $value) ||
+        !$this->checkConstraints($handlerSetting, $value, 'not_constraints')
+      ) {
+        $this->setItemValidationResultByCode($entity, $property, $handlerSetting['logCode'] ?? 'INT-2000');
+      }
+    }
+  }
 
-			if(
-				!$this->checkConstraints($handlerSetting, $value) ||
-				!$this->checkConstraints($handlerSetting, $value, 'not_constraints')
-			) {
-				$this->setItemValidationResultByCode($entity, $property, $handlerSetting['logCode'] ?? 'INT-2000');
-			}
-		}
-	}
+  private function checkConstraints($setting, $value, $constraintsCheck = 'constraints'): bool {
+    if (!isset($setting[$constraintsCheck])) {
+      return TRUE;
+    }
 
-	public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
-		$settings = $itemConfiguration->getValidatorItemHandlerSettings($this::class);
-		$label = $itemConfiguration->getLabel();
+    if ($this->validator instanceof TraceableValidator) {
+      $this->validator->reset();
+    }
 
-		foreach ($settings as $key => $handlerSetting) {
+    foreach ($setting[$constraintsCheck] as $constraint => $constraintSetting) {
+      $constraint = $this->getConstraint($constraint, $constraintSetting);
+      $errors = $this->validator->validate(
+        $value,
+        $constraint
+      );
+      if ($errors->count() && $constraintsCheck === 'constraints') {
+        return FALSE;
+      } elseif (!$errors->count() && $constraintsCheck === 'not_constraints') {
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
 
-			if(
-				!$this->checkConstraints($handlerSetting, $value) ||
-				!$this->checkConstraints($handlerSetting, $value, 'not_constraints')
-			) {
-				return false;
-			}
+  private function getConstraint($constraint, $constraintSetting) {
+    $constraint = AppNamespaces::buildNamespace(AppNamespaces::SYMFONY_CONSTRAINTS, $constraint);
+    return new $constraint($constraintSetting);
+  }
 
-		}
+  public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
+    $settings = $itemConfiguration->getValidatorItemHandlerSettings($this::class);
+    $label = $itemConfiguration->getLabel();
 
-		return true;
-	}
+    foreach ($settings as $key => $handlerSetting) {
+      if (
+        !$this->checkConstraints($handlerSetting, $value) ||
+        !$this->checkConstraints($handlerSetting, $value, 'not_constraints')
+      ) {
+        return FALSE;
+      }
+    }
 
-	private function getConstraint($constraint, $constraintSetting) {
-		$constraint = AppNamespaces::buildNamespace(AppNamespaces::SYMFONY_CONSTRAINTS, $constraint);
-		return new $constraint($constraintSetting);
-	}
-
-	private function checkConstraints($setting, $value, $constraintsCheck = 'constraints'): bool {
-		if(!isset($setting[$constraintsCheck])) {
-			return true;
-		}
-
-		if($this->validator instanceof TraceableValidator) {
-			$this->validator->reset();
-		}
-
-		foreach ($setting[$constraintsCheck] as $constraint => $constraintSetting) {
-			$constraint = $this->getConstraint($constraint, $constraintSetting);
-			$errors = $this->validator->validate(
-				$value,
-				$constraint
-			);
-			if($errors->count() && $constraintsCheck === 'constraints') {
-				return false;
-			} elseif(!$errors->count() && $constraintsCheck === 'not_constraints') {
-				return false;
-			}
-		}
-		return true;
-	}
+    return TRUE;
+  }
 
 }

@@ -12,71 +12,70 @@ use App\DaViEntity\Schema\EntitySchema;
  */
 class ListFilterHandler extends InFilterHandler {
 
-	public function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
-		$values = $this->processValues($values);
+  public function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
+    $values = $this->processValues($values);
 
-		if($values === false) {
-			return;
-		}
+    if ($values === FALSE) {
+      return;
+    }
 
-		parent::setWhereIn($queryBuilder, $column, $values, $dataType);
-	}
+    parent::setWhereIn($queryBuilder, $column, $values, $dataType);
+  }
 
-	protected function processValues(mixed $values): array | bool {
+  protected function processValues(mixed $values): array|bool {
+    if (is_array($values)) {
+      $ret = [];
+      foreach ($values as $value) {
+        $value = $this->processValues($value);
+        if ($value !== FALSE && is_array($value)) {
+          $ret = array_merge($ret, $value);
+        }
+      }
+      return $ret;
+    }
 
-		if(is_array($values)) {
-			$ret = [];
-			foreach ($values as $value) {
-				$value = $this->processValues($value);
-				if($value !== false && is_array($value)) {
-					$ret = array_merge($ret, $value);
-				}
-			}
-			return $ret;
-		}
+    if (!is_string($values)) {
+      return FALSE;
+    }
 
-		if(!is_string($values)) {
-			return false;
-		}
+    $separator = $this->checkSeparator($values);
 
-		$separator = $this->checkSeparator($values);
+    if ($separator === FALSE) {
+      return FALSE;
+    }
 
-		if($separator === false) {
-			return false;
-		}
+    if (empty($separator)) {
+      return [$values];
+    }
 
-		if(empty($separator)) {
-			return [$values];
-		}
+    $ret = explode($separator, $values);
+    return array_map('trim', $ret);
+  }
 
-		$ret = explode($separator, $values);
-		return array_map('trim', $ret);
-	}
+  protected function checkSeparator(string $values): string|bool {
+    $separators = ["\n", ';', ',', ' '];
+    $separator = '';
 
-	protected function checkSeparator(string $values): string | bool {
-		$separators = ["\n", ';', ',', ' '];
-		$separator = '';
+    foreach ($separators as $char) {
+      if (str_contains($values, $char) && empty($separator)) {
+        $separator = $char;
+      } elseif (str_contains($values, $char) && !empty($separator) && $char !== ' ') {
+        return FALSE;
+      }
+    }
 
-		foreach ($separators as $char) {
-			if(str_contains($values, $char) && empty($separator)) {
-				$separator = $char;
-			} elseif (str_contains($values, $char) && !empty($separator) && $char !== ' ') {
-				return false;
-			}
-		}
-
-		return $separator;
-	}
+    return $separator;
+  }
 
   public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
-		return [
-			'component' => 'ListFilter',
+    return [
+      'component' => 'ListFilter',
       'type' => $filterDefinition->getType(),
-			'name' => $filterDefinition->getKey(),
-			'title' => $filterDefinition->getTitle(),
-			'description' => $filterDefinition->getDescription(),
-			'defaultValue' => $filterDefinition->getDefaultValue(),
-		];
-	}
+      'name' => $filterDefinition->getKey(),
+      'title' => $filterDefinition->getTitle(),
+      'description' => $filterDefinition->getDescription(),
+      'defaultValue' => $filterDefinition->getDefaultValue(),
+    ];
+  }
 
 }

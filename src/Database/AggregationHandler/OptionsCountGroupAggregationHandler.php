@@ -3,7 +3,6 @@
 namespace App\Database\AggregationHandler;
 
 use App\Database\Aggregation\AggregationConfiguration;
-use App\Database\Aggregation\AggregationHandlerInterface;
 use App\Database\DaViQueryBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
@@ -13,61 +12,61 @@ use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
 
 class OptionsCountGroupAggregationHandler extends AbstractAggregationHandler {
 
-	private ValueFormatterItemHandlerLocator $formatterHandlerLocator;
+  private ValueFormatterItemHandlerLocator $formatterHandlerLocator;
 
-	public function __construct(ValueFormatterItemHandlerLocator $formatterHandlerLocator) {
-		$this->formatterHandlerLocator = $formatterHandlerLocator;
-	}
+  public function __construct(ValueFormatterItemHandlerLocator $formatterHandlerLocator) {
+    $this->formatterHandlerLocator = $formatterHandlerLocator;
+  }
 
-	public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $columnsBlacklist = []): void {
-		$columns = $aggregationConfiguration->getProperties();
-		foreach ($columns as $column => $expressionName) {
-			if(!is_string($column) || array_key_exists($column, $columnsBlacklist)) {
-				continue;
-			}
-			$queryBuilder->Select('COUNT(' . $column . ') AS ' . $expressionName);
-			$queryBuilder->addSelect($column);
-			$queryBuilder->addGroupBy($column);
-		}
-	}
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $columnsBlacklist = []): void {
+    $columns = $aggregationConfiguration->getProperties();
+    foreach ($columns as $column => $expressionName) {
+      if (!is_string($column) || array_key_exists($column, $columnsBlacklist)) {
+        continue;
+      }
+      $queryBuilder->Select('COUNT(' . $column . ') AS ' . $expressionName);
+      $queryBuilder->addSelect($column);
+      $queryBuilder->addGroupBy($column);
+    }
+  }
 
   public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
     $data = $this->executeQueryBuilder($queryBuilder);
 
-		$headerColumns = $aggregationConfiguration->getSetting('header');
-		$aggregatedColumns = $aggregationConfiguration->getProperties();
-		$items = [];
-		foreach (array_keys($aggregatedColumns) as $columnName) {
-			if(!$schema->hasProperty($columnName)) {
-				continue;
-			}
-			$items[$columnName] = $schema->getProperty($columnName);
-		}
+    $headerColumns = $aggregationConfiguration->getSetting('header');
+    $aggregatedColumns = $aggregationConfiguration->getProperties();
+    $items = [];
+    foreach (array_keys($aggregatedColumns) as $columnName) {
+      if (!$schema->hasProperty($columnName)) {
+        continue;
+      }
+      $items[$columnName] = $schema->getProperty($columnName);
+    }
 
-		$header = [];
-		$tableRows = [];
+    $header = [];
+    $tableRows = [];
 
-		foreach ($data as $index => $row) {
-			foreach ($row as $columnName => $value) {
-				$handler = null;
-				if(!isset($header[$columnName])) {
-					$header[$columnName] = $headerColumns[$columnName] ?? $columnName;
-				}
+    foreach ($data as $index => $row) {
+      foreach ($row as $columnName => $value) {
+        $handler = NULL;
+        if (!isset($header[$columnName])) {
+          $header[$columnName] = $headerColumns[$columnName] ?? $columnName;
+        }
 
-				$item = $items[$columnName] ?? false;
-				if($item instanceof ItemConfigurationInterface && $item->hasFormatterHandler()) {
-					$handler = $this->formatterHandlerLocator->getFormatterHandlerFromItem($item);
-				}
+        $item = $items[$columnName] ?? FALSE;
+        if ($item instanceof ItemConfigurationInterface && $item->hasFormatterHandler()) {
+          $handler = $this->formatterHandlerLocator->getFormatterHandlerFromItem($item);
+        }
 
-				if($handler instanceof ValueFormatterItemHandlerInterface) {
-					$tableRows[$index][$columnName] = $handler->getValueRawFormatted($item, $value);
-				} else {
-					$tableRows[$index][$columnName] = $value;
-				}
-			}
-		}
+        if ($handler instanceof ValueFormatterItemHandlerInterface) {
+          $tableRows[$index][$columnName] = $handler->getValueRawFormatted($item, $value);
+        } else {
+          $tableRows[$index][$columnName] = $value;
+        }
+      }
+    }
 
-		return new TableData($header, $tableRows);
-	}
+    return new TableData($header, $tableRows);
+  }
 
 }

@@ -10,6 +10,7 @@ use App\DaViEntity\Schema\EntitySchema;
 class NullCheckFilterHandler extends AbstractFilterHandler {
 
   public const int OPTION_IS_NULL = 1;
+
   public const int OPTION_IS_NOT_NULL = 2;
 
   public const string COMPONENT_NAME = 'SelectSingleFilter';
@@ -29,15 +30,18 @@ class NullCheckFilterHandler extends AbstractFilterHandler {
 
   public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
     $component = $this->getFilterComponentInternal($filterDefinition, $schema, $filterKey);
-    $possibleValues = [[
-      'optionId' => self::OPTION_IS_NULL,
-      'label' => 'Wert ist NULL',
-      'description' => 'Filtert alle Werte, die NULL sind'
-    ],[
-      'optionId' => self::OPTION_IS_NOT_NULL,
-      'label' => 'Wert ist nicht NULL',
-      'description' => 'Filtert alle Werte, die nicht NULL sind'
-    ]];
+    $possibleValues = [
+      [
+        'optionId' => self::OPTION_IS_NULL,
+        'label' => 'Wert ist NULL',
+        'description' => 'Filtert alle Werte, die NULL sind',
+      ],
+      [
+        'optionId' => self::OPTION_IS_NOT_NULL,
+        'label' => 'Wert ist nicht NULL',
+        'description' => 'Filtert alle Werte, die nicht NULL sind',
+      ],
+    ];
 
     $component['additional']['possibleValues'] = $possibleValues;
     return $component;

@@ -10,74 +10,76 @@ use App\Item\ItemInterface;
 
 abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandlerInterface {
 
-	protected ValueFormatterItemHandlerLocator $formatterLocator;
+  protected ValueFormatterItemHandlerLocator $formatterLocator;
 
-	public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
-		$this->formatterLocator = $formatterLocator;
-	}
+  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+    $this->formatterLocator = $formatterLocator;
+  }
 
-	protected function buildValues(ItemInterface $item): array {
-		$itemConfiguration = $item->getConfiguration();
-		$handlerSettings = $itemConfiguration->getPreRenderingHandlerSetting();
-		$values = $item->getValuesAsArray();
+  public function getComponentPreRenderArray(EntityInterface $entity, string $property): array {
+    $item = $entity->getPropertyItem($property);
+    $values = $this->buildValues($item);
 
-		if($itemConfiguration->hasFormatterHandler()) {
-			$handler = $this->formatterLocator->getFormatterHandlerFromItem($item->getConfiguration());
-			$values = $handler->getArrayRawFormatted($item);
+    return [
+      'component' => 'CommonItem',
+      'name' => $item->getConfiguration()->getItemName(),
+      'documentation' => [
+        'label' => $item->getConfiguration()->getLabel(),
+        'description' => $item->getConfiguration()->getDescription(),
+        //				'deprecated' => $item->getConfiguration()->getDeprecated(),
+      ],
+      'data' => [
+        'values' => $values,
+        'isNull' => $item->isValuesNull(),
+        'criticalError' => $item->isRedError(),
+        'warningError' => $item->isYellowError(),
+      ],
+    ];
+  }
 
-			if(!isset($handlerSettings['default_formatter_output'])) {
-				return $values;
-			} elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_FORMATTED) {
-				$values = $handler->getArrayFormatted($item);
-			} elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_RAW) {
-				$values = $item->getValuesAsOneDimensionalArray();;
-			} elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_RAW_FORMATTED) {
-				$values = $handler->getArrayRawFormatted($item);
-			}
-		}
+  protected function buildValues(ItemInterface $item): array {
+    $itemConfiguration = $item->getConfiguration();
+    $handlerSettings = $itemConfiguration->getPreRenderingHandlerSetting();
+    $values = $item->getValuesAsArray();
 
-		return $values;
-	}
+    if ($itemConfiguration->hasFormatterHandler()) {
+      $handler = $this->formatterLocator->getFormatterHandlerFromItem($item->getConfiguration());
+      $values = $handler->getArrayRawFormatted($item);
 
-	public function getComponentPreRenderArray(EntityInterface $entity, string $property): array {
-		$item = $entity->getPropertyItem($property);
-		$values = $this->buildValues($item);
+      if (!isset($handlerSettings['default_formatter_output'])) {
+        return $values;
+      } elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_FORMATTED) {
+        $values = $handler->getArrayFormatted($item);
+      } elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_RAW) {
+        $values = $item->getValuesAsOneDimensionalArray();
+      } elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_RAW_FORMATTED) {
+        $values = $handler->getArrayRawFormatted($item);
+      }
+    }
 
-		return [
-			'component' => 'CommonItem',
-			'name' => $item->getConfiguration()->getItemName(),
-			'documentation' => [
-				'label' => $item->getConfiguration()->getLabel(),
-				'description' => $item->getConfiguration()->getDescription(),
-//				'deprecated' => $item->getConfiguration()->getDeprecated(),
-			],
-			'data' => [
-				'values' => $values,
-				'isNull' => $item->isValuesNull(),
-				'criticalError' => $item->isRedError(),
-				'warningError' => $item->isYellowError()
-			]
-		];
-	}
+    return $values;
+  }
 
   public function getExtendedOverview(ItemInterface $item, array $options): array {
     $itemConfiguration = $item->getConfiguration();
     $firstValue = $item->getFirstValueAsString();
-    if($itemConfiguration->hasFormatterHandler()) {
+    if ($itemConfiguration->hasFormatterHandler()) {
       $handler = $this->formatterLocator->getFormatterHandlerFromItem($itemConfiguration);
       return [
         'type' => EntityViewBuilderInterface::EXT_OVERVIEW_ADDITIONAL,
         'data' => [
           'text' => $firstValue,
-          'additional' => $handler->getValueFormatted($itemConfiguration, $firstValue)
-      ]];
+          'additional' => $handler->getValueFormatted($itemConfiguration, $firstValue),
+        ],
+      ];
     }
 
     return [
       'type' => EntityViewBuilderInterface::EXT_OVERVIEW_SCALAR,
       'data' => [
-        'text' => $firstValue
-      ]];
+        'text' => $firstValue,
+      ],
+    ];
   }
 
 }

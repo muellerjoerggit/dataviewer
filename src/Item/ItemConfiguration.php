@@ -4,15 +4,20 @@ namespace App\Item;
 
 use App\Item\ItemHandler\ItemHandlerInterface;
 use App\Services\AppNamespaces;
+use Generator;
 
 class ItemConfiguration implements ItemConfigurationInterface {
 
   protected int $cardinality = ItemConfigurationInterface::CARDINALITY_SINGLE;
+
   protected int $dataType;
+
   protected string $label;
+
   protected string $description;
 
   protected array $handler = [];
+
   protected array $handlerSettings = [];
 
   protected array $settings = [];
@@ -42,17 +47,17 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->description ?? '';
   }
 
-  public function setDescription(string $description): ItemConfigurationInterface	{
+  public function setDescription(string $description): ItemConfigurationInterface {
     $this->description = $description;
     return $this;
   }
 
-  public function getCardinality(): int {
-    return $this->cardinality;
-  }
-
   public function isCardinalityMultiple(): bool {
     return $this->getCardinality() === ItemConfigurationInterface::CARDINALITY_MULTIPLE;
+  }
+
+  public function getCardinality(): int {
+    return $this->cardinality;
   }
 
   public function setCardinality(int $cardinality): ItemConfiguration {
@@ -60,13 +65,13 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this;
   }
 
+  public function getDataType(): int {
+    return $this->dataType ?? 0;
+  }
+
   public function setDataType(int $dataType): ItemConfiguration {
     $this->dataType = $dataType;
     return $this;
-  }
-
-  public function getDataType(): int {
-    return $this->dataType ?? 0;
   }
 
   public function setHandler(string $handlerType, string $handler): ItemConfigurationInterface {
@@ -77,8 +82,8 @@ class ItemConfiguration implements ItemConfigurationInterface {
   protected function setHandlerInternal(string $handlerType, string $handlerShortName): string {
     $handlerName = $this->getHandlerClass($handlerType, $handlerShortName);
 
-    if($handlerType === ItemHandlerInterface::HANDLER_VALIDATOR) {
-      if(isset($this->handler[$handlerType])) {
+    if ($handlerType === ItemHandlerInterface::HANDLER_VALIDATOR) {
+      if (isset($this->handler[$handlerType])) {
         $handlers = array_merge($this->handler[$handlerType], [$handlerName]);
       } else {
         $handlers = [$handlerName];
@@ -115,46 +120,32 @@ class ItemConfiguration implements ItemConfigurationInterface {
     ];
 
     foreach ($handlerArray as $handlerType => $handler) {
-      if(!in_array($handlerType, $validHandlers)) {
+      if (!in_array($handlerType, $validHandlers)) {
         continue;
       }
 
-      if(is_string($handler)) {
+      if (is_string($handler)) {
         $this->setHandlerInternal($handlerType, $handler);
-      } elseif(is_array($handler)) {
+      } elseif (is_array($handler)) {
         $this->fillHandlerWithSettings($handlerType, $handler);
       }
-
-
     }
     return $this;
   }
 
   protected function fillHandlerWithSettings(string $handlerType, array $handlerArray): void {
-    foreach($handlerArray as $handler => $handlerSetting) {
+    foreach ($handlerArray as $handler => $handlerSetting) {
       $handlerName = $this->setHandlerInternal($handlerType, $handler);
       $this->setHandlerSettings($handlerType, $handlerName, $handlerSetting);
     }
   }
 
-  public function getHandlerByType(string $handlerType): string | array | bool {
-    if(!$this->hasHandlerByType($handlerType)) {
-      return false;
-    }
-
-    return $this->handler[$handlerType];
-  }
-
-  public function hasHandlerByType($handlerType): bool {
-    return isset($this->handler[$handlerType]);
-  }
-
   public function setHandlerSettings(string $handlerType, string $handlerName, array $handlerSettings): ItemConfigurationInterface {
-    if($handlerType === ItemHandlerInterface::HANDLER_VALIDATOR) {
+    if ($handlerType === ItemHandlerInterface::HANDLER_VALIDATOR) {
       $this->handlerSettings[$handlerType][$handlerName] = $handlerSettings;
     } elseif ($handlerType === ItemHandlerInterface::HANDLER_ENTITY_REFERENCE && isset($handlerSettings['validation'])) {
       $newValidatorSettings = [];
-      foreach($handlerSettings['validation'] as $validatorHandler => $validator) {
+      foreach ($handlerSettings['validation'] as $validatorHandler => $validator) {
         $validatorHandlerClass = $this->getHandlerClass(ItemHandlerInterface::HANDLER_VALIDATOR, $validatorHandler);
         $newValidatorSettings[$validatorHandlerClass] = $validator;
       }
@@ -165,6 +156,18 @@ class ItemConfiguration implements ItemConfigurationInterface {
     }
 
     return $this;
+  }
+
+  public function getHandlerByType(string $handlerType): string|array|bool {
+    if (!$this->hasHandlerByType($handlerType)) {
+      return FALSE;
+    }
+
+    return $this->handler[$handlerType];
+  }
+
+  public function hasHandlerByType($handlerType): bool {
+    return isset($this->handler[$handlerType]);
   }
 
   public function getAdditionalDataSetting(): array {
@@ -183,19 +186,19 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->hasHandlerByType(ItemHandlerInterface::HANDLER_VALUE_FORMATTER);
   }
 
-  public function getValidatorItemHandlerSettings($handlerName): array {
-    return $this->handlerSettings[ItemHandlerInterface::HANDLER_VALIDATOR][$handlerName] ?? [];
-  }
-
   public function hasValidatorHandler(): bool {
     return $this->hasHandlerByType(ItemHandlerInterface::HANDLER_VALIDATOR);
   }
 
-  public function iterateValidatorHandlers(): \Generator {
+  public function iterateValidatorHandlers(): Generator {
     foreach ($this->handler[ItemHandlerInterface::HANDLER_VALIDATOR] as $handlerName) {
       $handlerConfig = $this->getValidatorItemHandlerSettings($handlerName);
       yield $handlerName => $handlerConfig;
     }
+  }
+
+  public function getValidatorItemHandlerSettings($handlerName): array {
+    return $this->handlerSettings[ItemHandlerInterface::HANDLER_VALIDATOR][$handlerName] ?? [];
   }
 
   public function getEntityReferenceHandlerSetting(): array {
@@ -206,7 +209,7 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->handlerSettings[ItemHandlerInterface::HANDLER_PRE_RENDERING] ?? [];
   }
 
-  public function getSetting($setting, $default = null): mixed {
+  public function getSetting($setting, $default = NULL): mixed {
     return $this->settings[$setting] ?? $default;
   }
 

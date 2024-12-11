@@ -14,6 +14,13 @@ class ConnectionCreator {
     private readonly Environment $environment
   ) {}
 
+  public function createConnection(string $client, string $prefix = ''): Connection {
+    $databaseName = $this->clientService->getClientDatabaseName($client, $prefix);
+    $connectionParam = $this->getDbConnectionParam();
+    $connectionParam['dbname'] = $databaseName;
+    return DriverManager::getConnection($connectionParam);
+  }
+
   protected function getDbConnectionParam(): array {
     return [
       'user' => $this->environment->getDatabaseUser(),
@@ -23,13 +30,6 @@ class ConnectionCreator {
       'charset ' => 'utf8mb4',
       'driver' => 'pdo_mysql',
     ];
-  }
-
-  public function createConnection(string $client, string $prefix = ''): Connection {
-    $databaseName = $this->clientService->getClientDatabaseName($client, $prefix);
-    $connectionParam = $this->getDbConnectionParam();
-    $connectionParam['dbname'] = $databaseName;
-    return DriverManager::getConnection($connectionParam);
   }
 
   public function createConnectionWithoutDbName(): Connection {

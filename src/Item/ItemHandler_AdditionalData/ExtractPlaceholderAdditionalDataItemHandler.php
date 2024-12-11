@@ -10,56 +10,57 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ExtractPlaceholderAdditionalDataItemHandler implements AdditionalDataItemHandlerInterface {
 
-	private const MODE_HTML = 'html';
-	private const MODE_TEXT = 'text';
+  private const MODE_HTML = 'html';
 
-	public function getValues(EntityInterface $entity, string $property): TableData | array {
-		$item = $entity->getPropertyItem($property);
-		$itemConfiguration = $item->getConfiguration();
-		$handlerSetting = $itemConfiguration->getLazyLoaderSettings();
-		$sourceProperties = $handlerSetting['sourceProperty'] ?? null;
-		$mode = $handlerSetting['mode'] ?? null;
+  private const MODE_TEXT = 'text';
 
-		if(!$sourceProperties || !$mode) {
-			return [];
-		}
+  public function getValues(EntityInterface $entity, string $property): TableData|array {
+    $item = $entity->getPropertyItem($property);
+    $itemConfiguration = $item->getConfiguration();
+    $handlerSetting = $itemConfiguration->getLazyLoaderSettings();
+    $sourceProperties = $handlerSetting['sourceProperty'] ?? NULL;
+    $mode = $handlerSetting['mode'] ?? NULL;
 
-		if(!is_array($sourceProperties)) {
-			$sourceProperties = [$sourceProperties];
-		}
+    if (!$sourceProperties || !$mode) {
+      return [];
+    }
 
-		$ret = [];
+    if (!is_array($sourceProperties)) {
+      $sourceProperties = [$sourceProperties];
+    }
 
-		foreach ($sourceProperties as $sourceProperty) {
-			$sourceItem = $entity->getPropertyItem($sourceProperty);
-			$ret = array_merge($ret, $this->extractPlaceholders($mode, $sourceItem));
-		}
+    $ret = [];
 
-		return array_values(array_unique($ret));
-	}
+    foreach ($sourceProperties as $sourceProperty) {
+      $sourceItem = $entity->getPropertyItem($sourceProperty);
+      $ret = array_merge($ret, $this->extractPlaceholders($mode, $sourceItem));
+    }
 
-	private function extractPlaceholders(string $mode, ItemInterface $item): array {
-		$ret = [];
-		foreach ($item->getValuesAsOneDimensionalArray() as $value) {
-			$matches = [];
-			$text = $this->prepareText($mode, $value);
-			preg_match_all('/{[[:alpha:]:_]+}/', $text, $matches);
-			$matches = ArrayUtils::flattenArrayToScalarValues($matches);
-			$ret = array_merge($ret, $matches);
-		}
+    return array_values(array_unique($ret));
+  }
 
-		return $ret;
-	}
+  private function extractPlaceholders(string $mode, ItemInterface $item): array {
+    $ret = [];
+    foreach ($item->getValuesAsOneDimensionalArray() as $value) {
+      $matches = [];
+      $text = $this->prepareText($mode, $value);
+      preg_match_all('/{[[:alpha:]:_]+}/', $text, $matches);
+      $matches = ArrayUtils::flattenArrayToScalarValues($matches);
+      $ret = array_merge($ret, $matches);
+    }
 
-	private function prepareText(string $mode, string $value): string {
-		switch ($mode) {
-			case self::MODE_HTML:
-				$body = (new Crawler($value))->filterXPath('descendant-or-self::body');
-				return $body->text();
-			case self::MODE_TEXT:
-				return $value;
-		}
-		return '';
-	}
+    return $ret;
+  }
+
+  private function prepareText(string $mode, string $value): string {
+    switch ($mode) {
+      case self::MODE_HTML:
+        $body = (new Crawler($value))->filterXPath('descendant-or-self::body');
+        return $body->text();
+      case self::MODE_TEXT:
+        return $value;
+    }
+    return '';
+  }
 
 }

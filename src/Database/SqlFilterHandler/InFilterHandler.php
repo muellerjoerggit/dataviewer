@@ -14,37 +14,37 @@ class InFilterHandler extends AbstractFilterHandler implements InFilterInterface
     $value = $filter->getValue();
     $property = $this->getProperty($filter, $schema);
     $column = $schema->getColumn($property);
-    $dataType = $schema->getProperty($property)->getQueryParameterType(true);
-
+    $dataType = $schema->getProperty($property)->getQueryParameterType(TRUE);
 
     $this->setWhereIn($queryBuilder, $column, $value, $dataType);
   }
 
-	protected function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
-		if(is_scalar($values)) {
-			$values = [$values];
-		}
+  protected function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
+    if (is_scalar($values)) {
+      $values = [$values];
+    }
 
-		if(!is_array($values)) {
-			return;
-		}
+    if (!is_array($values)) {
+      return;
+    }
 
-		$parameter = 'values_' . str_replace('.', '_', $column);
-		$queryBuilder->andWhere(
-			$queryBuilder->expr()->in($column, ':' . $parameter)
+    $parameter = 'values_' . str_replace('.', '_', $column);
+    $queryBuilder->andWhere(
+      $queryBuilder->expr()->in($column, ':' . $parameter)
     );
 
-		$queryBuilder->setParameter($parameter, $values, $dataType);
-	}
+    $queryBuilder->setParameter($parameter, $values, $dataType);
+  }
 
-	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
-		return [
-			'component' => 'InFilter',
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
+    return [
+      'component' => 'InFilter',
       'type' => $filterDefinition->getType(),
-			'name' => $filterDefinition->getKey(),
-			'title' => $filterDefinition->getTitle(),
-			'description' => $filterDefinition->getDescription(),
-			'defaultValue' => $filterDefinition->getDefaultValue(),
-		];
-	}
+      'name' => $filterDefinition->getKey(),
+      'title' => $filterDefinition->getTitle(),
+      'description' => $filterDefinition->getDescription(),
+      'defaultValue' => $filterDefinition->getDefaultValue(),
+    ];
+  }
+
 }

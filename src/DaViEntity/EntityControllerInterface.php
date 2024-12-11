@@ -17,7 +17,7 @@ interface EntityControllerInterface {
 
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface;
 
-  public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = null, array $columnsBlacklist = []): array | TableData;
+  public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $columnsBlacklist = []): array|TableData;
 
   public function preRenderEntity(EntityInterface $entity): array;
 
@@ -28,4 +28,5 @@ interface EntityControllerInterface {
   public function getEntityList(FilterContainer $filterContainer): EntityList;
 
   public function getEntityLabel(EntityInterface $entity): string;
+
 }

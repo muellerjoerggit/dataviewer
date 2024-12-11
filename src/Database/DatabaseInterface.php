@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface DatabaseInterface {
 
   public const string DB_DATETIME_FORMAT = 'Y-m-d H:i:s';
+
   public const string DB_DATE_FORMAT = 'Y-m-d';
 
   public function getDatabaseName(string $client): string;
@@ -20,7 +21,7 @@ interface DatabaseInterface {
 
   public function tableExists(string $client, string $tableName): bool;
 
-  public function createSchemaManager(string $client): AbstractSchemaManager | bool;
+  public function createSchemaManager(string $client): AbstractSchemaManager|bool;
 
   public function fetchAssociativeFromSql(string $client, string $sql): array;
 

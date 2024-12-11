@@ -2,7 +2,7 @@
 
 namespace App\DaViEntity;
 
-use App\DaViEntity\Entities\NullEntity\NullEntityController;
+use App\DaViEntity\EntityTypes\NullEntity\NullEntityController;
 use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -17,7 +17,7 @@ class EntityControllerLocator extends AbstractLocator {
   }
 
   public function getController(string $id): EntityControllerInterface {
-    if(!$this->has($id)) {
+    if (!$this->has($id)) {
       return $this->get(NullEntityController::class);
     }
 

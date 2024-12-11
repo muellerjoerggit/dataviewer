@@ -22,16 +22,20 @@ class PropertyConfigurationBuilder {
 
   public function buildPropertyConfiguration(array $config, string $propertyName, EntitySchema $schema): PropertyConfiguration {
     $propertyConfiguration = $this->createPropertyConfiguration($propertyName);
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED])) {
+    if (isset($config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED])) {
       $this->buildPreDefinedConfiguration($config, $propertyConfiguration, $schema);
     }
 
     return $this->fillPropertyConfiguration($config, $propertyConfiguration, $schema);
   }
 
+  private function createPropertyConfiguration(string $propertyName): ?PropertyConfiguration {
+    return new PropertyConfiguration($propertyName);
+  }
+
   private function buildPreDefinedConfiguration(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
     $preDefined = $config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED];
-    if(!is_array($preDefined)) {
+    if (!is_array($preDefined)) {
       $preDefined = [$preDefined];
     }
 
@@ -41,8 +45,8 @@ class PropertyConfigurationBuilder {
       return $preDefinedConfigurations[$preDefinedName] ?? [];
     }, $preDefined);
 
-    foreach($preDefined as $preDefinedConfig) {
-      if(empty($preDefinedConfig)) {
+    foreach ($preDefined as $preDefinedConfig) {
+      if (empty($preDefinedConfig)) {
         continue;
       }
 
@@ -50,19 +54,15 @@ class PropertyConfigurationBuilder {
     }
   }
 
-  private function createPropertyConfiguration(string $propertyName): ?PropertyConfiguration {
-    return new PropertyConfiguration($propertyName);
-  }
-
   private function fillPropertyConfiguration(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): PropertyConfiguration {
     $this->fillBasic($config, $propertyConfiguration);
     $this->fillDatabase($config, $propertyConfiguration, $schema);
 
-    if(isset($config[PropertyConfiguration::YAML_PARAM_HANDLER])) {
+    if (isset($config[PropertyConfiguration::YAML_PARAM_HANDLER])) {
       $this->fillHandler($config, $propertyConfiguration);
     }
 
-    if(isset($config[PropertyConfiguration::YAML_PARAM_FILTER])) {
+    if (isset($config[PropertyConfiguration::YAML_PARAM_FILTER])) {
       $this->fillFilter($config, $propertyConfiguration, $schema);
     }
 
@@ -70,12 +70,12 @@ class PropertyConfigurationBuilder {
   }
 
   private function fillBasic(array $config, PropertyConfiguration $propertyConfiguration): void {
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_CARDINALITY])) {
+    if (isset($config[ItemConfigurationInterface::YAML_PARAM_CARDINALITY])) {
       $cardinality = $config[ItemConfigurationInterface::YAML_PARAM_CARDINALITY] === ItemConfigurationInterface::YAML_PARAM_VALUE_MULTIPLE ? ItemConfigurationInterface::CARDINALITY_MULTIPLE : ItemConfigurationInterface::CARDINALITY_SINGLE;
       $propertyConfiguration->setCardinality($cardinality);
     }
 
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_DATA_TYPE])) {
+    if (isset($config[ItemConfigurationInterface::YAML_PARAM_DATA_TYPE])) {
       $dataType = match ($config[ItemConfigurationInterface::YAML_PARAM_DATA_TYPE]) {
         'Integer' => ItemInterface::DATA_TYPE_INTEGER,
         'String' => ItemInterface::DATA_TYPE_STRING,
@@ -90,24 +90,28 @@ class PropertyConfigurationBuilder {
       $propertyConfiguration->setDataType($dataType);
     }
 
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_LABEL])) {
+    if (isset($config[ItemConfigurationInterface::YAML_PARAM_LABEL])) {
       $propertyConfiguration->setLabel($config[ItemConfigurationInterface::YAML_PARAM_LABEL]);
     }
 
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_DESCRIPTION])) {
+    if (isset($config[ItemConfigurationInterface::YAML_PARAM_DESCRIPTION])) {
       $propertyConfiguration->setDescription($config[ItemConfigurationInterface::YAML_PARAM_DESCRIPTION]);
     }
 
-    $settings = $config[ItemConfigurationInterface::YAML_PARAM_SETTINGS] ?? null;
-    if(is_array($settings)) {
+    $settings = $config[ItemConfigurationInterface::YAML_PARAM_SETTINGS] ?? NULL;
+    if (is_array($settings)) {
       $propertyConfiguration->mergeSettings($settings);
     }
   }
 
   private function fillDatabase(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
-    if(isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
+    if (isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
       $propertyConfiguration->setColumn($schema->getBaseTable() . '.' . $config[PropertyConfiguration::YAML_PARAM_COLUMN]);
     }
+  }
+
+  private function fillHandler(array $config, PropertyConfiguration $propertyConfiguration): void {
+    $propertyConfiguration->fillHandler($config[PropertyConfiguration::YAML_PARAM_HANDLER]);
   }
 
   private function fillFilter(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
@@ -118,13 +122,13 @@ class PropertyConfigurationBuilder {
     );
 
     foreach ($config[PropertyConfiguration::YAML_PARAM_FILTER] as $filter) {
-      if(!is_array($filter)) {
+      if (!is_array($filter)) {
         $filter[SqlFilterDefinitionInterface::YAML_KEY_HANDLER] = $filter;
       }
 
       $hashName = $this->sqlFilterDefinitionsBuilder->calculateFilterHash($filter);
 
-      if($this->sqlGeneratedFilterRegister->hasFilter($hashName)) {
+      if ($this->sqlGeneratedFilterRegister->hasFilter($hashName)) {
         $filterDefinition = $this->sqlGeneratedFilterRegister->getFilter($hashName);
       } else {
         $filterDefinition = SqlGeneratedFilterDefinition::create($hashName, $filter);
@@ -134,10 +138,6 @@ class PropertyConfigurationBuilder {
 
       $schema->addFilter($filterDefinition, $property, $filterGroup);
     }
-  }
-
-  private function fillHandler(array $config, PropertyConfiguration $propertyConfiguration): void {
-    $propertyConfiguration->fillHandler($config[PropertyConfiguration::YAML_PARAM_HANDLER]);
   }
 
 }

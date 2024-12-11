@@ -3,151 +3,156 @@
 namespace App\DataCollections;
 
 use App\Logger\LogItems\LogItemInterface;
+use Generator;
 
 class EntityList {
 
-	private array $entityList = [];
-	private int $lowerBound;
-	private int $upperBound;
-	private array $loggingList = [];
-	private int $total_count = 0;
-	private bool $useBound = false;
-	private int $page = 0;
+  private array $entityList = [];
 
-	public function getCount(): int {
-		return count($this->entityList);
-	}
+  private int $lowerBound;
 
-	public function getTotalCount(): int {
-		return $this->total_count ?? 0;
-	}
+  private int $upperBound;
 
-	public function setTotalCount(int $total_count): EntityList {
-		$this->total_count = $total_count;
-		return $this;
-	}
+  private array $loggingList = [];
 
-	public function getLowerBound(): int {
-		return $this->lowerBound ?? 0;
-	}
+  private int $total_count = 0;
 
-	public function setLowerBound(int $lowerBound): EntityList {
-		$this->lowerBound = $lowerBound;
-		return $this;
-	}
+  private bool $useBound = FALSE;
 
-	public function getUpperBound(): int {
-		return $this->upperBound ?? 0;
-	}
+  private int $page = 0;
 
-	public function setUpperBound(int $lowerBound): EntityList {
-		$this->upperBound = $lowerBound;
-		return $this;
-	}
+  public function getCount(): int {
+    return count($this->entityList);
+  }
 
-	public function evaluateBound(mixed $bound): bool {
-		$ret = false;
+  public function getTotalCount(): int {
+    return $this->total_count ?? 0;
+  }
 
-		if(!is_integer($bound)) {
-			return $ret;
-		}
+  public function setTotalCount(int $total_count): EntityList {
+    $this->total_count = $total_count;
+    return $this;
+  }
 
-		if(!isset($this->lowerBound) || $bound > ($this->upperBound)) {
-			$this->upperBound = $bound;
-			$ret = true;
-		}
+  public function getLowerBound(): int {
+    return $this->lowerBound ?? 0;
+  }
 
-		if(!isset($this->lowerBound) || $bound < ($this->lowerBound)) {
-			$this->lowerBound = $bound;
-			$ret = true;
-		}
+  public function setLowerBound(int $lowerBound): EntityList {
+    $this->lowerBound = $lowerBound;
+    return $this;
+  }
 
-		return $ret;
-	}
+  public function getUpperBound(): int {
+    return $this->upperBound ?? 0;
+  }
 
-	public function addEntity(array $entity): EntityList {
-		if($this->isValidEntityArray($entity)) {
-			$entityKey = $entity['entityKey'];
-			$this->entityList[$entityKey] = $entity;
+  public function setUpperBound(int $lowerBound): EntityList {
+    $this->upperBound = $lowerBound;
+    return $this;
+  }
 
-			if($this->isUseBound()) {
-				$this->evaluateBound($entity['uniqueKey']);
-			}
-		}
+  public function addEntities(array $entities): EntityList {
+    if ($this->isValidEntityArray($entities)) {
+      return $this->addEntity($entities);
+    }
 
-		return $this;
-	}
+    foreach ($entities as $entity) {
+      if (!is_array($entity)) {
+        continue;
+      }
+      $this->addEntity($entity);
+    }
 
-	private function isValidEntityArray(array $entity): bool {
-		return 	array_key_exists('entityLabel', $entity)
-			&& array_key_exists('entityKey', $entity)
-			&& array_key_exists('uniqueKey', $entity);
-	}
+    ksort($this->entityList, SORT_NATURAL);
 
-	public function addEntities(array $entities): EntityList {
-		if($this->isValidEntityArray($entities)) {
-			return $this->addEntity($entities);
-		}
+    return $this;
+  }
 
-		foreach ($entities as $entity) {
-			if(!is_array($entity)) {
-				continue;
-			}
-			$this->addEntity($entity);
-		}
+  private function isValidEntityArray(array $entity): bool {
+    return array_key_exists('entityLabel', $entity)
+      && array_key_exists('entityKey', $entity)
+      && array_key_exists('uniqueKey', $entity);
+  }
 
-		ksort($this->entityList, SORT_NATURAL);
+  public function addEntity(array $entity): EntityList {
+    if ($this->isValidEntityArray($entity)) {
+      $entityKey = $entity['entityKey'];
+      $this->entityList[$entityKey] = $entity;
 
-		return $this;
-	}
+      if ($this->isUseBound()) {
+        $this->evaluateBound($entity['uniqueKey']);
+      }
+    }
 
-	public function getLoggingList(): array	{
-		return $this->loggingList;
-	}
+    return $this;
+  }
 
-	public function addLog(LogItemInterface $logItem): EntityList {
-		$this->loggingList[] = $logItem;
-		return $this;
-	}
+  public function isUseBound(): bool {
+    return $this->useBound;
+  }
 
-	public function addLogs(array $logItems): EntityList {
-		foreach ($logItems as $logItem) {
-			if(!($logItem instanceof LogItemInterface)) {
-				continue;
-			}
-			$this->addLog($logItem);
-		}
-		return $this;
-	}
+  public function setUseBound(bool $useBound): EntityList {
+    $this->useBound = $useBound;
+    return $this;
+  }
 
-	public function getEntityList(): array {
-		return $this->entityList;
-	}
+  public function evaluateBound(mixed $bound): bool {
+    $ret = FALSE;
 
-	public function iterateEntityList(): \Generator {
-		foreach ($this->entityList as $entityKey => $entity) {
-			yield $entityKey => $entity;
-		}
-	}
+    if (!is_integer($bound)) {
+      return $ret;
+    }
 
-	public function isUseBound(): bool{
-		return $this->useBound;
-	}
+    if (!isset($this->lowerBound) || $bound > ($this->upperBound)) {
+      $this->upperBound = $bound;
+      $ret = TRUE;
+    }
 
-	public function setUseBound(bool $useBound): EntityList {
-		$this->useBound = $useBound;
-		return $this;
-	}
+    if (!isset($this->lowerBound) || $bound < ($this->lowerBound)) {
+      $this->lowerBound = $bound;
+      $ret = TRUE;
+    }
 
-	public function getPage(): int {
-		return $this->page;
-	}
+    return $ret;
+  }
 
-	public function setPage(int $page): EntityList {
-		$this->page = $page;
-		return $this;
-	}
+  public function getLoggingList(): array {
+    return $this->loggingList;
+  }
 
+  public function addLogs(array $logItems): EntityList {
+    foreach ($logItems as $logItem) {
+      if (!($logItem instanceof LogItemInterface)) {
+        continue;
+      }
+      $this->addLog($logItem);
+    }
+    return $this;
+  }
 
+  public function addLog(LogItemInterface $logItem): EntityList {
+    $this->loggingList[] = $logItem;
+    return $this;
+  }
+
+  public function getEntityList(): array {
+    return $this->entityList;
+  }
+
+  public function iterateEntityList(): Generator {
+    foreach ($this->entityList as $entityKey => $entity) {
+      yield $entityKey => $entity;
+    }
+  }
+
+  public function getPage(): int {
+    return $this->page;
+  }
+
+  public function setPage(int $page): EntityList {
+    $this->page = $page;
+    return $this;
+  }
 
 }

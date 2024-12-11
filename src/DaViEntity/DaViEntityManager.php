@@ -20,17 +20,13 @@ class DaViEntityManager {
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
   ) {}
 
-  public function getEntity(EntityKey $entityKey): EntityInterface {
-    return $this->loadEntityByEntityKey($entityKey);
+  public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
+    $controller = $this->getEntityController($entityType);
+    return $controller->loadEntityData($filterContainer, $options);
   }
 
   public function getEntityController($input): EntityControllerInterface {
     return $this->entityTypesRegister->resolveEntityController($input);
-  }
-
-  public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
-    $controller = $this->getEntityController($entityType);
-    return $controller->loadEntityData($filterContainer, $options);
   }
 
   public function loadMultipleEntities(string $entityType, FilterContainer $filterContainer, array $options = []): array {
@@ -38,12 +34,7 @@ class DaViEntityManager {
     return $controller->loadMultipleEntities($filterContainer, $options);
   }
 
-  public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
-    $controller = $this->getEntityController($entityKey);
-    return $controller->loadEntityByEntityKey($entityKey);
-  }
-
-  public function loadAggregatedEntityData($input, string $client, string | AggregationConfiguration $aggregation, FilterContainer $filterContainer = null, array $columnsBlacklist = []): array | TableData {
+  public function loadAggregatedEntityData($input, string $client, string|AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $columnsBlacklist = []): array|TableData {
     $controller = $this->getEntityController($input);
     return $controller->loadAggregatedData($client, $aggregation, $filterContainer, $columnsBlacklist);
   }
@@ -52,6 +43,36 @@ class DaViEntityManager {
     $entity = $this->evaluateEntity($entityKey);
     $controller = $this->getEntityController($entity);
     return $controller->getEntityLabel($entity);
+  }
+
+  public function evaluateEntity(mixed $entity): EntityInterface {
+    if (is_string($entity)) {
+      $entity = EntityKey::createFromString($entity);
+    }
+
+    if ($entity instanceof EntityKey) {
+      $entity = $this->getEntity($entity);
+    }
+
+    if ($entity instanceof EntityInterface) {
+      return $entity;
+    } else {
+      return $this->createNullEntity();
+    }
+  }
+
+  public function getEntity(EntityKey $entityKey): EntityInterface {
+    return $this->loadEntityByEntityKey($entityKey);
+  }
+
+  public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
+    $controller = $this->getEntityController($entityKey);
+    return $controller->loadEntityByEntityKey($entityKey);
+  }
+
+  public function createNullEntity(): EntityInterface {
+    $schema = $this->schemaRegister->getEntityTypeSchema(NullEntity::ENTITY_TYPE);
+    return new NullEntity($schema, 'unknown');
   }
 
   public function preRenderEntity(mixed $entityKey): array {
@@ -76,7 +97,7 @@ class DaViEntityManager {
     $currentEntity = $this->evaluateEntity($baseEntity);
     $ret = [];
     $separatorPos = strpos($path, '.');
-    if($separatorPos) {
+    if ($separatorPos) {
       $pathSection = substr($path, 0, $separatorPos);
       $path = substr($path, $separatorPos + 1);
     } else {
@@ -85,12 +106,13 @@ class DaViEntityManager {
     }
 
     $item = $currentEntity->getPropertyItem($pathSection);
-    if($item->getConfiguration()->hasEntityReferenceHandler() && !empty($path)) {
+    if ($item->getConfiguration()
+        ->hasEntityReferenceHandler() && !empty($path)) {
       $itemConfiguration = $item->getConfiguration();
       $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
 
       foreach ($handler->iterateEntityKeys($currentEntity, $pathSection) as $entityKey) {
-        if(!$entityKey) {
+        if (!$entityKey) {
           continue;
         }
         $ret = array_merge($this->getItemsFromPath($path, $entityKey), $ret);
@@ -100,28 +122,6 @@ class DaViEntityManager {
     }
 
     return $ret;
-  }
-
-  public function evaluateEntity(mixed $entity): EntityInterface {
-
-    if(is_string($entity)) {
-      $entity = EntityKey::createFromString($entity);
-    }
-
-    if ($entity instanceof EntityKey) {
-      $entity = $this->getEntity($entity);
-    }
-
-    if($entity instanceof EntityInterface) {
-      return $entity;
-    } else {
-      return $this->createNullEntity();
-    }
-  }
-
-  public function createNullEntity(): EntityInterface {
-    $schema = $this->schemaRegister->getEntityTypeSchema(NullEntity::ENTITY_TYPE);
-    return new NullEntity($schema, 'unknown');
   }
 
   public function getEntityList(string $entityType, FilterContainer $filterContainer): EntityList {

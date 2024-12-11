@@ -22,8 +22,8 @@ class RestApiMain extends AbstractController {
   #[Route(path: '/api/get-entity-types', name: 'app_api_get_entity_types')]
   public function getEntityTypesApi(EntityTypesRegister $entityTypesRegister, EntityTypeSchemaRegister $schemaRegister, SqlFilterHandlerLocator $filterHandlerLocator): Response {
     $entityTypes = [];
-    foreach($entityTypesRegister->iterateEntityTypes() as $entityType) {
-      if($entityType === 'NullEntity') {
+    foreach ($entityTypesRegister->iterateEntityTypes() as $entityType) {
+      if ($entityType === 'NullEntity') {
         continue;
       }
       $schema = $schemaRegister->getEntityTypeSchema($entityType);
@@ -34,13 +34,49 @@ class RestApiMain extends AbstractController {
         'filterDefinitions' => $this->buildFilters($schema, $filterHandlerLocator),
         'filterGroups' => $this->getFilterGroups($schema),
         'groupFilterMapping' => $schema->getGroupFilterMappings(),
-        'entityActions' => []
+        'entityActions' => [],
       ];
 
       $entityTypes[] = $entityType;
     }
 
     return $this->json($entityTypes);
+  }
+
+  private function buildFilters(EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator): array {
+    $ret = [];
+
+    foreach ($schema->iterateFilterDefinitions() as $filterKey => $filterDefinition) {
+      $filter = $this->buildFilter($filterDefinition, $schema, $filterHandlerLocator, $filterKey);
+      if (!empty($filter)) {
+        $ret[$filterKey] = $filter;
+      }
+    }
+
+    return $ret;
+  }
+
+  private function buildFilter(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator, string $filterKey = ''): array {
+    $handler = $filterHandlerLocator->getFilterHandlerFromFilterDefinition($filterDefinition);
+    //    $defaultComponent = [
+    //      'component' => '',
+    //      'type' => 0,
+    //      'name' => '',
+    //      'title' => '',
+    //      'description' => '',
+    //      'mandatory' => false,
+    //      'defaultValue' => null,
+    //      'possibleValues' => [],
+    //      'additional' => []
+    //    ];
+
+    $component = $handler->getFilterComponent($filterDefinition, $schema, $filterKey);
+
+    if (!empty($component)) {
+      return $component;
+    }
+
+    return [];
   }
 
   private function getFilterGroups(EntitySchema $schema): array {
@@ -50,43 +86,6 @@ class RestApiMain extends AbstractController {
     }
 
     return $ret;
-  }
-
-  private function buildFilters(EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator): array {
-    $ret = [];
-
-    foreach($schema->iterateFilterDefinitions() as $filterKey => $filterDefinition) {
-      $filter = $this->buildFilter($filterDefinition, $schema, $filterHandlerLocator, $filterKey);
-      if(!empty($filter)) {
-        $ret[$filterKey] = $filter;
-      }
-    }
-
-
-    return $ret;
-  }
-
-  private function buildFilter(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator, string $filterKey = ''): array {
-    $handler = $filterHandlerLocator->getFilterHandlerFromFilterDefinition($filterDefinition);
-//    $defaultComponent = [
-//      'component' => '',
-//      'type' => 0,
-//      'name' => '',
-//      'title' => '',
-//      'description' => '',
-//      'mandatory' => false,
-//      'defaultValue' => null,
-//      'possibleValues' => [],
-//      'additional' => []
-//    ];
-
-    $component = $handler->getFilterComponent($filterDefinition, $schema, $filterKey);
-
-    if(!empty($component)) {
-      return $component;
-    }
-
-    return [];
   }
 
 }

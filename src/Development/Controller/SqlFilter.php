@@ -14,8 +14,8 @@ class SqlFilter extends AbstractController {
       SqlFilterDefinitionInterface::YAML_KEY_HANDLER => 'CommonTextFilterHandler',
       "values_definition" => [
         "input" => "String",
-        "cardinality" => "singleValue"
-      ]
+        "cardinality" => "singleValue",
+      ],
     ];
     dd($filterDefinitionBuilder->calculateFilterHash($filterArray));
   }

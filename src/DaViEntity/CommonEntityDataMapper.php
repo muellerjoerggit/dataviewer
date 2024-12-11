@@ -11,6 +11,7 @@ use App\Database\SqlFilter\SqlFilterBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DataCollections\EntityList;
 use App\DaViEntity\Schema\EntitySchema;
+use Exception;
 
 class CommonEntityDataMapper implements EntityDataMapperInterface {
 
@@ -22,53 +23,6 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     private readonly AggregationBuilder $aggregationBuilder,
   ) {}
 
-  protected function getQueryBuilder(EntitySchema $schema, string $client): DaViQueryBuilder {
-    return $this->databaseLocator->getDatabaseBySchema($schema)->createQueryBuilder($client);
-  }
-
-  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder {
-    $options = $this->getDefaultQueryOptions($options);
-
-    $baseTable = $schema->getBaseTable();
-    if ($options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]) {
-      $columns = $schema->getColumns();
-    }
-    else {
-      $columns = [];
-    }
-
-    $queryBuilder = $this->getQueryBuilder($schema, $client);
-
-    foreach ($columns as $property => $column) {
-      $queryBuilder->addSelect($column . ' AS ' . $property);
-    }
-
-
-    $queryBuilder->from($baseTable);
-    $queryBuilder->setMaxResults($options[EntityDataMapperInterface::OPTION_LIMIT]);
-
-    return $queryBuilder;
-  }
-
-  protected function getDefaultQueryOptions(array $options): array {
-    return array_merge(
-      [
-        EntityDataMapperInterface::OPTION_WITH_COLUMNS => true,
-        EntityDataMapperInterface::OPTION_WITH_JOINS => true,
-        EntityDataMapperInterface::OPTION_LIMIT => 50
-      ],
-      $options
-    );
-  }
-
-  protected function executeQueryBuilder(DaViQueryBuilder $queryBuilder, array $options = []): mixed {
-    try {
-      return $this->executeQueryBuilderInternal($queryBuilder, $options);
-    } catch (\Exception $exception) {
-      return [];
-    }
-  }
-
   public function fetchEntityData(EntitySchema $schema, FilterContainer $filters, array $options = []): array {
     $client = $filters->getClient();
     $queryBuilder = $this->buildQueryFromSchema($schema, $client);
@@ -79,11 +33,57 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     return $this->executeQueryBuilder($queryBuilder);
   }
 
+  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder {
+    $options = $this->getDefaultQueryOptions($options);
+
+    $baseTable = $schema->getBaseTable();
+    if ($options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]) {
+      $columns = $schema->getColumns();
+    } else {
+      $columns = [];
+    }
+
+    $queryBuilder = $this->getQueryBuilder($schema, $client);
+
+    foreach ($columns as $property => $column) {
+      $queryBuilder->addSelect($column . ' AS ' . $property);
+    }
+
+    $queryBuilder->from($baseTable);
+    $queryBuilder->setMaxResults($options[EntityDataMapperInterface::OPTION_LIMIT]);
+
+    return $queryBuilder;
+  }
+
+  protected function getDefaultQueryOptions(array $options): array {
+    return array_merge(
+      [
+        EntityDataMapperInterface::OPTION_WITH_COLUMNS => TRUE,
+        EntityDataMapperInterface::OPTION_WITH_JOINS => TRUE,
+        EntityDataMapperInterface::OPTION_LIMIT => 50,
+      ],
+      $options
+    );
+  }
+
+  protected function getQueryBuilder(EntitySchema $schema, string $client): DaViQueryBuilder {
+    return $this->databaseLocator->getDatabaseBySchema($schema)
+      ->createQueryBuilder($client);
+  }
+
+  protected function executeQueryBuilder(DaViQueryBuilder $queryBuilder, array $options = []): mixed {
+    try {
+      return $this->executeQueryBuilderInternal($queryBuilder, $options);
+    } catch (Exception $exception) {
+      return [];
+    }
+  }
+
   public function fetchAggregatedData(
     string $client,
     EntitySchema $schema,
     AggregationConfiguration $aggregationConfiguration,
-    FilterContainer $filterContainer = null,
+    FilterContainer $filterContainer = NULL,
     array $columnsBlacklist = []
   ): mixed {
     $queryBuilder = $this->buildQueryFromSchema($schema, $client);
@@ -95,9 +95,9 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
   public function getEntityList(EntitySchema $schema, FilterContainer $filterContainer): EntityList {
     $client = $filterContainer->getClient();
 
-    $queryBuilder = $this->buildQueryFromSchema($schema, $client, [EntityDataMapperInterface::OPTION_WITH_COLUMNS => false]);
+    $queryBuilder = $this->buildQueryFromSchema($schema, $client, [EntityDataMapperInterface::OPTION_WITH_COLUMNS => FALSE]);
 
-    $this->buildLabelColumn($queryBuilder, $schema, true);
+    $this->buildLabelColumn($queryBuilder, $schema, TRUE);
     $this->buildEntityKeyColumn($queryBuilder, $schema);
 
     $queryBuilder->setMaxResults($filterContainer->getLimit());
@@ -110,7 +110,7 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     $database = $this->databaseLocator->getDatabaseBySchema($schema);
     $entityCount = $database->getCountResultFromQueryBuilder($countQueryBuilder, EntityDataMapperInterface::FETCH_TYPE_ONE);
 
-    if(!is_integer($entityCount)) {
+    if (!is_integer($entityCount)) {
       $entityCount = -1;
     }
 
@@ -118,19 +118,18 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     $list
       ->setUseBound($schema->isSingleColumnPrimaryKeyInteger())
       ->setTotalCount($entityCount)
-      ->addEntities($queryResult)
-    ;
+      ->addEntities($queryResult);
 
     return $list;
   }
 
-  protected function buildLabelColumn(DaViQueryBuilder $queryBuilder, EntitySchema $schema, bool $withEntityLabel = false): void {
+  protected function buildLabelColumn(DaViQueryBuilder $queryBuilder, EntitySchema $schema, bool $withEntityLabel = FALSE): void {
     $concat = '';
     $entityLabelProperties = $schema->getEntityLabelProperties();
     foreach ($entityLabelProperties as $labelProperty) {
       $column = $schema->getColumn($labelProperty);
 
-      if(empty($column)) {
+      if (empty($column)) {
         continue;
       }
 
