@@ -11,51 +11,52 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class ValidatorItemHandlerLocator extends AbstractLocator {
 
-	public function __construct(
+  public function __construct(
     #[AutowireLocator('validator_item_handler')]
     ServiceLocator $services
   ) {
-		parent::__construct($services);
-	}
+    parent::__construct($services);
+  }
 
-	public function getValidatorHandlerFromItem(ItemConfigurationInterface $itemConfiguration): array {
-		if($itemConfiguration instanceof ItemInterface) {
-			$itemConfiguration = $itemConfiguration->getConfiguration();
-		}
+  public function getValidatorHandlerFromItem(ItemConfigurationInterface $itemConfiguration): array {
+    if ($itemConfiguration instanceof ItemInterface) {
+      $itemConfiguration = $itemConfiguration->getConfiguration();
+    }
 
-		$ret = [];
-		$handlers = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_VALIDATOR);
+    $ret = [];
+    $handlers = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_VALIDATOR);
 
-		if(!$handlers) {
-			return [];
-		}
+    if (!$handlers) {
+      return [];
+    }
 
-		foreach($handlers as $handler) {
-			$ret[] = $this->getHandler($handler);
-		}
+    foreach ($handlers as $handler) {
+      $ret[] = $this->getHandler($handler);
+    }
 
-		return $ret;
-	}
+    return $ret;
+  }
 
-	/**
-	 * @param array $validationSetting
-	 * @return array
-	 * @deprecated
-	 */
-	public function getValidatorHandlerFromEntityReferenceSetting(array $validationSetting): array {
-		$ret = [];
-		foreach($validationSetting as $handler => $settings) {
-			$ret[] = $this->getHandler($handler);
-		}
+  public function getHandler(string $handler): ValidatorItemHandlerInterface {
+    if ($handler && $this->has($handler)) {
+      return $this->get($handler);
+    }
+    return $this->get(NullValidatorItemHandler::class);
+  }
 
-		return $ret;
-	}
+  /**
+   * @param array $validationSetting
+   *
+   * @return array
+   * @deprecated
+   */
+  public function getValidatorHandlerFromEntityReferenceSetting(array $validationSetting): array {
+    $ret = [];
+    foreach ($validationSetting as $handler => $settings) {
+      $ret[] = $this->getHandler($handler);
+    }
 
-	public function getHandler(string $handler): ValidatorItemHandlerInterface {
-		if($handler && $this->has($handler)) {
-			return $this->get($handler);
-		}
-		return $this->get(NullValidatorItemHandler::class);
-	}
+    return $ret;
+  }
 
 }

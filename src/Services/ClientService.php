@@ -2,68 +2,67 @@
 
 namespace App\Services;
 
-
 use App\SymfonyRepository\ClientRepository;
 
 class ClientService {
 
-	private ClientRepository $clientRepository;
-	private array $clients;
+  private ClientRepository $clientRepository;
 
-	public function __construct(ClientRepository $clientRepository) {
-		$this->clientRepository = $clientRepository;
+  private array $clients;
 
-		$this->initClients();
-	}
+  public function __construct(ClientRepository $clientRepository) {
+    $this->clientRepository = $clientRepository;
 
-	private function initClients(): void {
-		$clients = $this->clientRepository->findAll();
+    $this->initClients();
+  }
 
-		foreach ($clients as $client) {
-			$clientId = $client->getClientId();
-			$this->clients[$clientId] = [
-				'clientId' => $clientId,
-				'name' => $client->getName(),
-				'databaseName' => $client->getDatabaseName(),
-				'url' => $client->getUrl()
-			];
-		}
-	}
+  private function initClients(): void {
+    $clients = $this->clientRepository->findAll();
 
-	public function getFirstClientId(): string {
-		$client = reset($this->clients);
-		return $client['clientId'];
-	}
+    foreach ($clients as $client) {
+      $clientId = $client->getClientId();
+      $this->clients[$clientId] = [
+        'clientId' => $clientId,
+        'name' => $client->getName(),
+        'databaseName' => $client->getDatabaseName(),
+        'url' => $client->getUrl(),
+      ];
+    }
+  }
 
-	public function isClient(string $client): bool {
-		return isset($this->clients[$client]);
-	}
+  public function getFirstClientId(): string {
+    $client = reset($this->clients);
+    return $client['clientId'];
+  }
 
-	public function getClientsName(): array {
-		return array_column($this->clients, 'name', 'clientId');
-	}
+  public function getClientsName(): array {
+    return array_column($this->clients, 'name', 'clientId');
+  }
 
-	public function getClientName(string $client): string {
-		return $this->clients[$client]['name'] ?? 'unbekannter Client';
-	}
+  public function getClientName(string $client): string {
+    return $this->clients[$client]['name'] ?? 'unbekannter Client';
+  }
 
-	public function getClientDatabaseName(string $client, string $preFix = ''): string {
-
-		if(!$this->isClient($client)) {
-			return '';
-		}
+  public function getClientDatabaseName(string $client, string $preFix = ''): string {
+    if (!$this->isClient($client)) {
+      return '';
+    }
 
     $databaseName = $this->clients[$client]['databaseName'];
 
-    if(empty($databaseName)) {
+    if (empty($databaseName)) {
       return '';
     }
 
     return empty($preFix) ? $databaseName : $preFix . $databaseName;
-	}
+  }
 
-	public function getClientUrl(string $client): string {
-		return $this->clients[$client]['url'] ?? '';
-	}
+  public function isClient(string $client): bool {
+    return isset($this->clients[$client]);
+  }
+
+  public function getClientUrl(string $client): string {
+    return $this->clients[$client]['url'] ?? '';
+  }
 
 }

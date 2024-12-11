@@ -10,16 +10,16 @@ abstract class AbstractLocator {
     protected readonly ServiceLocator $services
   ) {}
 
-  protected function get($id) {
-    return $this->services->get($id);
-  }
-
   public function has($id): bool {
     return $this->services->has($id);
   }
 
   public function getProvidedServices(): array {
     return $this->services->getProvidedServices();
+  }
+
+  protected function get($id) {
+    return $this->services->get($id);
   }
 
 }

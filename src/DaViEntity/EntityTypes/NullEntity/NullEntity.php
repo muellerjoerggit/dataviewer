@@ -9,6 +9,7 @@ use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyItemInterface;
 use App\Logger\LogItems\LogItemInterface;
+use Generator;
 
 #[EntityType(name: 'NullEntity')]
 class NullEntity implements EntityInterface {
@@ -25,7 +26,7 @@ class NullEntity implements EntityInterface {
   }
 
   public function isMissingEntity(): bool {
-    return true;
+    return TRUE;
   }
 
   public function setMissingEntity(bool $missingEntity): EntityInterface {
@@ -47,6 +48,7 @@ class NullEntity implements EntityInterface {
   public function countYellowLogs(): int {
     return 0;
   }
+
   public function countLogs(array $logLevels): int {
     return 1;
   }
@@ -61,6 +63,10 @@ class NullEntity implements EntityInterface {
       self::ENTITY_TYPE,
       [['id' => $this->getPropertyItem('id')->getFirstValue()]]
     );
+  }
+
+  public function getPropertyItem(string $property): PropertyItemInterface {
+    return $this->getPropertyItem('id');
   }
 
   public function getFirstEntityKeyAsString(): string {
@@ -84,15 +90,15 @@ class NullEntity implements EntityInterface {
   }
 
   public function hasCriticalLogs(): bool {
-    return true;
+    return TRUE;
   }
 
-  public function iteratePropertyItems(): \Generator {
+  public function iteratePropertyItems(): Generator {
     yield $this->getPropertyItem('id');
   }
 
   public function getPropertyRawValues(string $property): mixed {
-    return null;
+    return NULL;
   }
 
   public function getPropertyValues(string $property): mixed {
@@ -103,12 +109,8 @@ class NullEntity implements EntityInterface {
     return '';
   }
 
-  public function getPropertyItem(string $property): PropertyItemInterface {
-    return $this->getPropertyItem('id');
-  }
-
   public function hasPropertyItem(string $property): bool {
-    return false;
+    return FALSE;
   }
 
   public function setPropertyItem(string $property, ItemInterface $item): EntityInterface {

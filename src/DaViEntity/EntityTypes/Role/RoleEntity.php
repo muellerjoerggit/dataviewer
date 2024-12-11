@@ -12,7 +12,9 @@ class RoleEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   private $rol_id;
+
   private $title;
+
   private $description;
 
 }

@@ -2,85 +2,88 @@
 
 namespace App\Database\SqlFilter;
 
+use Generator;
+
 class FilterContainer {
 
-	private array $filters = [];
-	private int $limit = 50;
-	private string $client = '';
+  private array $filters = [];
 
-	public function __construct(string $client, array $filters = []) {
-		$this->filters = $filters;
-		$this->client = $client;
-	}
+  private int $limit = 50;
 
-	public function iterateFilters(): \Generator {
-		foreach ($this->filters as $key => $filter) {
-			yield $key => $filter;
-		}
-	}
+  private string $client = '';
 
-	public function getClient(): string {
-		return $this->client;
-	}
+  public function __construct(string $client, array $filters = []) {
+    $this->filters = $filters;
+    $this->client = $client;
+  }
 
-	public function getFilter(string $filterName): SqlFilterInterface | bool {
-		if(!$this->hasFilter($filterName)) {
-			return false;
-		}
-		return $this->filters[$filterName];
-	}
+  public function getClient(): string {
+    return $this->client;
+  }
 
-	public function hasFilters(): bool {
-		return !empty($this->filters);
-	}
+  public function getFilter(string $filterName): SqlFilterInterface|bool {
+    if (!$this->hasFilter($filterName)) {
+      return FALSE;
+    }
+    return $this->filters[$filterName];
+  }
 
-	public function hasFilter($key): bool {
-		return isset($this->filters[$key]);
-	}
+  public function hasFilter($key): bool {
+    return isset($this->filters[$key]);
+  }
 
-	public function addFilters(SqlFilterInterface | SqlFilterDefinitionInterface $filter): void {
-		$name = $filter->getFilterKey();
+  public function hasFilters(): bool {
+    return !empty($this->filters);
+  }
 
-		$this->filters[$name] = $filter;
-	}
+  public function addFiltersIfNotExists(FilterContainer|array|SqlFilterDefinitionInterface|SqlFilter $filters): FilterContainer {
+    if (($filters instanceof SqlFilterInterface || $filters instanceof SqlFilterDefinitionInterface) && !$this->hasFilter($filters->getFilterKey())) {
+      $this->addFilters($filters);
+      return $this;
+    }
 
-	public function addFiltersIfNotExists(FilterContainer | array | SqlFilterDefinitionInterface | SqlFilter $filters): FilterContainer {
-		if(($filters instanceof SqlFilterInterface || $filters instanceof SqlFilterDefinitionInterface) && !$this->hasFilter($filters->getFilterKey())) {
-			$this->addFilters($filters);
-			return $this;
-		}
+    if (is_array($filters)) {
+      foreach ($filters as $filter) {
+        if (!($filter instanceof SqlFilterInterface) || !($filter instanceof SqlFilterDefinitionInterface)) {
+          continue;
+        }
+        $this->addFiltersIfNotExists($filter);
+      }
+      return $this;
+    }
 
-		if(is_array($filters)) {
-			foreach ($filters as $filter) {
-				if(!($filter instanceof SqlFilterInterface) || !($filter instanceof SqlFilterDefinitionInterface)) {
-					continue;
-				}
-				$this->addFiltersIfNotExists($filter);
-			}
-			return $this;
-		}
+    if ($filters instanceof FilterContainer) {
+      foreach ($filters->iterateFilters() as $filter) {
+        if (!($filter instanceof SqlFilterInterface) || !($filter instanceof SqlFilterDefinitionInterface)) {
+          continue;
+        }
+        $this->addFiltersIfNotExists($filter);
+      }
+      return $this;
+    }
 
-		if($filters instanceof FilterContainer) {
-			foreach ($filters->iterateFilters() as $filter) {
-				if(!($filter instanceof SqlFilterInterface) || !($filter instanceof SqlFilterDefinitionInterface)) {
-					continue;
-				}
-				$this->addFiltersIfNotExists($filter);
-			}
-			return $this;
-		}
+    return $this;
+  }
 
-		return $this;
-	}
+  public function addFilters(SqlFilterInterface|SqlFilterDefinitionInterface $filter): void {
+    $name = $filter->getFilterKey();
 
-	public function getLimit(): int	{
-		return $this->limit;
-	}
+    $this->filters[$name] = $filter;
+  }
 
-	public function setLimit(int $limit): FilterContainer {
-		$this->limit = $limit;
-		return $this;
-	}
+  public function iterateFilters(): Generator {
+    foreach ($this->filters as $key => $filter) {
+      yield $key => $filter;
+    }
+  }
 
+  public function getLimit(): int {
+    return $this->limit;
+  }
+
+  public function setLimit(int $limit): FilterContainer {
+    $this->limit = $limit;
+    return $this;
+  }
 
 }

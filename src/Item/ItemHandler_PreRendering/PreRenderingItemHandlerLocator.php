@@ -10,20 +10,20 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class PreRenderingItemHandlerLocator extends AbstractLocator {
 
-	public function __construct(
+  public function __construct(
     #[AutowireLocator('pre_rendering_item_handler')]
     ServiceLocator $services
   ) {
-		parent::__construct($services);
-	}
+    parent::__construct($services);
+  }
 
-	public function getPreRenderingHandlerFromItem(ItemConfigurationInterface $itemConfiguration): PreRenderingItemHandlerInterface {
-		$handlerName = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_PRE_RENDERING);
-		if($handlerName && $this->has($handlerName)) {
-			return $this->get($handlerName);
-		} else {
-			return $this->get(NullPreRenderingItemHandler::class);
-		}
-	}
+  public function getPreRenderingHandlerFromItem(ItemConfigurationInterface $itemConfiguration): PreRenderingItemHandlerInterface {
+    $handlerName = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_PRE_RENDERING);
+    if ($handlerName && $this->has($handlerName)) {
+      return $this->get($handlerName);
+    } else {
+      return $this->get(NullPreRenderingItemHandler::class);
+    }
+  }
 
 }

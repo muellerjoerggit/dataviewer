@@ -8,120 +8,124 @@ use Doctrine\DBAL\Result;
 
 class DaViQueryBuilder extends QueryBuilder {
 
-	private array $joinsOnHold = [];
-	private array $groupByOnHold = [];
-	private string $client;
+  private array $joinsOnHold = [];
 
+  private array $groupByOnHold = [];
 
-	public function __construct(Connection $connection, string $client) {
-		parent::__construct($connection);
-		$this->client = $client;
-	}
+  private string $client;
 
-	public function getClient(): string	{
-		return $this->client;
-	}
+  public function __construct(Connection $connection, string $client) {
+    parent::__construct($connection);
+    $this->client = $client;
+  }
 
-	public function leftJoin($fromAlias, $join, $alias, $condition = null) {
-		$this->joinsOnHold[$alias] = [
-			$fromAlias => [
-				'joinType'      => 'left',
-				'joinTable'     => $join,
-				'joinAlias'     => $alias,
-				'joinCondition' => $condition,
-			]];
+  public function getClient(): string {
+    return $this->client;
+  }
 
-		return $this;
-	}
+  public function executeQuery(): Result {
+    $this->prepareSql();
+    return parent::executeQuery();
+  }
 
-	public function innerJoin($fromAlias, $join, $alias, $condition = null)	{
-		$this->joinsOnHold[$alias] = [
-			$fromAlias => [
-				'joinType'      => 'inner',
-				'joinTable'     => $join,
-				'joinAlias'     => $alias,
-				'joinCondition' => $condition,
-			]];
+  private function prepareSql(): void {
+    foreach ($this->joinsOnHold as $key => $join) {
+      $fromAlias = key($join);
+      $join = current($join);
 
-		return $this;
-	}
+      switch ($join['joinType']) {
+        case 'left':
+          parent::leftJoin($fromAlias, $join['joinTable'], $join['joinAlias'], $join['joinCondition']);
+          break;
+        case 'right':
+          parent::rightJoin($fromAlias, $join['joinTable'], $join['joinAlias'], $join['joinCondition']);
+          break;
+        case 'inner':
+        default:
+          parent::innerJoin($fromAlias, $join['joinTable'], $join['joinAlias'], $join['joinCondition']);
+      }
+    }
 
-	public function rightJoin($fromAlias, $join, $alias, $condition = null)	{
-		$this->joinsOnHold[$alias] = [
-			$fromAlias => [
-				'joinType'      => 'left',
-				'joinTable'     => $join,
-				'joinAlias'     => $alias,
-				'joinCondition' => $condition,
-			]];
+    $groupBys = array_unique($this->groupByOnHold);
 
-		return $this;
-	}
+    foreach ($groupBys as $groupBy) {
+      parent::addGroupBy($groupBy);
+    }
 
-	public function addGroupBy($groupBy) {
-		if (is_array($groupBy) && count($groupBy) === 0) {
-			return $this;
-		}
+    $this->resetOnHold();
+  }
 
-		$groupBy = is_array($groupBy) ? $groupBy : func_get_args();
+  public function leftJoin($fromAlias, $join, $alias, $condition = NULL) {
+    $this->joinsOnHold[$alias] = [
+      $fromAlias => [
+        'joinType' => 'left',
+        'joinTable' => $join,
+        'joinAlias' => $alias,
+        'joinCondition' => $condition,
+      ],
+    ];
 
-		$this->groupByOnHold = array_merge($this->groupByOnHold, $groupBy);
+    return $this;
+  }
 
-		return $this;
-	}
+  public function rightJoin($fromAlias, $join, $alias, $condition = NULL) {
+    $this->joinsOnHold[$alias] = [
+      $fromAlias => [
+        'joinType' => 'left',
+        'joinTable' => $join,
+        'joinAlias' => $alias,
+        'joinCondition' => $condition,
+      ],
+    ];
 
-	public function executeQuery(): Result {
-		$this->prepareSql();
-		return parent::executeQuery();
-	}
+    return $this;
+  }
 
-	public function getSQL() {
-		$this->prepareSql();
-		return parent::getSQL();
-	}
+  public function innerJoin($fromAlias, $join, $alias, $condition = NULL) {
+    $this->joinsOnHold[$alias] = [
+      $fromAlias => [
+        'joinType' => 'inner',
+        'joinTable' => $join,
+        'joinAlias' => $alias,
+        'joinCondition' => $condition,
+      ],
+    ];
 
-	private function prepareSql(): void {
-		foreach ($this->joinsOnHold as $key => $join) {
-			$fromAlias = key($join);
-			$join = current($join);
+    return $this;
+  }
 
-			switch ($join['joinType']) {
-				case 'left':
-					parent::leftJoin($fromAlias, $join['joinTable'], $join['joinAlias'], $join['joinCondition']);
-					break;
-				case 'right':
-					parent::rightJoin($fromAlias, $join['joinTable'], $join['joinAlias'], $join['joinCondition']);
-					break;
-				case 'inner':
-				default:
-					parent::innerJoin($fromAlias, $join['joinTable'], $join['joinAlias'], $join['joinCondition']);
-			}
-		}
+  public function addGroupBy($groupBy) {
+    if (is_array($groupBy) && count($groupBy) === 0) {
+      return $this;
+    }
 
-		$groupBys = array_unique($this->groupByOnHold);
+    $groupBy = is_array($groupBy) ? $groupBy : func_get_args();
 
-		foreach ($groupBys as $groupBy) {
-			parent::addGroupBy($groupBy);
-		}
+    $this->groupByOnHold = array_merge($this->groupByOnHold, $groupBy);
 
-		$this->resetOnHold();
-	}
+    return $this;
+  }
 
-	private function resetOnHold(): void {
-		$this->groupByOnHold = [];
-		$this->joinsOnHold = [];
-	}
+  private function resetOnHold(): void {
+    $this->groupByOnHold = [];
+    $this->joinsOnHold = [];
+  }
 
-	public function fetchAllAssociativeGroupIndexed(): array {
-		$result = parent::fetchAllAssociative();
-		$ret = [];
+  public function getSQL() {
+    $this->prepareSql();
+    return parent::getSQL();
+  }
 
-		foreach($result as $row) {
-			$firstColumn = array_shift($row);
-			$ret[$firstColumn][] = $row;
-		}
+  public function fetchAllAssociativeGroupIndexed(): array {
+    $result = parent::fetchAllAssociative();
+    $ret = [];
 
-		return $ret;
-	}
+    foreach ($result as $row) {
+      $firstColumn = array_shift($row);
+      $ret[$firstColumn][] = $row;
+    }
+
+    return $ret;
+  }
 
 }

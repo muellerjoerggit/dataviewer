@@ -12,10 +12,15 @@ class UserEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   private $usr_id;
+
   private $firstname;
+
   private $lastname;
+
   private $email;
+
   private $active;
+
   private $inactivation_date;
 
 }

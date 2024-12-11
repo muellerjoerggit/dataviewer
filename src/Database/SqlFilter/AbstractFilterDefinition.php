@@ -5,29 +5,24 @@ namespace App\Database\SqlFilter;
 abstract class AbstractFilterDefinition implements SqlFilterDefinitionInterface {
 
   protected string $title = '';
+
   protected string $description = '';
 
   protected array $definitions = [];
-  protected mixed $defaultValue = null;
+
+  protected mixed $defaultValue = NULL;
 
   public function __construct(
     protected readonly string $key,
     protected readonly string $handler
-  ) {
-  }
-
-  public function setTitle(string $title): SqlFilterDefinitionInterface {
-    $this->title = $title;
-    return $this;
-  }
-
-  public function setDescription(string $description): SqlFilterDefinitionInterface {
-    $this->description = $description;
-    return $this;
-  }
+  ) {}
 
   public function getHandler(): string {
     return $this->handler;
+  }
+
+  public function getDefaultValue(mixed $default = NULL): mixed {
+    return $this->defaultValue ?? $default;
   }
 
   public function setDefaultValue($defaultValue): SqlFilterDefinitionInterface {
@@ -35,12 +30,8 @@ abstract class AbstractFilterDefinition implements SqlFilterDefinitionInterface 
     return $this;
   }
 
-  public function getDefaultValue(mixed $default = null): mixed {
-    return $this->defaultValue ?? $default;
-  }
-
   public function hasDefaultValue(): bool {
-    return $this->defaultValue !== null;
+    return $this->defaultValue !== NULL;
   }
 
   public function getKey(): string {
@@ -51,8 +42,18 @@ abstract class AbstractFilterDefinition implements SqlFilterDefinitionInterface 
     return $this->title;
   }
 
+  public function setTitle(string $title): SqlFilterDefinitionInterface {
+    $this->title = $title;
+    return $this;
+  }
+
   public function getDescription(): string {
     return $this->description;
+  }
+
+  public function setDescription(string $description): SqlFilterDefinitionInterface {
+    $this->description = $description;
+    return $this;
   }
 
   public function setSetting(string $key, mixed $value): SqlFilterDefinitionInterface {
@@ -65,12 +66,12 @@ abstract class AbstractFilterDefinition implements SqlFilterDefinitionInterface 
     return $this;
   }
 
-  public function getSetting(string $key, $defaultValue = null): mixed {
+  public function getSetting(string $key, $defaultValue = NULL): mixed {
     return $this->definitions[$key] ?? $defaultValue;
   }
 
   public function getType(): int {
-    if($this instanceof SqlFilterDefinition) {
+    if ($this instanceof SqlFilterDefinition) {
       return SqlFilterDefinitionInterface::FILTER_TYPE_STANDALONE;
     } elseif ($this instanceof SqlGeneratedFilterDefinition) {
       return SqlFilterDefinitionInterface::FILTER_TYPE_GENERATED;
