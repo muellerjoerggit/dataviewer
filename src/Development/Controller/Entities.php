@@ -18,25 +18,25 @@ class Entities extends AbstractController {
   }
 
   public function getEntityByEntityKey(DaViEntityManager $entityManager): void {
-//    $entityKey = new EntityKey(
-//      'employees',
-//      'Employee',
-//      [
-//        ['emp_no' => 10001]
-//      ]
-//    );
+    //    $entityKey = new EntityKey(
+    //      'employees',
+    //      'Employee',
+    //      [
+    //        ['emp_no' => 10001]
+    //      ]
+    //    );
     $entityKey = EntityKey::createFromString('umbrella::User::usr_id::1');
     dd($entityManager->loadEntityByEntityKey($entityKey));
   }
 
   public function preRenderEntity(DaViEntityManager $entityManager): void {
-//    $entityKey = new EntityKey(
-//      'employees',
-//      'Employee',
-//      [
-//        ['emp_no' => 10001]
-//      ]
-//    );
+    //    $entityKey = new EntityKey(
+    //      'employees',
+    //      'Employee',
+    //      [
+    //        ['emp_no' => 10001]
+    //      ]
+    //    );
     $entityKey = EntityKey::createFromString('umbrella::RoleUserMap::usr_id+rol_id::11+1');
     dd($entityManager->preRenderEntity($entityKey));
   }
@@ -46,13 +46,13 @@ class Entities extends AbstractController {
     EntityTypeSchemaRegister $schemaRegister,
     SqlFilterBuilder $sqlFilterBuilder
   ): void {
-//    $entityType = 'User';
+    //    $entityType = 'User';
     $entityType = 'RoleUserMap';
     $filters = [];
     $client = 'umbrella';
     $schema = $schemaRegister->getEntityTypeSchema($entityType);
     $filterContainer = $sqlFilterBuilder->buildFilterContainerFromArray($client, $schema, $filters);
-    if(!$schema->isSingleColumnPrimaryKeyInteger()) {
+    if (!$schema->isSingleColumnPrimaryKeyInteger()) {
       $filterContainer->setLimit(500);
     }
 
@@ -61,7 +61,7 @@ class Entities extends AbstractController {
 
     foreach ($entityList->iterateEntityList() as $entityKeyString => $entityData) {
       $entityKey = EntityKey::createFromString($entityKeyString);
-      $overView['entityOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [EntityViewBuilderInterface::FORMAT => false]);
+      $overView['entityOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [EntityViewBuilderInterface::FORMAT => FALSE]);
       $overView['entityKey'] = $entityKeyString;
       $overView['entityLabel'] = $entityData['entityLabel'];
       $entities[] = $overView;
@@ -72,10 +72,10 @@ class Entities extends AbstractController {
       'entityCount' => $entityList->getTotalCount(),
       'lowerBound' => -1,
       'upperBound' => -1,
-      'page' => $entityList->getPage()
+      'page' => $entityList->getPage(),
     ];
 
-    if($entityList->isUseBound()) {
+    if ($entityList->isUseBound()) {
       $listArray['lowerBound'] = $entityList->getLowerBound();
       $listArray['upperBound'] = $entityList->getUpperBound();
     }

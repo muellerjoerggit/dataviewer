@@ -9,8 +9,8 @@ trait ExecuteQueryBuilderTrait {
 
   protected function executeQueryBuilderInternal(DaViQueryBuilder $queryBuilder, array $options = []): mixed {
     $options = array_merge([
-        EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ASSOCIATIVE
-      ],
+      EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ASSOCIATIVE,
+    ],
       $options
     );
 

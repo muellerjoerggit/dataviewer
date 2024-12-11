@@ -6,8 +6,8 @@ use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
 
 class CommonPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
-	public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
-		parent::__construct($formatterLocator);
-	}
+  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+    parent::__construct($formatterLocator);
+  }
 
 }

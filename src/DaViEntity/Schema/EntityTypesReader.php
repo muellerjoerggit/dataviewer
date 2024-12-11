@@ -6,20 +6,26 @@ use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityControllerInterface;
 use App\DaViEntity\EntityInterface;
 use App\Services\AppNamespaces;
-use ReflectionClass;
-use Symfony\Component\Finder\Finder;
 use App\Services\DirectoryFileRegister;
+use ReflectionClass;
+use ReflectionException;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 class EntityTypesReader {
 
   private const string PATTERN_SCHEMA = '/^([a-zA-Z]+Schema).yaml/i';
+
   private const string PATTERN_ERROR_CODE = '/^([a-zA-Z]+ErrorCodes).yaml/i';
 
   public const string KEY_SCHEMA_FILE = 'yamlSchema';
+
   public const string KEY_ERROR_CODE_FILE = 'errorCode';
+
   public const string KEY_CONTROLLER_CLASS = 'controller';
+
   public const string KEY_ENTITY_CLASS = 'entityClass';
+
   public const string KEY_ENTITY_TYPE = 'entityType';
 
   public function __construct(
@@ -28,14 +34,17 @@ class EntityTypesReader {
 
   public function read(): array {
     $finder = new Finder();
-    $finder->directories()->in($this->directoryFileRegister->getEntityTypesDir());
+    $finder->directories()
+      ->in($this->directoryFileRegister->getEntityTypesDir());
 
     $ret = [];
     foreach ($finder as $directory) {
       $entityType = $directory->getBasename();
       $files = $this->iterateEntityFiles($directory);
 
-      if(!$this->isValidEntityTypeFiles($files)) {continue;}
+      if (!$this->isValidEntityTypeFiles($files)) {
+        continue;
+      }
 
       $ret[$entityType] = $files;
     }
@@ -52,7 +61,7 @@ class EntityTypesReader {
     $ret[self::KEY_ENTITY_TYPE] = $entityType;
 
     foreach ($finder as $file) {
-      if($file->isDir()) {
+      if ($file->isDir()) {
         continue;
       }
 
@@ -60,11 +69,11 @@ class EntityTypesReader {
         $ret[self::KEY_SCHEMA_FILE] = $file;
       } elseif (preg_match(self::PATTERN_ERROR_CODE, $file->getFilename())) {
         $ret[self::KEY_ERROR_CODE_FILE] = $file;
-      } elseif($file->getExtension() == 'php') {
+      } elseif ($file->getExtension() == 'php') {
         $className = AppNamespaces::buildNamespace(AppNamespaces::ENTITY_TYPE_NAMESPACE, $entityType, $file->getBasename('.php'));
         $reflection = $this->reflectClass($className);
 
-        if(!$reflection) {
+        if (!$reflection) {
           continue;
         }
 
@@ -75,19 +84,15 @@ class EntityTypesReader {
     return $ret;
   }
 
-  private function isValidEntityTypeFiles(array $files): bool {
-    $mandatoryKeys = [self::KEY_SCHEMA_FILE];
-
-    foreach ($mandatoryKeys as $key) {
-      if(!isset($files[$key])) {
-        return false;
-      }
+  private function reflectClass($className): ?ReflectionClass {
+    try {
+      return new ReflectionClass($className);
+    } catch (ReflectionException $e) {
+      return NULL;
     }
-
-    return true;
   }
 
-  private function identifyInterface(\ReflectionClass $reflectionClass, string $expectedEntityType): array {
+  private function identifyInterface(ReflectionClass $reflectionClass, string $expectedEntityType): array {
     $interfaces = $reflectionClass->getInterfaceNames();
     $entityType = self::getEntityTypeFromReflection($reflectionClass);
     $className = $reflectionClass->getName();
@@ -99,24 +104,28 @@ class EntityTypesReader {
       $key = self::KEY_ENTITY_CLASS;
     }
 
-    if(empty($key) || empty($entityType) || $entityType !== $expectedEntityType) {
+    if (empty($key) || empty($entityType) || $entityType !== $expectedEntityType) {
       return [];
     }
 
     return [$key => $className];
   }
 
-  private function reflectClass($className): ?ReflectionClass {
-    try {
-      return new \ReflectionClass($className);
-    } catch (\ReflectionException $e) {
-      return null;
-    }
-  }
-
   public static function getEntityTypeFromReflection(ReflectionClass $reflectionClass): string {
     $attributes = $reflectionClass->getAttributes(EntityType::class);
     return empty($attributes) ? '' : $attributes[0]->getArguments()['name'] ?? '';
+  }
+
+  private function isValidEntityTypeFiles(array $files): bool {
+    $mandatoryKeys = [self::KEY_SCHEMA_FILE];
+
+    foreach ($mandatoryKeys as $key) {
+      if (!isset($files[$key])) {
+        return FALSE;
+      }
+    }
+
+    return TRUE;
   }
 
 }

@@ -12,6 +12,7 @@ class RoleUserMapEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   private $usr_id;
+
   private $rol_id;
 
 }

@@ -4,7 +4,7 @@ DaVi or Data Viewer is a web application to view raw data from a database. In co
 
 In order to use DaVi you must first create an entity. Then you specify which columns/properties this entity should have. With this information, DaVi can then read the data from the database. So just like in any database management software.
 
-But DaVi can do even more. You can define additional handlers for each column that can, for example, format or validate the data.
+But DaVi can more. You can define additional handlers for each column that can, for example, format or validate data.
 
 ## Configuration
 
@@ -66,9 +66,9 @@ properties:
 
 
 ## Frontend
-There is a frontend developed with react, but it is currently not publicly available.
+There is a frontend developed with react, but it is currently not public available.
 
-Here are two example pictures. The shows all found entities and the second the data of the selected entity.
+Here are two example pictures. The first shows all found entities and the second the data of one selected entity.
 ![img.png](docs/frontend1.png)
 
 ![img.png](docs/frontend2.png)
@@ -82,3 +82,5 @@ Symfony skeleton is available under the MIT License.
 ## Credits
 
 DaVi builds on top of Symfony and FrankenPHP: https://github.com/dunglas/symfony-docker
+
+https://github.com/symfony/skeleton

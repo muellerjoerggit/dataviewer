@@ -5,94 +5,95 @@ namespace App\Item\ItemHandler_ValueFormatter;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 use DateTime;
+use Exception;
 
 class DateTimeValueFormatterItemHandler extends AbstractValueFormatterItemHandler {
 
-	protected function formatValue(DateTime $dateTime): string {
-		return $dateTime->format('d.m.Y H:i');
-	}
+  public function getArrayFormatted(ItemInterface $item): array {
+    $ret = [];
 
-	protected function getDateTime(mixed $dateTimeRaw): string | DateTime {
-		if($dateTimeRaw === null) {
-			return 'NULL';
-		}
+    foreach ($item->getValuesAsOneDimensionalArray() as $key => $dateTimeRaw) {
+      $ret[$key] = $this->getValueFormatted($item, $dateTimeRaw);
+    }
 
-		if($dateTimeRaw === '0000-00-00 00:00:00') {
-			return $dateTimeRaw;
-		}
+    return $ret;
+  }
 
-		try {
-			$dateTime = new DateTime($dateTimeRaw);
-		} catch (\Exception $exception) {
-			$dateTime = 'unknown';
-		}
+  public function getValueFormatted(ItemConfigurationInterface|ItemInterface $itemConfiguration, $value): string {
+    $dateTime = $this->getDateTime($value);
 
-		return $dateTime;
-	}
+    if (!($dateTime instanceof DateTime)) {
+      return $dateTime;
+    }
 
-	public function getArrayFormatted(ItemInterface $item): array {
-		$ret = [];
+    return $this->formatValue($dateTime);
+  }
 
-		foreach ($item->getValuesAsOneDimensionalArray() as $key => $dateTimeRaw) {
-			$ret[$key] =  $this->getValueFormatted($item, $dateTimeRaw);
-		}
+  protected function getDateTime(mixed $dateTimeRaw): string|DateTime {
+    if ($dateTimeRaw === NULL) {
+      return 'NULL';
+    }
 
-		return $ret;
-	}
+    if ($dateTimeRaw === '0000-00-00 00:00:00') {
+      return $dateTimeRaw;
+    }
 
-	public function getArrayRawFormatted(ItemInterface $item): array {
-		$ret = [];
+    try {
+      $dateTime = new DateTime($dateTimeRaw);
+    } catch (Exception $exception) {
+      $dateTime = 'unknown';
+    }
 
-		foreach ($item->getValuesAsOneDimensionalArray() as $key => $dateTimeRaw) {
-			$ret[$key] = $this->getValueRawFormatted($item, $dateTimeRaw);
-		}
+    return $dateTime;
+  }
 
-		return $ret;
-	}
+  protected function formatValue(DateTime $dateTime): string {
+    return $dateTime->format('d.m.Y H:i');
+  }
 
-	public function getValueRawFormatted(ItemConfigurationInterface|ItemInterface $itemConfiguration, $value): string {
-		$dateTime = $this->getDateTime($value);
+  public function getArrayRawFormatted(ItemInterface $item): array {
+    $ret = [];
 
-		if(!($dateTime instanceof DateTime)) {
-			return $dateTime;
-		}
+    foreach ($item->getValuesAsOneDimensionalArray() as $key => $dateTimeRaw) {
+      $ret[$key] = $this->getValueRawFormatted($item, $dateTimeRaw);
+    }
 
-		return $value . ' (' . $this->formatValue($dateTime) . ')';
-	}
+    return $ret;
+  }
 
+  public function getValueRawFormatted(ItemConfigurationInterface|ItemInterface $itemConfiguration, $value): string {
+    $dateTime = $this->getDateTime($value);
 
-	public function getValueFormatted(ItemConfigurationInterface | ItemInterface $itemConfiguration, $value): string {
-		$dateTime = $this->getDateTime($value);
+    if (!($dateTime instanceof DateTime)) {
+      return $dateTime;
+    }
 
-		if(!($dateTime instanceof DateTime)) {
-			return $dateTime;
-		}
+    return $value . ' (' . $this->formatValue($dateTime) . ')';
+  }
 
-		return $this->formatValue($dateTime);
-	}
+  public function getPossibleFormats(): array {
+    return [
+      'dmYHi' => [
+        'label' => 'deutsches Datum + Uhrzeit',
+        'description' => 'Tag.Monat.Jahr und Uhrzeit Stunden:Minuten',
+        'format' => 'd.m.Y H:i',
+      ],
+      'dmY' => [
+        'label' => 'deutsches Datum',
+        'description' => 'Tag.Monat.Jahr',
+        'format' => 'd.m.Y',
+      ],
+      'Hi' => [
+        'label' => 'Uhrzeit',
+        'description' => 'Uhrzeit Stunden:Minuten',
+        'format' => 'H:i',
+      ],
+      'database' => [
+        'label' => 'Datenbankformat',
+        'description' => 'Jahr-Monat-Tag und Uhrzeit Stunden:Minuten:Sekunden',
+        'format' => 'Y-m-d H:i:s',
+      ],
+    ];
+  }
 
-	public function getPossibleFormats(): array {
-		return [
-			'dmYHi' => [
-				'label' => 'deutsches Datum + Uhrzeit',
-				'description' => 'Tag.Monat.Jahr und Uhrzeit Stunden:Minuten',
-				'format' => 'd.m.Y H:i'
-			],
-			'dmY' => [
-				'label' => 'deutsches Datum',
-				'description' => 'Tag.Monat.Jahr',
-				'format' => 'd.m.Y'
-			],
-			'Hi' => [
-				'label' => 'Uhrzeit',
-				'description' => 'Uhrzeit Stunden:Minuten',
-				'format' => 'H:i'
-			],
-			'database' => [
-				'label' => 'Datenbankformat',
-				'description' => 'Jahr-Monat-Tag und Uhrzeit Stunden:Minuten:Sekunden',
-				'format' => 'Y-m-d H:i:s'
-			]
-		];
-	}
 }

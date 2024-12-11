@@ -27,7 +27,7 @@ class RestApiEntities extends AbstractController {
     $filters = $data['filters'];
     $schema = $schemaRegister->getEntityTypeSchema($entityType);
     $filterContainer = $sqlFilterBuilder->buildFilterContainerFromArray($client, $schema, $filters);
-    if(!$schema->isSingleColumnPrimaryKeyInteger()) {
+    if (!$schema->isSingleColumnPrimaryKeyInteger()) {
       $filterContainer->setLimit(500);
     }
 
@@ -36,7 +36,7 @@ class RestApiEntities extends AbstractController {
 
     foreach ($entityList->iterateEntityList() as $entityKeyString => $entityData) {
       $entityKey = EntityKey::createFromString($entityKeyString);
-      $overView['entityOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [EntityViewBuilderInterface::FORMAT => false]);
+      $overView['entityOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [EntityViewBuilderInterface::FORMAT => FALSE]);
       $overView['entityKey'] = $entityKeyString;
       $overView['entityLabel'] = $entityData['entityLabel'];
       $entities[] = $overView;
@@ -47,10 +47,10 @@ class RestApiEntities extends AbstractController {
       'entityCount' => $entityList->getTotalCount(),
       'lowerBound' => -1,
       'upperBound' => -1,
-      'page' => $entityList->getPage()
+      'page' => $entityList->getPage(),
     ];
 
-    if($entityList->isUseBound()) {
+    if ($entityList->isUseBound()) {
       $listArray['lowerBound'] = $entityList->getLowerBound();
       $listArray['upperBound'] = $entityList->getUpperBound();
     }

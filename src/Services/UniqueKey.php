@@ -6,7 +6,7 @@ class UniqueKey {
 
   private array $uniqueKey = [];
 
-  public function addKeyValue(string $property, int | string $value): void {
+  public function addKeyValue(string $property, int|string $value): void {
     $this->uniqueKey[$property] = $value;
   }
 
