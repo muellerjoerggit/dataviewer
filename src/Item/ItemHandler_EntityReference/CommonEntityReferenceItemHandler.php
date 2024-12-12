@@ -98,7 +98,7 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 
   public function getTargetSetting(ItemConfigurationInterface $itemConfiguration): array {
     $referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-    $entityType = $referenceSettings['target_entity_type'] ?? '';
+    $entityType = $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
     $property = $referenceSettings['target_property'] ?? '';
 
     return [$entityType, $property];
@@ -106,7 +106,7 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 
 	protected function getTargetItemConfiguration(ItemConfigurationInterface $itemConfiguration): ItemConfigurationInterface {
 		$referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-		$entityType = $referenceSettings['target_entity_type'] ?? '';
+		$entityType = $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
 		$property = $referenceSettings['target_property'] ?? '';
 		$schema = $this->schemaRegister->getEntityTypeSchema($entityType);
 		return $schema->getProperty($property);
@@ -116,4 +116,16 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     $entityKey = $this->buildEntityKeys($value, $itemConfiguration, $client);
     return $this->entityManager->getEntityLabel($entityKey) ?? '';
   }
+
+  public function getTargetEntityTypes(ItemConfigurationInterface $itemConfiguration): array {
+    $referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
+    $entityType = $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
+
+    if(!empty($entityType)) {
+      return [$entityType];
+    } else {
+      return [];
+    }
+  }
+
 }
