@@ -20,9 +20,6 @@ when@dev:
         controller: App\Development\Controller\Database::fetchEntityList
 
     # sqlFilter
-    dev_filter_hash:
-        path: /dev/filter/hash
-        controller: App\Development\Controller\SqlFilter::filterHash
 
     # entities
     dev_entities_get_entities:
@@ -45,3 +42,8 @@ when@dev:
     dev_services_type_reader:
         path: /dev/services/type-reader
         controller: App\Development\Controller\Services::entityTypeReader
+
+  # entity types
+    dev_entity_types_get:
+      path: /dev/entity/types/get
+      controller: App\Development\Controller\EntityTypes::getEntityTypes
