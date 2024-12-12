@@ -28,3 +28,18 @@ properties:
     preDefined: "String"
     column: "description"
     label: "Description"
+  count_user:
+    preDefined: "Table"
+    label: "Anzahl Benutzer"
+    handler:
+      additionalDataItemHandler:
+        AggregationFilterAdditionalDataItemHandler:
+          target_entity: "RoleUserMap"
+          filters:
+            rol_id:
+              filter: "rol_id"
+              filter_mapping: "rol_id"
+          aggregation:
+            key: "count_users"
+            columns_blacklist:
+              rol_id: "count_role"

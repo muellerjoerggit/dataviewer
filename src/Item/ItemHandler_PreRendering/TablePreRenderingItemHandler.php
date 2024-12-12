@@ -18,7 +18,7 @@ class TablePreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
     $preRender = [
       'component' => 'TableItem',
-      'name' => $item->getConfiguration()->getName(),
+      'name' => $item->getConfiguration()->getItemName(),
       'documentation' => [
         'label' => $item->getConfiguration()->getLabel(),
         'description' => $item->getConfiguration()->getDescription(),

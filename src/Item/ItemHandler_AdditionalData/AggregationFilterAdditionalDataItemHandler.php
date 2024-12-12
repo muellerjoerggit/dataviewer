@@ -20,10 +20,10 @@ class AggregationFilterAdditionalDataItemHandler implements AdditionalDataItemHa
   ) {}
 
   public function getValues(EntityInterface $entity, string $property): TableData|array {
-    $itemConfiguration = $entity->getPropertyItem($property)
-      ->getConfiguration();
-    $targetEntityType = $itemConfiguration->getTargetEntityTypeLazyLoader();
-    $aggregationSettings = $itemConfiguration->getLazyLoaderSettings()['aggregation'] ?? [];
+    $itemConfiguration = $entity->getPropertyItem($property)->getConfiguration();
+    $additionalDataSetting = $itemConfiguration->getAdditionalDataSetting();
+    $targetEntityType = $additionalDataSetting['target_entity'];
+    $aggregationSettings = $additionalDataSetting['aggregation'] ?? [];
     $columnsBlacklist = $aggregationSettings['columns_blacklist'] ?? [];
     $aggregationKey = $aggregationSettings['key'] ?? '';
     if (empty($aggregationKey) || empty($targetEntityType)) {
@@ -31,7 +31,8 @@ class AggregationFilterAdditionalDataItemHandler implements AdditionalDataItemHa
     }
     $schema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);
     $filterContainer = $this->prepareFilterContainer($schema, $itemConfiguration, $entity);
-    $data = $this->daViEntityManager->loadAggregatedEntityData($targetEntityType, $entity->getClient(), $aggregationKey, $filterContainer, $columnsBlacklist);
+    $aggregationDefinition = $schema->getAggregation($aggregationKey);
+    $data = $this->daViEntityManager->loadAggregatedEntityData($targetEntityType, $entity->getClient(), $aggregationDefinition, $filterContainer, $columnsBlacklist);
     return $data;
   }
 
@@ -40,9 +41,8 @@ class AggregationFilterAdditionalDataItemHandler implements AdditionalDataItemHa
     $filterContainer = SqlFilterBuilder::buildDefaultFilterContainerAndAppend($entity->getClient(), $schema);
     foreach ($filterSettings as $key => $filterSetting) {
       $filterDefinition = $schema->getFilterDefinition($filterSetting['filter']);
-      $sourceValues = $entity->getPropertyItem($filterSetting['filter_mapping'])
-        ->getValuesAsOneDimensionalArray();
-      $filter = new SqlFilter($filterDefinition, $sourceValues);
+      $sourceValues = $entity->getPropertyItem($filterSetting['filter_mapping'])->getValuesAsOneDimensionalArray();
+      $filter = new SqlFilter($filterDefinition, $sourceValues, 'AggregationFilterAdditionalDataItemHandler');
       $filterContainer->addFilters($filter);
     }
     return $filterContainer;

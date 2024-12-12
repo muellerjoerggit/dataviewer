@@ -45,3 +45,13 @@ filters:
     values_definition:
       input: "Integer"
       cardinality: "multipleValues"
+aggregations:
+  count_users:
+    title: "Anzahl Benutzer mit Rollen"
+    description: "Anzahl Benutzer mit der Rolle"
+    handler:
+      CountGroupAggregationHandler:
+        columns:
+          rol_id: "count_role"
+        header:
+          count_role: "Anzahl Benutzer"

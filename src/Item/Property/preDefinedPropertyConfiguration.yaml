@@ -28,3 +28,7 @@ Date:
   handler:
     preRenderingItemHandler: "CommonPreRenderingItemHandler"
     valueFormatterItemHandler: "DateValueFormatterItemHandler"
+Table:
+  dataType: "Table"
+  handler:
+    preRenderingItemHandler: "TablePreRenderingItemHandler"
