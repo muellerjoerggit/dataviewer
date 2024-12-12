@@ -67,4 +67,10 @@ class RestApiEntities extends AbstractController {
     return $this->json($preRendered);
   }
 
+  #[Route(path: '/api/entities/search/{client}/{entityType}/{searchString}', name: 'app_api_search_entity')]
+  public function searchEntityList(DaViEntityManager $entityManager, string $client, string $entityType, string $searchString = ''): Response {
+    $searchResult = $entityManager->getEntityListFromSearchString($client, $entityType, $searchString);
+    return $this->json($searchResult);
+  }
+
 }

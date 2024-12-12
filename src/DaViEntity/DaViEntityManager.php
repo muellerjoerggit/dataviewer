@@ -65,6 +65,11 @@ class DaViEntityManager {
     return $this->loadEntityByEntityKey($entityKey);
   }
 
+  public function getEntityListFromSearchString(string $client, string $entityType, string $searchString): array {
+    $controller = $this->getEntityController($entityType);
+    return $controller->getEntityListFromSearchString($client, $searchString);
+  }
+
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
     $controller = $this->getEntityController($entityKey);
     return $controller->loadEntityByEntityKey($entityKey);

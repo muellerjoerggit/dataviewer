@@ -36,4 +36,8 @@ interface EntityDataMapperInterface {
 
   public function getEntityList(EntitySchema $schema, FilterContainer $filterContainer): EntityList;
 
+  public function buildEntityKeyColumn(DaViQueryBuilder $queryBuilder, EntitySchema $schema): void;
+
+  public function buildLabelColumn(DaViQueryBuilder $queryBuilder, EntitySchema $schema, bool $withEntityLabel = false): void;
+
 }

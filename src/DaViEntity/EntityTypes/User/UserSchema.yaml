@@ -10,6 +10,7 @@ entityOverview:
   usr_id:
   firstname:
   lastname:
+  active:
 extendedEntityOverview:
   usr_id:
   firstname:

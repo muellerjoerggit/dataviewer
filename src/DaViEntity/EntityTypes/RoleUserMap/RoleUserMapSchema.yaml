@@ -23,7 +23,7 @@ properties:
     handler:
       entityReferenceItemHandler:
         CommonEntityReferenceItemHandler:
-          target_entity_type: "User"
+          targetEntityType: "User"
           target_property: "usr_id"
       preRenderingItemHandler: "EntityReferencePreRenderingItemHandler"
   rol_id:
@@ -33,6 +33,15 @@ properties:
     handler:
       entityReferenceItemHandler:
         CommonEntityReferenceItemHandler:
-          target_entity_type: "Role"
+          targetEntityType: "Role"
           target_property: "rol_id"
       preRenderingItemHandler: "EntityReferencePreRenderingItemHandler"
+filters:
+  usr_id:
+    title: "Benutzer suchen"
+    description: "Alle Rollen des Nutzers anzeigen"
+    property: "usr_id"
+    handler: "EntityReferenceFilterHandler"
+    values_definition:
+      input: "Integer"
+      cardinality: "multipleValues"
