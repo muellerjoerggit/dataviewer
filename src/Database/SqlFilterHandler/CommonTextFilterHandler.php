@@ -4,9 +4,7 @@ namespace App\Database\SqlFilterHandler;
 
 use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
-use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
-use App\Database\SqlFilter\SqlGeneratedFilterDefinition;
 use App\Database\SqlFilter\TextFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
@@ -17,7 +15,7 @@ class CommonTextFilterHandler extends AbstractFilterHandler {
   public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $value = $filter->getValue();
     $column = $this->getColumn($filter, $schema);
-    $filterType = $value['filter_type'] ?? TextFilterInterface::FILTER_TYPE_CONTAINS;
+    $filterType = $value['filterType'] ?? TextFilterInterface::FILTER_TYPE_CONTAINS;
     $value = $value['value'] ?? '';
 
     if(empty($column) || (empty($value) && $filterType !== TextFilterInterface::FILTER_TYPE_EMPTY_STRING)) {
@@ -66,12 +64,8 @@ class CommonTextFilterHandler extends AbstractFilterHandler {
 		$queryBuilder->setParameter($parameter, $values);
 	}
 
-  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
-		return $this->getFilterComponentInternal($filterDefinition, $schema, $filterKey);
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
+		return $this->getFilterComponentInternal($filterDefinition);
 	}
-
-  public function getGeneratedFilterComponent(SqlGeneratedFilterDefinition $filterDefinition, EntitySchema $schema, string $property): array {
-    return [];
-  }
 
 }

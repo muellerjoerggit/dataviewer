@@ -8,7 +8,6 @@ use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
-use App\Database\SqlFilter\SqlGeneratedFilterDefinition;
 use App\DaViEntity\Schema\EntitySchema;
 
 class NullFilterHandler implements SqlFilterHandlerInterface{
@@ -31,16 +30,12 @@ class NullFilterHandler implements SqlFilterHandlerInterface{
 
 	public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {}
 
-  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
 		return [];
 	}
 
   public function buildFilterFromApi(SqlFilterDefinitionInterface $filterDefinition, mixed $filterValues, string $filterKey): SqlFilterInterface {
 		return self::getNullFilter();
 	}
-
-  public function getGeneratedFilterComponent(SqlGeneratedFilterDefinition $filterDefinition, EntitySchema $schema, string $property): array {
-    return [];
-  }
 
 }

@@ -4,11 +4,12 @@ namespace App\Database\SqlFilterHandler;
 
 use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
-use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 class BooleanFilterHandler extends AbstractFilterHandler{
+
+  protected const string COMPONENT_NAME = 'SelectFilter';
 
   public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $value = $filter->getValue();
@@ -25,7 +26,9 @@ class BooleanFilterHandler extends AbstractFilterHandler{
     );
   }
 
-  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
+    $component = $this->getFilterComponentInternal($filterDefinition);
+
 		$property = $filterDefinition->getProperty();
 		$config = $schema->getProperty($property);
 		$options = $config->getSetting('options', []);
@@ -40,15 +43,9 @@ class BooleanFilterHandler extends AbstractFilterHandler{
 			];
 		}
 
-		return [
-			'component' => 'SelectFilter',
-      'type' => $filterDefinition->getType(),
-			'name' => $filterDefinition->getKey(),
-			'title' => $filterDefinition->getTitle(),
-			'description' => $filterDefinition->getDescription(),
-			'defaultValue' => $filterDefinition->getDefaultValue(),
-			'possibleValues' => $possibleValues
-		];
+    $component['additional']['possibleValues'] = $possibleValues;
+
+		return $component;
 	}
 
 }

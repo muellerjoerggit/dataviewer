@@ -12,7 +12,7 @@ class InFilterHandler extends AbstractFilterHandler implements InFilterInterface
 
   public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $value = $filter->getValue();
-    $property = $this->getProperty($filter, $schema);
+    $property = $filter->getFilterDefinition()->getProperty();
     $column = $schema->getColumn($property);
     $dataType = $schema->getProperty($property)->getQueryParameterType(true);
 
@@ -20,7 +20,7 @@ class InFilterHandler extends AbstractFilterHandler implements InFilterInterface
     $this->setWhereIn($queryBuilder, $column, $value, $dataType);
   }
 
-	protected function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
+	protected function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, mixed $values, int $dataType): void {
 		if(is_scalar($values)) {
 			$values = [$values];
 		}
@@ -37,10 +37,9 @@ class InFilterHandler extends AbstractFilterHandler implements InFilterInterface
 		$queryBuilder->setParameter($parameter, $values, $dataType);
 	}
 
-	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
+	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
 		return [
 			'component' => 'InFilter',
-      'type' => $filterDefinition->getType(),
 			'name' => $filterDefinition->getKey(),
 			'title' => $filterDefinition->getTitle(),
 			'description' => $filterDefinition->getDescription(),

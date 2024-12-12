@@ -2,13 +2,10 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\SqlFilter\PropertyProviderInterface;
 use App\Database\SqlFilter\SqlFilter;
-use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
-use App\Database\SqlFilter\SqlGeneratedFilterDefinition;
 use App\DaViEntity\Schema\EntitySchema;
 
 abstract class AbstractFilterHandler implements SqlFilterHandlerInterface  {
@@ -19,50 +16,12 @@ abstract class AbstractFilterHandler implements SqlFilterHandlerInterface  {
 		return new SqlFilter($filterDefinition, $filterValues, $filterKey);
 	}
 
-  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
 		return [];
 	}
 
-  public function getGeneratedFilterComponent(SqlGeneratedFilterDefinition $filterDefinition, EntitySchema $schema, string $property): array {
-    return [];
-  }
-
-  protected function getDefaultComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
-    if($filterDefinition instanceof SqlGeneratedFilterDefinition && empty($filterKey)) {
-      return [];
-    } elseif($filterDefinition instanceof SqlFilterDefinition) {
-      $filterKey = $filterDefinition->getKey();
-    }
-
-    $title = $filterDefinition->getTitle();
-    if($filterDefinition instanceof SqlGeneratedFilterDefinition) {
-      $title = $this->getGeneratedFilterTitle($title, $schema, $filterKey);
-    }
-
-    return [
-      'type' => $filterDefinition->getType(),
-      'filterKey' => $filterKey,
-      'title' => $title,
-      'description' => $filterDefinition->getDescription(),
-      'defaultValue' => $filterDefinition->getDefaultValue(),
-      'mandatory' => false,
-      'additional' => []
-    ];
-  }
-
-  protected function getGeneratedFilterTitle(string $title, EntitySchema $schema, string $filterKey): string {
-    $property = $schema->getGeneratedFilterProperty($filterKey);
-
-    if(empty($property)) {
-      return $title;
-    }
-
-    $propertyDefinition = $schema->getProperty($property);
-    return strtr($title, ['{property}' => $propertyDefinition->getLabel()]);
-  }
-
-  protected function getFilterComponentInternal(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
-    $component = $this->getDefaultComponent($filterDefinition, $schema, $filterKey);
+  protected function getFilterComponentInternal(SqlFilterDefinitionInterface $filterDefinition): array {
+    $component = $this->getDefaultComponent($filterDefinition);
 
     if(empty($component)) {
       return [];
@@ -72,20 +31,25 @@ abstract class AbstractFilterHandler implements SqlFilterHandlerInterface  {
     return $component;
   }
 
-  protected function getColumn(SqlFilterInterface $filter, EntitySchema $schema): string {
-    $filterDefinition = $filter->getFilterDefinition();
-    if(!$filterDefinition instanceof PropertyProviderInterface) {
-      $property = $this->getProperty($filter, $schema);
-    } else {
-      $property = $filterDefinition->getProperty();
-    }
+  protected function getDefaultComponent(SqlFilterDefinitionInterface $filterDefinition): array {
+    $filterKey = $filterDefinition->getKey();
+    $title = $filterDefinition->getTitle();
 
-    return $schema->getColumn($property);
+    return [
+      'filterKey' => $filterKey,
+      'title' => $title,
+      'description' => $filterDefinition->getDescription(),
+      'defaultValue' => $filterDefinition->getDefaultValue(),
+      'mandatory' => false,
+      'additional' => []
+    ];
   }
 
-  protected function getProperty(SqlFilterInterface $filter, EntitySchema $schema): string {
-    $filterKey = $filter->getFilterKey();
-    return $schema->getGeneratedFilterProperty($filterKey);
+  protected function getColumn(SqlFilterInterface $filter, EntitySchema $schema): string {
+    $filterDefinition = $filter->getFilterDefinition();
+    $property = $filterDefinition->getProperty();
+
+    return $schema->getColumn($property);
   }
 
 }

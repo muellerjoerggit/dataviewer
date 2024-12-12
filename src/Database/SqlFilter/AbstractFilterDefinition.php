@@ -69,13 +69,13 @@ abstract class AbstractFilterDefinition implements SqlFilterDefinitionInterface 
     return $this->definitions[$key] ?? $defaultValue;
   }
 
-  public function getType(): int {
-    if($this instanceof SqlFilterDefinition) {
-      return SqlFilterDefinitionInterface::FILTER_TYPE_STANDALONE;
-    } elseif ($this instanceof SqlGeneratedFilterDefinition) {
-      return SqlFilterDefinitionInterface::FILTER_TYPE_GENERATED;
-    }
-    return SqlFilterDefinitionInterface::FILTER_TYPE_UNKNOWN;
+  public function setProperty(string $property): SqlFilterDefinitionInterface {
+    $this->definitions[SqlFilterDefinitionInterface::YAML_KEY_PROPERTY] = $property;
+    return $this;
+  }
+
+  public function getProperty(): string {
+    return $this->definitions[SqlFilterDefinitionInterface::YAML_KEY_PROPERTY] ?? '';
   }
 
 }

@@ -68,10 +68,9 @@ class ListFilterHandler extends InFilterHandler {
 		return $separator;
 	}
 
-  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
 		return [
 			'component' => 'ListFilter',
-      'type' => $filterDefinition->getType(),
 			'name' => $filterDefinition->getKey(),
 			'title' => $filterDefinition->getTitle(),
 			'description' => $filterDefinition->getDescription(),

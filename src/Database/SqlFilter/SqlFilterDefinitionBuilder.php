@@ -71,24 +71,4 @@ class SqlFilterDefinitionBuilder {
 		return $ret;
 	}
 
-  public function calculateFilterHash(array $filterConfig, array $additional = []): string {
-    $string = $this->buildHashString('', $filterConfig);
-    if(!empty($additional)) {
-      $string = $this->buildHashString($string, $additional);
-    }
-
-    return sha1($string);
-  }
-
-  protected function buildHashString(string $string, array $input): string {
-    array_walk_recursive(
-      $input,
-      function ($value, $key) use (&$string) {
-        $value = is_array($value) ? implode(',', $value) : $value;
-        $string = empty($string) ? $key . '=>' . $value : $string . '::' . $key . '=>' . $value;
-      }
-    );
-    return $string;
-  }
-
 }

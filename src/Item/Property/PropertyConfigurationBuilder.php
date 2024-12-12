@@ -3,10 +3,9 @@
 namespace App\Item\Property;
 
 use App\Database\SqlFilter\FilterGroup;
+use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
-use App\Database\SqlFilter\SqlGeneratedFilterDefinition;
-use App\Database\SqlFilter\SqlGeneratedFilterRegister;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
@@ -16,8 +15,7 @@ class PropertyConfigurationBuilder {
 
   public function __construct(
     private readonly DirectoryFileRegister $directoryFileRegister,
-    private readonly SqlFilterDefinitionBuilder $sqlFilterDefinitionsBuilder,
-    private readonly SqlGeneratedFilterRegister $sqlGeneratedFilterRegister,
+    private readonly SqlFilterDefinitionBuilder $sqlFilterDefinitionsBuilder
   ) {}
 
   public function buildPropertyConfiguration(array $config, string $propertyName, EntitySchema $schema): PropertyConfiguration {
@@ -117,20 +115,16 @@ class PropertyConfigurationBuilder {
       $property
     );
 
-    foreach ($config[PropertyConfiguration::YAML_PARAM_FILTER] as $filter) {
+    foreach ($config[PropertyConfiguration::YAML_PARAM_FILTER] as $key => $filter) {
       if(!is_array($filter)) {
         $filter[SqlFilterDefinitionInterface::YAML_KEY_HANDLER] = $filter;
       }
 
-      $hashName = $this->sqlFilterDefinitionsBuilder->calculateFilterHash($filter);
+      $filter[SqlFilterDefinitionInterface::YAML_KEY_PROPERTY] = $property;
+      $filter[SqlFilterDefinitionInterface::YAML_KEY_NAME] = SqlFilterDefinitionInterface::FILTER_PREFIX_GENERATED . '::' . $key . '::' . $property;
 
-      if($this->sqlGeneratedFilterRegister->hasFilter($hashName)) {
-        $filterDefinition = $this->sqlGeneratedFilterRegister->getFilter($hashName);
-      } else {
-        $filterDefinition = SqlGeneratedFilterDefinition::create($hashName, $filter);
-        $this->sqlFilterDefinitionsBuilder->fillEntityFilterDefinition($filterDefinition, $filter);
-        $this->sqlGeneratedFilterRegister->addFilter($filterDefinition);
-      }
+      $filterDefinition = SqlFilterDefinition::createFromArray($filter);
+      $this->sqlFilterDefinitionsBuilder->fillEntityFilterDefinition($filterDefinition, $filter);
 
       $schema->addFilter($filterDefinition, $property, $filterGroup);
     }

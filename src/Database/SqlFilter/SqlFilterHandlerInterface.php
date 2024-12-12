@@ -10,7 +10,5 @@ interface SqlFilterHandlerInterface {
 
 	public function buildFilterFromApi(SqlFilterDefinitionInterface $filterDefinition, mixed $filterValues, string $filterKey): SqlFilterInterface;
 
-	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array;
-
-  public function getGeneratedFilterComponent(SqlGeneratedFilterDefinition $filterDefinition, EntitySchema $schema, string $property): array;
+	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array;
 }

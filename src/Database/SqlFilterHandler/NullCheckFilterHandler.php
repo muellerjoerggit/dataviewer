@@ -27,8 +27,8 @@ class NullCheckFilterHandler extends AbstractFilterHandler {
     );
   }
 
-  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, string $filterKey = ''): array {
-    $component = $this->getFilterComponentInternal($filterDefinition, $schema, $filterKey);
+  public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
+    $component = $this->getFilterComponentInternal($filterDefinition);
     $possibleValues = [[
       'optionId' => self::OPTION_IS_NULL,
       'label' => 'Wert ist NULL',

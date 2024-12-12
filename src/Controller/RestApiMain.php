@@ -66,7 +66,7 @@ class RestApiMain extends AbstractController {
     return $ret;
   }
 
-  private function buildFilter(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator, string $filterKey = ''): array {
+  private function buildFilter(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator): array {
     $handler = $filterHandlerLocator->getFilterHandlerFromFilterDefinition($filterDefinition);
 //    $defaultComponent = [
 //      'component' => '',
@@ -80,7 +80,7 @@ class RestApiMain extends AbstractController {
 //      'additional' => []
 //    ];
 
-    $component = $handler->getFilterComponent($filterDefinition, $schema, $filterKey);
+    $component = $handler->getFilterComponent($filterDefinition, $schema);
 
     if(!empty($component)) {
       return $component;

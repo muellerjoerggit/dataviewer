@@ -2,7 +2,7 @@
 
 namespace App\Database\SqlFilter;
 
-class SqlFilterDefinition extends AbstractFilterDefinition implements PropertyProviderInterface {
+class SqlFilterDefinition extends AbstractFilterDefinition {
 
   public static function createFromArray(array $filterArray): SqlFilterDefinitionInterface {
 		return new SqlFilterDefinition(
@@ -11,12 +11,5 @@ class SqlFilterDefinition extends AbstractFilterDefinition implements PropertyPr
     );
 	}
 
-	public function setProperty(string $property): SqlFilterDefinitionInterface {
-		$this->definitions[SqlFilterDefinitionInterface::YAML_KEY_PROPERTY] = $property;
-		return $this;
-	}
 
-	public function getProperty(): string {
-		return $this->definitions[SqlFilterDefinitionInterface::YAML_KEY_PROPERTY] ?? '';
-	}
 }

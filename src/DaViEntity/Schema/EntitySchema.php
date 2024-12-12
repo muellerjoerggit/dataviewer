@@ -7,7 +7,6 @@ use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
-use App\Database\SqlFilter\SqlGeneratedFilterDefinition;
 use App\Database\SqlFilterHandler\NullFilterHandler;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
@@ -34,6 +33,8 @@ class EntitySchema implements EntitySchemaInterface {
 
   private array $uniqueIdentifiers;
   private array $entityLabelProperties = [];
+  private array $searchProperties = [];
+
   private array $entityOverview = [];
   private array $extendedEntityOverview = [];
 
@@ -132,16 +133,10 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addFilter(SqlFilterDefinitionInterface $filterDefinition, string $property = '', ?FilterGroup $filterGroup = null): EntitySchemaInterface {
-    $filterKey = '';
     $groupKey = EntitySchemaInterface::WITHOUT_FILTER_GROUP;
-    if($filterDefinition instanceof SqlFilterDefinition) {
-      $filterKey = SqlFilterDefinitionInterface::FILTER_PREFIX_STANDALONE . '_' . $filterDefinition->getKey();
-      $this->filters[$filterKey] = $filterDefinition;
-    } elseif ($filterDefinition instanceof SqlGeneratedFilterDefinition && !empty($property)) {
-      $filterKey = SqlFilterDefinitionInterface::FILTER_PREFIX_GENERATED . '_' . $property . '_' . $filterDefinition->getKey();
-      $this->generatedFilters[$filterKey] = $property;
-      $this->filters[$filterKey] = $filterDefinition;
-    }
+
+    $filterKey = $filterDefinition->getKey();
+    $this->filters[$filterKey] = $filterDefinition;
 
     if($filterGroup && !empty($filterKey)) {
       $groupKey = $filterGroup->getGroupKey();
@@ -274,6 +269,15 @@ class EntitySchema implements EntitySchemaInterface {
     foreach($this->aggregations as $key => $aggregation) {
       yield $key => $aggregation;
     }
+  }
+
+  public function getSearchProperties(): array {
+    return $this->searchProperties;
+  }
+
+  public function setSearchProperties(array $searchProperties): EntitySchemaInterface {
+    $this->searchProperties = $searchProperties;
+    return $this;
   }
 
 }
