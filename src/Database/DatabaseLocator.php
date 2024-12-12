@@ -20,4 +20,9 @@ class DatabaseLocator extends AbstractLocator {
     return $this->get(DaViDatabase::class);
   }
 
+  public function getDatabaseName(string $client, EntitySchema $schema): string {
+    $database = $this->getDatabaseBySchema($schema);
+    return $database->getDatabaseName($client);
+  }
+
 }

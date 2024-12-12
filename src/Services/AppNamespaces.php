@@ -19,6 +19,7 @@ class AppNamespaces {
   public const string SQL_FILTER_HANDLER = 'App\\Database\\SqlFilterHandler';
 
   public const string AGGREGATION_HANDLER = 'App\\Database\\AggregationHandler';
+  public const string TABLE_REFERENCE_HANDLER = 'App\\Database\\TableReferenceHandler';
 
   public const string SYMFONY_CONSTRAINTS = 'Symfony\\Component\\Validator\\Constraints';
 

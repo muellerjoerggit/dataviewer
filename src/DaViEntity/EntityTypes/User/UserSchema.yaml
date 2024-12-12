@@ -17,6 +17,12 @@ extendedEntityOverview:
   lastname:
 database:
   baseTable: "usr_data"
+  referencedTables:
+    roleMapping:
+      TableJoinHandler:
+        entityType: "RoleUserMap"
+        condition_mapping:
+          usr_id: "usr_id"
 properties:
   usr_id:
     preDefined: "Integer"

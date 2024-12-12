@@ -19,6 +19,7 @@ class EntitySchema implements EntitySchemaInterface {
 
   private string $baseTable;
   private array $columns = [];
+  private int $database;
 
   private array $properties;
 
@@ -44,6 +45,15 @@ class EntitySchema implements EntitySchemaInterface {
     );
 
     $this->addFilterGroup($filterGroup);
+  }
+
+  public function getDatabase(): int {
+    return $this->database;
+  }
+
+  public function setDatabase(int $database): EntitySchema {
+    $this->database = $database;
+    return $this;
   }
 
   public function getEntityLabel(): string {
