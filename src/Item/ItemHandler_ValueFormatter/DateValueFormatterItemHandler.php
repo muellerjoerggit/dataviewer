@@ -3,44 +3,45 @@
 namespace App\Item\ItemHandler_ValueFormatter;
 
 use DateTime;
+use Exception;
 
 class DateValueFormatterItemHandler extends DateTimeValueFormatterItemHandler {
 
-	protected function formatValue(DateTime $dateTime): string {
-		return $dateTime->format('d.m.Y');
-	}
+  public function getPossibleFormats(): array {
+    return [
+      'dmY' => [
+        'label' => 'deutsches Datum',
+        'description' => 'Tag.Monat.Jahr',
+        'format' => 'd.m.Y',
+      ],
+      'database' => [
+        'label' => 'Datenbankformat',
+        'description' => 'Jahr-Monat-Tag',
+        'format' => 'Y-m-d',
+      ],
+    ];
+  }
 
-	protected function getDateTime(mixed $dateTimeRaw): string | DateTime {
-		if($dateTimeRaw === null) {
-			return 'NULL';
-		}
+  protected function formatValue(DateTime $dateTime): string {
+    return $dateTime->format('d.m.Y');
+  }
 
-		if($dateTimeRaw === '0000-00-00 00:00:00' || $dateTimeRaw === '0000-00-00') {
-			return $dateTimeRaw;
-		}
+  protected function getDateTime(mixed $dateTimeRaw): string|DateTime {
+    if ($dateTimeRaw === NULL) {
+      return 'NULL';
+    }
 
-		try {
-			$dateTime = new DateTime($dateTimeRaw);
-		} catch (\Exception $exception) {
-			$dateTime = 'unknown';
-		}
+    if ($dateTimeRaw === '0000-00-00 00:00:00' || $dateTimeRaw === '0000-00-00') {
+      return $dateTimeRaw;
+    }
 
-		return $dateTime;
-	}
+    try {
+      $dateTime = new DateTime($dateTimeRaw);
+    } catch (Exception $exception) {
+      $dateTime = 'unknown';
+    }
 
-	public function getPossibleFormats(): array {
-		return [
-			'dmY' => [
-				'label' => 'deutsches Datum',
-				'description' => 'Tag.Monat.Jahr',
-				'format' => 'd.m.Y'
-			],
-			'database' => [
-				'label' => 'Datenbankformat',
-				'description' => 'Jahr-Monat-Tag',
-				'format' => 'Y-m-d'
-			]
-		];
-	}
+    return $dateTime;
+  }
 
 }

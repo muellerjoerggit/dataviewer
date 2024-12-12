@@ -5,21 +5,31 @@ namespace App\DaViEntity\Schema;
 use App\Database\Aggregation\AggregationConfigurationBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
 use App\Item\Property\PropertyConfigurationBuilder;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Yaml\Yaml;
 
 class EntitySchemaBuilder {
 
   private const string YAML_PARAM_FILTERS = 'filters';
+
   private const string YAML_PARAM_AGGREGATIONS = 'aggregations';
+
   private const string YAML_PARAM_PROPERTIES = 'properties';
+
   private const string YAML_PARAM_TYPE = 'entityType';
+
   private const string YAML_PARAM_LABEL = 'entityLabel';
+
   private const string YAML_PARAM_LABEL_PROPERTIES = 'labelProperties';
+
   private const string YAML_PARAM_UNIQUE_PROPERTIES = 'uniqueProperties';
+
   private const string YAML_PARAM_OVERVIEW = 'entityOverview';
+
   private const string YAML_PARAM_EXT_OVERVIEW = 'extendedEntityOverview';
+
   private const string YAML_PARAM_DATABASE = 'database';
+
   private const string YAML_PARAM_BASE_TABLE = 'baseTable';
 
   public function __construct(
@@ -35,12 +45,12 @@ class EntitySchemaBuilder {
     $this->fillDatabaseDetails($schema, $yaml);
     $this->fillProperties($schema, $yaml);
 
-    if(isset($yaml[self::YAML_PARAM_FILTERS])) {
-      $this->buildFilters($schema,  $yaml);
+    if (isset($yaml[self::YAML_PARAM_FILTERS])) {
+      $this->buildFilters($schema, $yaml);
     }
 
-    if(isset($yaml[self::YAML_PARAM_AGGREGATIONS])) {
-      $this->buildAggregations($schema,  $yaml);
+    if (isset($yaml[self::YAML_PARAM_AGGREGATIONS])) {
+      $this->buildAggregations($schema, $yaml);
     }
 
     return $schema;
@@ -51,20 +61,19 @@ class EntitySchemaBuilder {
       ->setEntityType($yaml[self::YAML_PARAM_TYPE])
       ->setEntityLabel($yaml[self::YAML_PARAM_LABEL])
       ->setUniqueProperties($yaml[self::YAML_PARAM_UNIQUE_PROPERTIES])
-      ->setEntityLabelProperties($yaml[self::YAML_PARAM_LABEL_PROPERTIES] ?? $yaml[self::YAML_PARAM_UNIQUE_PROPERTIES])
-    ;
+      ->setEntityLabelProperties($yaml[self::YAML_PARAM_LABEL_PROPERTIES] ?? $yaml[self::YAML_PARAM_UNIQUE_PROPERTIES]);
 
-    if(isset($yaml[self::YAML_PARAM_OVERVIEW]) && is_array($yaml[self::YAML_PARAM_OVERVIEW])) {
+    if (isset($yaml[self::YAML_PARAM_OVERVIEW]) && is_array($yaml[self::YAML_PARAM_OVERVIEW])) {
       $schema->setEntityOverviewProperties($yaml[self::YAML_PARAM_OVERVIEW]);
     }
 
-    if(isset($yaml[self::YAML_PARAM_EXT_OVERVIEW]) && is_array($yaml[self::YAML_PARAM_EXT_OVERVIEW])) {
+    if (isset($yaml[self::YAML_PARAM_EXT_OVERVIEW]) && is_array($yaml[self::YAML_PARAM_EXT_OVERVIEW])) {
       $schema->setExtendedEntityOverviewProperties($yaml[self::YAML_PARAM_EXT_OVERVIEW]);
     }
   }
 
   private function fillDatabaseDetails(EntitySchemaInterface $schema, array $yaml): void {
-    if(!isset($yaml[self::YAML_PARAM_DATABASE])) {
+    if (!isset($yaml[self::YAML_PARAM_DATABASE])) {
       return;
     }
 
@@ -73,7 +82,7 @@ class EntitySchemaBuilder {
   }
 
   private function fillProperties(EntitySchemaInterface $schema, array $yaml): void {
-    if(!isset($yaml[self::YAML_PARAM_PROPERTIES])) {
+    if (!isset($yaml[self::YAML_PARAM_PROPERTIES])) {
       return;
     }
 
@@ -91,7 +100,7 @@ class EntitySchemaBuilder {
   }
 
   private function buildAggregations(EntitySchema $schema, $yaml): void {
-    foreach($yaml[self::YAML_PARAM_AGGREGATIONS] as $key => $aggregationArray) {
+    foreach ($yaml[self::YAML_PARAM_AGGREGATIONS] as $key => $aggregationArray) {
       $aggregationConfiguration = $this->aggregationConfigurationBuilder->buildAggregationConfiguration($aggregationArray, $key);
       $schema->addAggregation($aggregationConfiguration);
     }

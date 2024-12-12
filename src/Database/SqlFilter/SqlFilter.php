@@ -4,27 +4,28 @@ namespace App\Database\SqlFilter;
 
 class SqlFilter implements SqlFilterInterface {
 
-	private array $options = [];
+  private array $options = [];
 
-	public function __construct(
+  public function __construct(
     private readonly SqlFilterDefinitionInterface $filterDefinition,
     private readonly mixed $value,
     private readonly string $filterKey
   ) {}
 
-	public function getFilterDefinition(): SqlFilterDefinitionInterface {
-		return $this->filterDefinition;
-	}
+  public function getFilterDefinition(): SqlFilterDefinitionInterface {
+    return $this->filterDefinition;
+  }
 
-	public function getValue(): mixed {
-		return $this->value;
-	}
+  public function getValue(): mixed {
+    return $this->value;
+  }
 
-	public function getOptions(): array {
-		return $this->options;
-	}
+  public function getOptions(): array {
+    return $this->options;
+  }
 
-	public function getFilterKey(): string {
-		return $this->filterKey;
-	}
+  public function getFilterKey(): string {
+    return $this->filterKey;
+  }
+
 }

@@ -11,13 +11,14 @@ use App\DaViEntity\Schema\EntitySchema;
 class NullAggregationHandler implements AggregationHandlerInterface {
 
   public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
-		return new TableData([], []);
-	}
+    return new TableData([], []);
+  }
 
-	public function buildAggregatedQueryBuilder(
-		EntitySchema $schema,
-		DaViQueryBuilder $queryBuilder,
-		AggregationConfiguration $aggregationConfiguration,
-		array $columnsBlacklist = []
-	): void {}
+  public function buildAggregatedQueryBuilder(
+    EntitySchema $schema,
+    DaViQueryBuilder $queryBuilder,
+    AggregationConfiguration $aggregationConfiguration,
+    array $columnsBlacklist = []
+  ): void {}
+
 }

@@ -3,89 +3,90 @@
 namespace App\Services\Validation;
 
 use App\DaViEntity\EntityInterface;
+use App\Logger\Logger;
 use App\Logger\LogItems\LogItemInterface;
 use App\Logger\LogItems\ValidationLogItem;
-use App\Logger\Logger;
 
 class ErrorCodes {
 
-	public const string ERROR_CODE_MISSING = 'INT-2000';
-	public const string ERROR_MISSING_PROPERTY = 'INT-1000';
+  public const string ERROR_CODE_MISSING = 'INT-2000';
 
-	public function __construct(
-		private readonly ErrorCodesRegister $errorCodesRegister,
-		private readonly Logger $logger
-	) {}
+  public const string ERROR_MISSING_PROPERTY = 'INT-1000';
 
-	public function buildError(EntityInterface $entity, string $code, array $additionalPlaceholders = []): array {
-		$errorDefinition = $this->getErrorDefinition($code);
+  public function __construct(
+    private readonly ErrorCodesRegister $errorCodesRegister,
+    private readonly Logger $logger
+  ) {}
 
-		$placeholders = $errorDefinition['placeholders'] ?? [];
-		$message = $errorDefinition['message'] ?? '';
+  public function logByCode(EntityInterface $entity, string $code, array $additionalPlaceholders = []): void {
+    $error = $this->buildError($entity, $code, $additionalPlaceholders);
+    $logItem = ValidationLogItem::createValidationLogItem($error['message'], $error['level'], $code);
+    $this->logger->addLog($logItem);
+    $entity->addLogs($logItem);
+  }
 
-		$message = $this->buildMessage($entity, $message, $placeholders, $additionalPlaceholders);
-		return [
-			'message' => $message,
-			'description' => $errorDefinition['description'] ?? '',
-			'level' => $this->getLevel($errorDefinition)
-		];
-	}
+  public function buildError(EntityInterface $entity, string $code, array $additionalPlaceholders = []): array {
+    $errorDefinition = $this->getErrorDefinition($code);
 
-	public function getErrorLevel(string $code): string {
-		return $this->getLevel($this->getErrorDefinition($code));
-	}
+    $placeholders = $errorDefinition['placeholders'] ?? [];
+    $message = $errorDefinition['message'] ?? '';
 
-	private function buildMessage(EntityInterface $entity, string $message, array $placeholders, array $additionalPlaceholders = []): string {
-		if(empty($message)) {
-			$message = 'Text der Fehlermeldung fehlt';
-		}
+    $message = $this->buildMessage($entity, $message, $placeholders, $additionalPlaceholders);
+    return [
+      'message' => $message,
+      'description' => $errorDefinition['description'] ?? '',
+      'level' => $this->getLevel($errorDefinition),
+    ];
+  }
 
-		if(empty($placeholders) && empty($additionalPlaceholders)) {
-			return $message;
-		}
+  private function getErrorDefinition(string $code): array {
+    return $this->errorCodesRegister->getErrorDefinitionByCode($code);
+  }
 
-		$finalPlaceholders = [];
-		foreach ($placeholders as $placeholderKey => $property) {
-			$finalPlaceholders['{' . $placeholderKey . '}'] = $entity->getPropertyValueAsString($property);
-		}
+  private function buildMessage(EntityInterface $entity, string $message, array $placeholders, array $additionalPlaceholders = []): string {
+    if (empty($message)) {
+      $message = 'Text der Fehlermeldung fehlt';
+    }
 
-		foreach ($additionalPlaceholders  as $placeholderKey => $value) {
-			$finalPlaceholders['{' . $placeholderKey . '}'] = $value;
-		}
+    if (empty($placeholders) && empty($additionalPlaceholders)) {
+      return $message;
+    }
 
-		return strtr($message, $finalPlaceholders);
-	}
+    $finalPlaceholders = [];
+    foreach ($placeholders as $placeholderKey => $property) {
+      $finalPlaceholders['{' . $placeholderKey . '}'] = $entity->getPropertyValueAsString($property);
+    }
 
-	private function getLevel(array $errorDefinition): string {
-		$level = $errorDefinition['level'] ?? '';
+    foreach ($additionalPlaceholders as $placeholderKey => $value) {
+      $finalPlaceholders['{' . $placeholderKey . '}'] = $value;
+    }
 
-		if(empty($level) || !in_array($level, LogItemInterface::LOG_LEVELS)) {
-			return LogItemInterface::LOG_LEVEL_WARNING;
-		} else {
-			return $level;
-		}
-	}
+    return strtr($message, $finalPlaceholders);
+  }
 
-	private function getErrorDefinition(string $code): array {
-		return $this->errorCodesRegister->getErrorDefinitionByCode($code);
-	}
+  private function getLevel(array $errorDefinition): string {
+    $level = $errorDefinition['level'] ?? '';
 
-	public function logByCode(EntityInterface $entity, string $code, array $additionalPlaceholders = []): void {
-		$error = $this->buildError($entity, $code, $additionalPlaceholders);
-		$logItem = ValidationLogItem::createValidationLogItem($error['message'], $error['level'], $code);
-		$this->logger->addLog($logItem);
-		$entity->addLogs($logItem);
-	}
+    if (empty($level) || !in_array($level, LogItemInterface::LOG_LEVELS)) {
+      return LogItemInterface::LOG_LEVEL_WARNING;
+    } else {
+      return $level;
+    }
+  }
 
-	public function setItemError(EntityInterface $entity, string $property, string $code): void {
-		$level = $this->getErrorLevel($code);
-		$item = $entity->getPropertyItem($property);
+  public function setItemError(EntityInterface $entity, string $property, string $code): void {
+    $level = $this->getErrorLevel($code);
+    $item = $entity->getPropertyItem($property);
 
-		if(in_array($level, LogItemInterface::RED_LOG_LEVELS)) {
-			$item->setCriticalError(true);
-		} elseif(in_array($level, LogItemInterface::YELLOW_LOG_LEVELS)) {
-			$item->setWarningError(true);
-		}
-	}
+    if (in_array($level, LogItemInterface::RED_LOG_LEVELS)) {
+      $item->setCriticalError(TRUE);
+    } elseif (in_array($level, LogItemInterface::YELLOW_LOG_LEVELS)) {
+      $item->setWarningError(TRUE);
+    }
+  }
+
+  public function getErrorLevel(string $code): string {
+    return $this->getLevel($this->getErrorDefinition($code));
+  }
 
 }

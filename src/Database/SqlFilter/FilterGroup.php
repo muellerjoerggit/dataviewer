@@ -10,6 +10,14 @@ class FilterGroup {
     private readonly string $description = '',
   ) {}
 
+  public function getAsArray(): array {
+    return [
+      'groupKey' => $this->getGroupKey(),
+      'title' => $this->getTitle(),
+      'description' => $this->getDescription(),
+    ];
+  }
+
   public function getGroupKey(): string {
     return $this->groupKey;
   }
@@ -20,14 +28,6 @@ class FilterGroup {
 
   public function getDescription(): string {
     return $this->description ?? '';
-  }
-
-  public function getAsArray(): array {
-    return [
-      'groupKey' => $this->getGroupKey(),
-      'title' => $this->getTitle(),
-      'description' => $this->getDescription()
-    ];
   }
 
 }

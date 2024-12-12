@@ -27,6 +27,18 @@ class CommonEntityCreator implements EntityCreatorInterface {
     return $entity;
   }
 
+  protected function createEntityObject(EntitySchema $schema, string $client): EntityInterface {
+    $class = $this->entityTypesRegister->getEntityClassByEntityType($schema->getEntityType());
+    return new $class($schema, $client);
+  }
+
+  protected function addProperty(EntitySchema $schema, EntityInterface $entity, string $property, mixed $value): void {
+    $itemConfig = $schema->getProperty($property);
+
+    $item = $this->propertyBuilder->createProperty($itemConfig, $value);
+    $entity->setPropertyItem($property, $item);
+  }
+
   public function createMissingEntity(EntityKey $entityKey, EntitySchema $schema): EntityInterface {
     $entity = $this->createEntityObject($schema, $entityKey->getClient());
     $uniqueIdentifiers = $entityKey->getUniqueIdentifiers();
@@ -41,21 +53,9 @@ class CommonEntityCreator implements EntityCreatorInterface {
       }
     }
 
-    $entity->setMissingEntity(true);
+    $entity->setMissingEntity(TRUE);
 
     return $entity;
-  }
-
-  protected function createEntityObject(EntitySchema $schema, string $client): EntityInterface {
-    $class = $this->entityTypesRegister->getEntityClassByEntityType($schema->getEntityType());
-    return new $class($schema, $client);
-  }
-
-  protected function addProperty(EntitySchema $schema, EntityInterface $entity, string $property, mixed $value): void {
-    $itemConfig = $schema->getProperty($property);
-
-    $item = $this->propertyBuilder->createProperty($itemConfig, $value);
-    $entity->setPropertyItem($property, $item);
   }
 
 }

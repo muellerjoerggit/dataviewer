@@ -9,20 +9,20 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class AggregationHandlerLocator extends AbstractLocator {
 
-	public function __construct(
+  public function __construct(
     #[AutowireLocator('aggregation_handler')]
     ServiceLocator $services
-  ){
-		parent::__construct($services);
-	}
+  ) {
+    parent::__construct($services);
+  }
 
-	public function getAggregationHandler(AggregationConfiguration $configuration): AggregationHandlerInterface {
-		$handlerName = $configuration->getHandler();
-		if($handlerName && $this->has($handlerName)) {
-			return $this->get($handlerName);
-		} else {
-			return $this->get(NullAggregationHandler::class);
-		}
-	}
+  public function getAggregationHandler(AggregationConfiguration $configuration): AggregationHandlerInterface {
+    $handlerName = $configuration->getHandler();
+    if ($handlerName && $this->has($handlerName)) {
+      return $this->get($handlerName);
+    } else {
+      return $this->get(NullAggregationHandler::class);
+    }
+  }
 
 }

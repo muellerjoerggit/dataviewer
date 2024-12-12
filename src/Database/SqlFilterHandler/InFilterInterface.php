@@ -2,7 +2,6 @@
 
 namespace App\Database\SqlFilterHandler;
 
-interface InFilterInterface
-{
+interface InFilterInterface {
 
 }

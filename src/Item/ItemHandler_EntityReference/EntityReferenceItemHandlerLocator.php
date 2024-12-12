@@ -11,25 +11,25 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class EntityReferenceItemHandlerLocator extends AbstractLocator {
 
-	public function __construct(
+  public function __construct(
     #[AutowireLocator('entity_reference_item_handler')]
     ServiceLocator $services
   ) {
-		parent::__construct($services);
-	}
+    parent::__construct($services);
+  }
 
-	public function getEntityReferenceHandlerFromItem(ItemConfigurationInterface $itemConfiguration): EntityReferenceItemHandlerInterface {
-		if($itemConfiguration instanceof ItemInterface) {
-			$itemConfiguration = $itemConfiguration->getConfiguration();
-		}
+  public function getEntityReferenceHandlerFromItem(ItemConfigurationInterface $itemConfiguration): EntityReferenceItemHandlerInterface {
+    if ($itemConfiguration instanceof ItemInterface) {
+      $itemConfiguration = $itemConfiguration->getConfiguration();
+    }
 
-		$handler = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_ENTITY_REFERENCE);
+    $handler = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_ENTITY_REFERENCE);
 
-		if($this->has($handler)) {
-			return $this->get($handler);
-		} else {
-			return $this->get(NullEntityReferenceItemHandler::class);
-		}
-	}
+    if ($this->has($handler)) {
+      return $this->get($handler);
+    } else {
+      return $this->get(NullEntityReferenceItemHandler::class);
+    }
+  }
 
 }
