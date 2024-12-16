@@ -14,7 +14,8 @@ class Services extends AbstractController {
   }
 
   public function entityTypeReader(EntityTypesReader $entityTypesReader): void {
-    dd($entityTypesReader->read());
+    $entityTypes = $entityTypesReader->read();
+    dd($entityTypes);
   }
 
 }
