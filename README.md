@@ -4,7 +4,9 @@ DaVi or Data Viewer is a web application to view raw data from a database. In co
 
 In order to use DaVi you must first create an entity. Then you specify which columns/properties this entity should have. With this information, DaVi can then read the data from the database. So just like in any database management software.
 
-But DaVi can more. You can define additional handlers for each column that can, for example, format or validate data.
+But DaVi can do even more. You can add different handlers to each column that can refine the data, create links to other data, or format data. For example, different date formats can be used in the database - such as Unixtime - which is then converted into a readable date using the appropriate handler. Another example are JSON data. These can be validated using the appropriate handler. 
+
+So you don't need another external software to check the data. You have all in one app and you can develop for specific use cases new handlers.
 
 ## Configuration
 
@@ -66,21 +68,25 @@ properties:
 
 
 ## Frontend
-There is a frontend developed with react, but it is currently not public available.
+There is a frontend developed with React. You can find it here: https://github.com/muellerjoerggit/dataviewer_frontend
 
-Here are two example pictures. The first shows all found entities and the second the data of one selected entity.
+Here are two example pictures. The first image shows a list of all users found. And the second image shows a specific user.
 ![img.png](docs/frontend1.png)
 
 ![img.png](docs/frontend2.png)
 
-## License
+## Getting started
+The data viewer is aimed more at technically savvy users and therefore there is no login area. Access control can be done via HTTP authentication.
 
-Symfony Docker is available under the MIT License.
+You have to configure your entity types. You can find some examples under src/DaViEntity/EntityTypes. 
 
-Symfony skeleton is available under the MIT License.
+Then clients also have to be created. If you for example have five customers, you have to create for every customer a client.
+
+With the command <code>php bin/console make davi:generate:example-data:user</code> you can create some example data.
 
 ## Credits
 
-DaVi builds on top of Symfony and FrankenPHP: https://github.com/dunglas/symfony-docker
+DaVi builds on top of Symfony, Symfony skeleton and FrankenPHP. Symfony Docker and Symfony skeleton are available under the MIT License.
 
+https://github.com/dunglas/symfony-docker
 https://github.com/symfony/skeleton
