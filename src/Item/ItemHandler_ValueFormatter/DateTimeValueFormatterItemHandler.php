@@ -10,11 +10,9 @@ use Exception;
 class DateTimeValueFormatterItemHandler extends AbstractValueFormatterItemHandler {
 
   public function getArrayFormatted(ItemInterface $item): array {
-    $ret = [];
-
-    foreach ($item->getValuesAsOneDimensionalArray() as $key => $dateTimeRaw) {
-      $ret[$key] = $this->getValueFormatted($item, $dateTimeRaw);
-    }
+    $ret = array_map(function($dateTimeRaw) use ($item) {
+      return $this->getValueFormatted($item, $dateTimeRaw);
+    }, $item->getValuesAsOneDimensionalArray());
 
     return $ret;
   }
@@ -52,11 +50,9 @@ class DateTimeValueFormatterItemHandler extends AbstractValueFormatterItemHandle
   }
 
   public function getArrayRawFormatted(ItemInterface $item): array {
-    $ret = [];
-
-    foreach ($item->getValuesAsOneDimensionalArray() as $key => $dateTimeRaw) {
-      $ret[$key] = $this->getValueRawFormatted($item, $dateTimeRaw);
-    }
+    $ret = array_map(function($dateTimeRaw) use ($item) {
+      return $this->getValueRawFormatted($item, $dateTimeRaw);
+    }, $item->getValuesAsOneDimensionalArray());
 
     return $ret;
   }

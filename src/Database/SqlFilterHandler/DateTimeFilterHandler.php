@@ -9,6 +9,7 @@ use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use DateTime;
+use Exception;
 
 class DateTimeFilterHandler extends AbstractFilterHandler implements SqlFilterHandlerInterface {
 
@@ -90,7 +91,7 @@ class DateTimeFilterHandler extends AbstractFilterHandler implements SqlFilterHa
 			if($filterType === DateTimeFilterHandlerInterface::FILTER_TYPE_BETWEEN) {
 				$toDateTime = new DateTime($toDateTime);
 			}
-		} catch (\Exception $exception) {
+		} catch (Exception $exception) {
 			return false;
 		}
 

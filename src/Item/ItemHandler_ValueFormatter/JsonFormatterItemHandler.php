@@ -12,10 +12,9 @@ class JsonFormatterItemHandler extends AbstractValueFormatterItemHandler {
   }
 
   public function getArrayFormatted(ItemInterface $item): array {
-    $ret = [];
-    foreach ($item->getValuesAsOneDimensionalArray() as $key => $value) {
-      $ret[$key] = $this->getValueFormatted($item, $value);
-    }
+    $ret = array_map(function($value) use ($item) {
+      return $this->getValueFormatted($item, $value);
+    }, $item->getValuesAsOneDimensionalArray());
     return $ret;
   }
 

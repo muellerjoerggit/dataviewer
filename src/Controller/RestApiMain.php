@@ -56,7 +56,7 @@ class RestApiMain extends AbstractController {
     $ret = [];
 
     foreach($schema->iterateFilterDefinitions() as $filterKey => $filterDefinition) {
-      $filter = $this->buildFilter($filterDefinition, $schema, $filterHandlerLocator, $filterKey);
+      $filter = $this->buildFilter($filterDefinition, $schema, $filterHandlerLocator);
       if(!empty($filter)) {
         $ret[$filterKey] = $filter;
       }

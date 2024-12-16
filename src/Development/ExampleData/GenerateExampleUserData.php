@@ -142,10 +142,10 @@ class GenerateExampleUserData extends AbstractMaker {
         $this->entityManager->flush();
       }
 
-      $stmt = $connectionDDL->prepare("DROP DATABASE IF EXISTS {$clientId};");
+      $stmt = $connectionDDL->prepare("DROP DATABASE IF EXISTS $clientId;");
       $stmt->executeStatement();
 
-      $stmt = $connectionDDL->prepare("CREATE DATABASE IF NOT EXISTS {$clientId};");
+      $stmt = $connectionDDL->prepare("CREATE DATABASE IF NOT EXISTS $clientId;");
       $stmt->executeStatement();
 
       $connection = $this->database->getConnection($clientId);
@@ -175,7 +175,7 @@ class GenerateExampleUserData extends AbstractMaker {
       $rolesSql = 'INSERT INTO role (rol_id, title) VALUE ';
 
       foreach (self::ROLES as $id => $title) {
-        $rolesSql .= "({$id}, '{$title}'),";
+        $rolesSql .= "($id, '$title'),";
       }
 
       $userSql = 'INSERT INTO usr_data (usr_id, firstname, lastname, email, active, inactivation_date) VALUE ';
@@ -184,7 +184,7 @@ class GenerateExampleUserData extends AbstractMaker {
       for ($usrId = 1; $usrId <= 1000; $usrId++) {
         $firstname = self::FIRSTNAMES[array_rand(self::FIRSTNAMES)];
         $lastname = self::LASTNAMES[array_rand(self::LASTNAMES)];
-        $email = "{$firstname}.{$lastname}@example.com";
+        $email = "$firstname.$lastname@example.com";
         $active = rand(1, 10) > 2 ? 1 : 0;
         $begin = new DateTime('2020-01-01');
         $end = new DateTime('2023-12-31');
@@ -195,7 +195,7 @@ class GenerateExampleUserData extends AbstractMaker {
         $roles = array_rand(self::ROLES, $numberRoles);
 
         foreach ($roles as $roleId) {
-          $userRolesSql .= "({$roleId}, {$usrId}),";
+          $userRolesSql .= "($roleId, $usrId),";
         }
       }
 
