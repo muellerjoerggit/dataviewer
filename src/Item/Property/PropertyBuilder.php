@@ -15,12 +15,8 @@ class PropertyBuilder {
       $property->setRawValues($values);
       return $property;
     } catch (Throwable $ex) {
-      return $this->createNullItem();
+      return NullPropertyItem::create();
     }
-  }
-
-  public function createNullItem(): PropertyItemInterface {
-    return new NullPropertyItem();
   }
 
 }

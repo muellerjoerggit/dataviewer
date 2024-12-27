@@ -55,7 +55,7 @@ class AbstractItem implements ItemInterface, ReferenceItemInterface {
     }
   }
 
-  public function getFirstValue() {
+  public function getFirstValue(): mixed {
     $value = $this->getRawValues();
     if (is_array($value)) {
       $value = reset($value);
@@ -114,21 +114,11 @@ class AbstractItem implements ItemInterface, ReferenceItemInterface {
     return $ret;
   }
 
-  public function getValuesAsCutOffString($length = 50): string {
-    $string = $this->getValuesAsString();
-    if (mb_strlen($string) > $length) {
-      $length = $length - 4;
-      $string = mb_substr($this->getValuesAsString(), 0, $length) . ' ...';
-    }
-    return $string;
-  }
-
   public function getValues(): mixed {
     if ($this->isValuesNull()) {
       return NULL;
     }
     $itemConfiguration = $this->getConfiguration();
-    $cardinality = $itemConfiguration->getCardinality();
     $values = $this->getValuesAsArray();
     if (!$itemConfiguration->isCardinalityMultiple()) {
       $values = reset($values);

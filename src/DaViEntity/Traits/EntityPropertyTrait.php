@@ -45,7 +45,7 @@ trait EntityPropertyTrait {
     if ($this->hasPropertyItem($property)) {
       return $this->{$property};
     } else {
-      return new NullPropertyItem();
+      return NullPropertyItem::create();
     }
   }
 
