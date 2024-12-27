@@ -5,12 +5,12 @@ namespace App\DaViEntity\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityType {
+final class BaseQuery {
 
-  public const string NAME_PROPERTY = 'name';
+  public const string CLASS_PROPERTY = 'baseQuery';
 
   public function __construct(
-    public readonly string $name
+    public readonly string $baseQuery
   ) {}
 
 }

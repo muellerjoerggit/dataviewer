@@ -149,6 +149,7 @@ class GenerateExampleUserData extends AbstractMaker {
       $stmt->executeStatement();
 
       $connection = $this->database->getConnection($clientId);
+
       $stmt = $connection->prepare("
         CREATE TABLE usr_data (
             usr_id INT AUTO_INCREMENT PRIMARY KEY,

@@ -11,7 +11,7 @@ abstract class AbstractEntitySearch implements EntitySearchInterface {
   use ExecuteQueryBuilderTrait;
 
   public function __construct(
-    private readonly EntityDataMapperInterface $dataMapper
+    protected readonly EntityDataMapperInterface $dataMapper
   ) {}
 
   public function getEntityListFromSearchString(string $client, EntitySchema $schema, string $searchString, string $uniqueColumn): array {
