@@ -7,6 +7,7 @@ use App\DaViEntity\Attribute\BaseQuery;
 use App\DaViEntity\Attribute\EntityCreator;
 use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 
@@ -27,6 +28,11 @@ class EntityTypeAttributesReader {
     if($reflection) {
       $attributes = $reflection->getAttributes($attributeClass);
       $attribute = reset($attributes);
+
+      if(!$attribute instanceof ReflectionAttribute) {
+        return $default;
+      }
+
       $arguments = $attribute->getArguments();
       if(isset($arguments[$key])) {
         return $arguments[$key];
@@ -41,11 +47,11 @@ class EntityTypeAttributesReader {
   }
 
   public function getBaseQueryClass(string $classname): ?string {
-    return $this->getAttributeKey($classname, BaseQuery::class, BaseQuery::CLASS_PROPERTY, null);
+    return $this->getAttributeKey($classname, BaseQuery::class, BaseQuery::CLASS_PROPERTY, '');
   }
 
   public function getEntityCreatorClass(string $classname): ?string {
-    return $this->getAttributeKey($classname, EntityCreator::class, EntityCreator::CLASS_PROPERTY, null);
+    return $this->getAttributeKey($classname, EntityCreator::class, EntityCreator::CLASS_PROPERTY, '');
   }
 
   public function getAdditionalDataProviderClassList(string $classname): array {
