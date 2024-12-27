@@ -2,6 +2,7 @@
 
 namespace App\Item\Property;
 
+use App\Database\TableReference\TableReferenceConfiguration;
 use App\Item\ItemConfiguration;
 use App\Item\ItemInterface;
 use Doctrine\DBAL\ArrayParameterType;
@@ -9,17 +10,14 @@ use Doctrine\DBAL\ParameterType;
 
 class PropertyConfiguration extends ItemConfiguration {
 
-  public const string YAML_COMMON_CLASS = 'PropertyItem';
-
-  public const string YAML_REFERENCE_CLASS = 'ReferencePropertyItem';
-
   public const string YAML_PARAM_COLUMN = 'column';
-
   public const string YAML_PARAM_FILTER = 'generatedFilter';
-
   public const string YAML_PARAM_HANDLER = 'handler';
+  public const string YAML_PARAM_TABLE_REFERENCE = 'tableReference';
+  public const string YAML_PARAM_REFERENCED_COLUMN = 'referencedColumn';
 
   private string $column;
+  private TableReferenceConfiguration $tableReference;
 
   public function getColumn(): string {
     return $this->column;
@@ -34,7 +32,7 @@ class PropertyConfiguration extends ItemConfiguration {
     return isset($this->column);
   }
 
-  public function getQueryParameterType(bool $forceArray = FALSE): int {
+  public function getQueryParameterType(bool $forceArray = false): int {
     $multiple = $forceArray || $this->isCardinalityMultiple();
     switch ($this->getDataType()) {
       case ItemInterface::DATA_TYPE_BOOL:
@@ -59,4 +57,16 @@ class PropertyConfiguration extends ItemConfiguration {
     }
   }
 
+  public function getTableReference(): TableReferenceConfiguration {
+    return $this->tableReference;
+  }
+
+  public function setTableReference(TableReferenceConfiguration $tableReference): PropertyConfiguration {
+    $this->tableReference = $tableReference;
+    return $this;
+  }
+
+  public function hasTableReference(): bool {
+    return isset($this->tableReference);
+  }
 }

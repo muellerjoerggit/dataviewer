@@ -2,6 +2,7 @@
 
 namespace App\DaViEntity\Schema;
 
+use App\DaViEntity\EntityTypeAttributesReader;
 use App\Item\ItemConfigurationInterface;
 
 class EntityTypeSchemaRegister {
@@ -14,7 +15,8 @@ class EntityTypeSchemaRegister {
 
   public function __construct(
     private readonly EntityTypesRegister $entityTypesRegister,
-    private readonly EntitySchemaBuilder $entitySchemaBuilder
+    private readonly EntitySchemaBuilder $entitySchemaBuilder,
+    private readonly EntityTypeAttributesReader $entityTypeClassReader,
   ) {
     $this->buildSchema('NullEntity');
   }
@@ -75,6 +77,10 @@ class EntityTypeSchemaRegister {
     $this->paths[$originallyPath] = $ret;
 
     return $ret;
+  }
+
+  public function getSchemaFromEntityClass(string $entityClass): EntitySchema {
+    return $this->getEntityTypeSchema($this->entityTypeClassReader->getEntityType($entityClass));
   }
 
   public function getEntityTypeSchema(string $entityType): EntitySchema {

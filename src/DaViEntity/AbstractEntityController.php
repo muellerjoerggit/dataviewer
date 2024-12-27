@@ -3,11 +3,13 @@
 namespace App\DaViEntity;
 
 use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilter;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
+use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesReader;
@@ -24,6 +26,7 @@ abstract class AbstractEntityController implements EntityControllerInterface{
     protected readonly EntityViewBuilderInterface $entityViewBuilder,
     protected readonly EntityRefinerInterface $entityRefiner,
     protected readonly EntityValidatorInterface $entityValidator,
+    protected readonly AdditionalDataProviderLocator $additionalDataProviderLocator,
   ) {
     $this->schema = $this->getEntitySchema();
   }
@@ -126,7 +129,19 @@ abstract class AbstractEntityController implements EntityControllerInterface{
   }
 
   public function refineEntity(EntityInterface $entity): EntityInterface {
+    $this->processAdditionalData($entity);
     return $this->entityRefiner->refineEntity($entity);
+  }
+
+  protected function processAdditionalData(EntityInterface $entity): void {
+    $dataProviders = $this->additionalDataProviderLocator->getAdditionalDataProviders($entity::class);
+    foreach ($dataProviders as $dataProvider) {
+      $dataProvider->loadData($entity);
+    }
+  }
+
+  public function buildQueryFromSchema(string $client, array $options = []): DaViQueryBuilder {
+    return $this->dataMapper->buildQueryFromSchema($this->schema, $client, $options);
   }
 
 }

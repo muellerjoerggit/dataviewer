@@ -3,6 +3,7 @@
 namespace App\DaViEntity;
 
 use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
@@ -132,6 +133,11 @@ class DaViEntityManager {
   public function getEntityList(string $entityType, FilterContainer $filterContainer): EntityList {
     $controller = $this->getEntityController($entityType);
     return $controller->getEntityList($filterContainer);
+  }
+
+  public function getBaseQueryBuilder(string $entityType, string $client, array $options = []): DaViQueryBuilder {
+    $controller = $this->getEntityController($entityType);
+    return $controller->buildQueryFromSchema($client, $options);
   }
 
 }

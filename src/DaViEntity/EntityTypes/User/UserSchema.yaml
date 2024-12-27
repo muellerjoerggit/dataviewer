@@ -17,12 +17,13 @@ extendedEntityOverview:
   lastname:
 database:
   baseTable: "usr_data"
-  referencedTables:
+  tableReferences:
     roleMapping:
-      TableJoinHandler:
+      CommonTableReferenceHandler:
         entityType: "RoleUserMap"
-        condition_mapping:
-          usr_id: "usr_id"
+        condition:
+          properties:
+            usr_id: "usr_id"
 properties:
   usr_id:
     preDefined: "Integer"
@@ -58,3 +59,14 @@ properties:
     label: "Inactivation date"
     handler:
       valueFormatterItemHandler: "DateTimeValueFormatterItemHandler"
+  roles:
+    preDefined: "Integer"
+    label: "Rollen"
+    referencedColumn: "rol_id"
+    cardinality: "multiple"
+    tableReference: "roleMapping"
+    handler:
+      entityReferenceItemHandler:
+        CommonEntityReferenceItemHandler:
+          targetEntityType: "Role"
+          target_property: "rol_id"

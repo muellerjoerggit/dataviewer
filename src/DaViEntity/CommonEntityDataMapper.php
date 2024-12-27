@@ -30,10 +30,17 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     $options = $this->getDefaultQueryOptions($options);
 
     $baseTable = $schema->getBaseTable();
-    if ($options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]) {
+    if (
+      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
+      && empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
+    ) {
       $columns = $schema->getColumns();
-    }
-    else {
+    } elseif (
+      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
+      && !empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
+    ) {
+      $columns = $options[EntityDataMapperInterface::OPTION_COLUMNS];
+    } else {
       $columns = [];
     }
 
@@ -42,7 +49,6 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     foreach ($columns as $property => $column) {
       $queryBuilder->addSelect($column . ' AS ' . $property);
     }
-
 
     $queryBuilder->from($baseTable);
     $queryBuilder->setMaxResults($options[EntityDataMapperInterface::OPTION_LIMIT]);
@@ -55,6 +61,7 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
       [
         EntityDataMapperInterface::OPTION_WITH_COLUMNS => true,
         EntityDataMapperInterface::OPTION_WITH_JOINS => true,
+        EntityDataMapperInterface::OPTION_COLUMNS => [],
         EntityDataMapperInterface::OPTION_LIMIT => 50
       ],
       $options
@@ -62,11 +69,7 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
   }
 
   protected function executeQueryBuilder(DaViQueryBuilder $queryBuilder, array $options = []): mixed {
-    try {
-      return $this->executeQueryBuilderInternal($queryBuilder, $options);
-    } catch (\Exception $exception) {
-      return [];
-    }
+    return $this->executeQueryBuilderInternal($queryBuilder, $options, []);
   }
 
   public function fetchEntityData(EntitySchema $schema, FilterContainer $filters, array $options = []): array {

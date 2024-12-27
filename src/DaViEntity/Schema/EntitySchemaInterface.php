@@ -6,6 +6,7 @@ use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\TableReference\TableReferenceConfiguration;
 use App\Item\Property\PropertyConfiguration;
 use Generator;
 
@@ -84,5 +85,10 @@ interface EntitySchemaInterface {
   public function iterateAggregations(): Generator;
 
   public function isSingleColumnPrimaryKeyInteger(): bool;
+
+  /**
+   * @return \Generator<TableReferenceConfiguration>
+   */
+  public function iterateTableReferences(): \Generator;
 
 }

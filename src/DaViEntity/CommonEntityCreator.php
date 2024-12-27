@@ -15,7 +15,12 @@ class CommonEntityCreator implements EntityCreatorInterface {
 
   public function createEntity(EntitySchema $schema, string $client, array $row): EntityInterface {
     $entity = $this->createEntityObject($schema, $client);
+    $this->processRow($entity, $row);
+    return $entity;
+  }
 
+  public function processRow(EntityInterface $entity, array $row): void {
+    $schema = $entity->getSchema();
     foreach ($row as $column => $value) {
       if (!$schema->hasProperty($column)) {
         continue;
@@ -23,8 +28,6 @@ class CommonEntityCreator implements EntityCreatorInterface {
 
       $this->addProperty($schema, $entity, $column, $value);
     }
-
-    return $entity;
   }
 
   protected function createEntityObject(EntitySchema $schema, string $client): EntityInterface {

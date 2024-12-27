@@ -8,6 +8,7 @@ use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
 use App\Database\SqlFilterHandler\NullFilterHandler;
+use App\Database\TableReference\TableReferenceConfiguration;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
 
@@ -30,6 +31,9 @@ class EntitySchema implements EntitySchemaInterface {
   private array $filterGroups = [];
   private array $groupFilterMapping = [];
 
+  private array $tableReferenceColumns = [];
+  private array $tableReferences = [];
+
   private array $aggregations = [];
 
   private array $uniqueIdentifiers;
@@ -40,10 +44,7 @@ class EntitySchema implements EntitySchemaInterface {
   private array $extendedEntityOverview = [];
 
   public function __construct() {
-    $filterGroup = new FilterGroup(
-      EntitySchemaInterface::WITHOUT_FILTER_GROUP
-    );
-
+    $filterGroup = new FilterGroup(EntitySchemaInterface::WITHOUT_FILTER_GROUP);
     $this->addFilterGroup($filterGroup);
   }
 
@@ -103,7 +104,7 @@ class EntitySchema implements EntitySchemaInterface {
   public function addProperty(PropertyConfiguration $property): EntitySchemaInterface {
     $name = $property->getItemName();
     $this->properties[$name] = $property;
-    if($property->hasColumn()) {
+    if($property->hasColumn() && !$property->hasTableReference()) {
       $this->columns[$name] = $property->getColumn();
     }
     return $this;
@@ -288,6 +289,33 @@ class EntitySchema implements EntitySchemaInterface {
   public function setSearchProperties(array $searchProperties): EntitySchemaInterface {
     $this->searchProperties = $searchProperties;
     return $this;
+  }
+
+  public function addTableReference(TableReferenceConfiguration $tableReferenceConfiguration, string $internalName): EntitySchemaInterface {
+    $this->tableReferences[$internalName] = $tableReferenceConfiguration;
+    return $this;
+  }
+
+  public function getTableReference(string $internalName): TableReferenceConfiguration {
+    return $this->tableReferences[$internalName] ?? TableReferenceConfiguration::createNullConfig($this->entityType . '-' . $internalName);
+  }
+
+  public function iterateTableReferences(): \Generator {
+    foreach($this->tableReferences as $internalName => $tableReferenceConfiguration) {
+      yield $internalName => $tableReferenceConfiguration;
+    }
+  }
+
+  public function addTableReferenceColumn(string $tableReferenceInternalName, string $column, string $property): EntitySchemaInterface {
+    $this->tableReferenceColumns[$tableReferenceInternalName][$property] = $column;
+    return $this;
+  }
+
+  /**
+   * @return array<string>
+   */
+  public function getTableReferenceColumns(string $tableReferenceInternalName): array {
+    return $this->tableReferenceColumns[$tableReferenceInternalName] ?? [];
   }
 
 }

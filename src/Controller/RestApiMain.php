@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RestApiMain extends AbstractController {
 
-  #[Route(path: '/api/clients/', name: 'app_api_clients')]
+  #[Route(path: '/api/clients', name: 'app_api_clients')]
   public function getClients(ClientService $clientService): Response {
     return $this->json($clientService->getClientsName());
   }

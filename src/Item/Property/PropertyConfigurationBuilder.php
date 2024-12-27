@@ -6,6 +6,7 @@ use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
@@ -15,7 +16,8 @@ class PropertyConfigurationBuilder {
 
   public function __construct(
     private readonly DirectoryFileRegister $directoryFileRegister,
-    private readonly SqlFilterDefinitionBuilder $sqlFilterDefinitionsBuilder
+    private readonly SqlFilterDefinitionBuilder $sqlFilterDefinitionsBuilder,
+    private readonly TableReferenceHandlerLocator $tableReferenceHandlersLocator,
   ) {}
 
   public function buildPropertyConfiguration(array $config, string $propertyName, EntitySchema $schema): PropertyConfiguration {
@@ -103,9 +105,25 @@ class PropertyConfigurationBuilder {
   }
 
   private function fillDatabase(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
-    if(isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
-      $propertyConfiguration->setColumn($schema->getBaseTable() . '.' . $config[PropertyConfiguration::YAML_PARAM_COLUMN]);
+    $baseTable = '';
+    $column = '';
+
+    if(
+      isset($config[PropertyConfiguration::YAML_PARAM_TABLE_REFERENCE])
+      && isset($config[PropertyConfiguration::YAML_PARAM_REFERENCED_COLUMN])
+    ) {
+      $tableReference = $config[PropertyConfiguration::YAML_PARAM_TABLE_REFERENCE];
+      $tableReferenceConfiguration = $schema->getTableReference($tableReference);
+      $handler = $this->tableReferenceHandlersLocator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
+      $baseTable = $handler->getReferencedTableName($tableReferenceConfiguration);
+      $propertyConfiguration->setTableReference($tableReferenceConfiguration);
+      $column = $baseTable . '.' . $config[PropertyConfiguration::YAML_PARAM_REFERENCED_COLUMN];
+      $schema->addTableReferenceColumn($tableReference, $column, $propertyConfiguration->getItemName());
+    } elseif (isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
+      $column = $schema->getBaseTable() . '.' . $config[PropertyConfiguration::YAML_PARAM_COLUMN];
     }
+
+    $propertyConfiguration->setColumn($column);
   }
 
   private function fillFilter(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {

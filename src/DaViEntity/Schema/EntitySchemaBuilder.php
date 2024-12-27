@@ -4,6 +4,7 @@ namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfigurationBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
+use App\Database\TableReference\TableReferenceConfigurationBuilder;
 use App\Item\Property\PropertyConfigurationBuilder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Finder\SplFileInfo;
@@ -19,13 +20,16 @@ class EntitySchemaBuilder {
   private const string YAML_PARAM_UNIQUE_PROPERTIES = 'uniqueProperties';
   private const string YAML_PARAM_OVERVIEW = 'entityOverview';
   private const string YAML_PARAM_EXT_OVERVIEW = 'extendedEntityOverview';
+
   private const string YAML_PARAM_DATABASE = 'database';
   private const string YAML_PARAM_BASE_TABLE = 'baseTable';
+  private const string YAML_PARAM_TABLE_REFERENCES = 'tableReferences';
 
   public function __construct(
     private readonly PropertyConfigurationBuilder $propertyConfigurationBuilder,
     private readonly SqlFilterDefinitionBuilder $filterDefinitionsBuilder,
     private readonly AggregationConfigurationBuilder $aggregationConfigurationBuilder,
+    private readonly TableReferenceConfigurationBuilder $tableReferenceConfigurationBuilder,
   ) {}
 
   public function buildSchema(SplFileInfo $file): EntitySchemaInterface {
@@ -70,6 +74,10 @@ class EntitySchemaBuilder {
 
     $yaml = $yaml[self::YAML_PARAM_DATABASE];
     $schema->setBaseTable($yaml[self::YAML_PARAM_BASE_TABLE]);
+
+    if(isset($yaml[self::YAML_PARAM_TABLE_REFERENCES])) {
+      $this->tableReferenceConfigurationBuilder->processYaml($yaml[self::YAML_PARAM_TABLE_REFERENCES], $schema);
+    }
   }
 
   private function fillProperties(EntitySchemaInterface $schema, array $yaml): void {
