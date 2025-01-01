@@ -105,8 +105,6 @@ class PropertyConfigurationBuilder {
   }
 
   private function fillDatabase(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
-    $baseTable = '';
-    $column = '';
 
     if(
       isset($config[PropertyConfiguration::YAML_PARAM_TABLE_REFERENCE])
@@ -121,6 +119,8 @@ class PropertyConfigurationBuilder {
       $schema->addTableReferenceColumn($tableReference, $column, $propertyConfiguration->getItemName());
     } elseif (isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
       $column = $schema->getBaseTable() . '.' . $config[PropertyConfiguration::YAML_PARAM_COLUMN];
+    } else {
+      return;
     }
 
     $propertyConfiguration->setColumn($column);

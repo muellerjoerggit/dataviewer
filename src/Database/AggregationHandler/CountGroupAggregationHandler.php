@@ -34,8 +34,11 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
   public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $columnsBlacklist = []): void {
     $columns = $aggregationConfiguration->getProperties();
     $header = $aggregationConfiguration->getSetting('header');
+
+    $columnCount = $header['count_column'] ?? 'count_column';
+    $queryBuilder->select('COUNT(*) as ' . $columnCount);
+
     $joins = [];
-    $queryBuilder->select(NULL);
     $queryBuilder->resetGroupBy();
     $baseTable = $schema->getBaseTable();
     foreach ($columns as $column => $expressionName) {
@@ -71,9 +74,6 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
 
       $queryBuilder->Join($sourceTable, $targetTable, $targetTable, $condition);
     }
-
-    $columnCount = $header['count_column'] ?? 'count_column';
-    $queryBuilder->addSelect('COUNT(*) as ' . $columnCount);
   }
 
   public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {

@@ -45,6 +45,14 @@ filters:
     values_definition:
       input: "Integer"
       cardinality: "multipleValues"
+  rol_id:
+    title: "Rollen suchen"
+    description: "Alle Benutzer der Rolle anzeigen"
+    property: "rol_id"
+    handler: "EntityReferenceFilterHandler"
+    values_definition:
+      input: "Integer"
+      cardinality: "multipleValues"
 aggregations:
   count_users:
     title: "Anzahl Benutzer mit Rollen"
