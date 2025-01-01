@@ -134,6 +134,10 @@ class PropertyConfigurationBuilder {
     );
 
     foreach ($config[PropertyConfiguration::YAML_PARAM_FILTER] as $key => $filter) {
+      if($propertyConfiguration->hasTableReference() || !isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
+        return;
+      }
+
       if(!is_array($filter)) {
         $filter[SqlFilterDefinitionInterface::YAML_KEY_HANDLER] = $filter;
       }
