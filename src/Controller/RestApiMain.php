@@ -19,7 +19,7 @@ class RestApiMain extends AbstractController {
     return $this->json($clientService->getClientsName());
   }
 
-  #[Route(path: '/api/get-entity-types', name: 'app_api_get_entity_types')]
+  #[Route(path: '/api/entityTypes', name: 'app_api_get_entity_types')]
   public function getEntityTypesApi(EntityTypesRegister $entityTypesRegister, EntityTypeSchemaRegister $schemaRegister, SqlFilterHandlerLocator $filterHandlerLocator): Response {
     $entityTypes = [];
     foreach($entityTypesRegister->iterateEntityTypes() as $entityType) {
@@ -68,17 +68,6 @@ class RestApiMain extends AbstractController {
 
   private function buildFilter(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema, SqlFilterHandlerLocator $filterHandlerLocator): array {
     $handler = $filterHandlerLocator->getFilterHandlerFromFilterDefinition($filterDefinition);
-//    $defaultComponent = [
-//      'component' => '',
-//      'type' => 0,
-//      'name' => '',
-//      'title' => '',
-//      'description' => '',
-//      'mandatory' => false,
-//      'defaultValue' => null,
-//      'possibleValues' => [],
-//      'additional' => []
-//    ];
 
     $component = $handler->getFilterComponent($filterDefinition, $schema);
 

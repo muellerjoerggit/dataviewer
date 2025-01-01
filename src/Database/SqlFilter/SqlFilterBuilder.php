@@ -32,7 +32,7 @@ class SqlFilterBuilder {
   public function buildFilteredQueryMultipleFilters(DaViQueryBuilder $queryBuilder, FilterContainer $filters, EntitySchema $schema): void {
     foreach ($filters->iterateFilters() as $filter) {
       if ($filter instanceof SqlFilterDefinitionInterface && $filter->hasDefaultValue()) {
-        $filter = new SqlFilter($filter, $filter->getDefaultValue());
+        $filter = new SqlFilter($filter, $filter->getDefaultValue(), 'defaultValue_filter');
       }
 
       if ($filter instanceof SqlFilter) {
