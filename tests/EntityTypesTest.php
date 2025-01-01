@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class EntityTypesTest extends KernelTestCase {
 
-  public function testSomething(): void {
+  public function testEntityTypeList(): void {
     $kernel = self::bootKernel();
 
     $this->assertSame('test', $kernel->getEnvironment());
@@ -28,6 +28,7 @@ class EntityTypesTest extends KernelTestCase {
     }
 
     $this->assertNotEmpty($entityTypes);
-
   }
+
+
 }
