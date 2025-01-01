@@ -47,7 +47,7 @@ class CommonEntityCreator implements EntityCreatorInterface {
     $uniqueIdentifiers = $entityKey->getUniqueIdentifiers();
 
     foreach ($uniqueIdentifiers as $uniqueIdentifier) {
-      foreach ($uniqueIdentifier as $property => $id) {
+      foreach ($uniqueIdentifier->iterateIdentifier() as $property => $id) {
         if (!$schema->hasProperty($property)) {
           continue;
         }

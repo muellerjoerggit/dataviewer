@@ -5,6 +5,7 @@ namespace App\Item\ItemHandler_EntityReference;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\DaViEntity\UniqueIdentifier;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
@@ -83,9 +84,9 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 			return null;
 		}
 
-		$identifiers = [[$property => $value]];
+		$identifiers = (new UniqueIdentifier())->addIdentifier($property, $value);
 
-		return EntityKey::create($client, $entityType, $identifiers);
+		return EntityKey::create($client, $entityType, [$identifiers]);
 	}
 
 	public function getEntityLabel($entityKey): string {

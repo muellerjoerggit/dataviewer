@@ -2,35 +2,24 @@
 
 namespace App\DaViEntity;
 
-/**
- * TODO: improve if(isset($firstIdentifier[0])) ...
- */
+use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
+
 class EntityKey {
 
-  private string $entityType;
-
-  private array $uniqueIdentifiers;
-
-  private string $client;
-
-  private string $parameterPath = '';
-
-  public function __construct(string $client, string $entityType, array $uniqueIdentifiers, string $parameterPath = '') {
-    $this->client = $client;
-    $this->entityType = $entityType;
-    $this->uniqueIdentifiers = $uniqueIdentifiers;
-    $this->parameterPath = $parameterPath;
-  }
+  public function __construct(
+    private readonly string $client,
+    private readonly string $entityType,
+    private array $uniqueIdentifiers
+  ) {}
 
   public static function createNullEntityKey(): EntityKey {
-    $entityType = 'NullEntity';
-    $uniqueIdentifiers = ['id' => NULL];
+    $entityType = NullEntity::ENTITY_TYPE;
+    $uniqueIdentifier = (new UniqueIdentifier())->addIdentifier('id', 0);
 
-    return new static ('', $entityType, $uniqueIdentifiers);
+    return new static ('', $entityType, [$uniqueIdentifier]);
   }
 
   public static function createFromString(string $entityKeyString, bool $dontReturnNullEntity = FALSE): EntityKey|null {
-    $uniqueIdentifier = [];
     $keyParts = explode('::', $entityKeyString);
     $error = FALSE;
 
@@ -45,81 +34,38 @@ class EntityKey {
       $error = TRUE;
     }
 
+    $uniqueIdentifier = new UniqueIdentifier();
     foreach ($properties as $key => $property) {
-      $uniqueIdentifier[$property] = $values[$key];
+      $uniqueIdentifier->addIdentifier($property, $values[$key]);
     }
 
     if ($error && $dontReturnNullEntity) {
       return NULL;
     } elseif ($error) {
-      return self::create('', 'NullEntity', ['id' => NULL]);
+      return self::createNullEntityKey();
     }
 
-    $parameterPath = $keyParts[4] ?? '';
-    return self::create($keyParts[0], $keyParts[1], [$uniqueIdentifier], $parameterPath);
+    return self::create($keyParts[0], $keyParts[1], [$uniqueIdentifier]);
   }
 
-  public static function create(string $client, string $entityType, array $uniqueIdentifiers, $parameterPath = ''): EntityKey {
+  public static function create(string $client, string $entityType, array $uniqueIdentifiers): EntityKey {
     if (empty($entityType) || empty($uniqueIdentifiers)) {
-      $entityType = 'NullEntity';
-      $uniqueIdentifiers = [['id' => NULL]];
+      return self::createNullEntityKey();
     }
 
-    return new static ($client, $entityType, $uniqueIdentifiers, $parameterPath);
+    return new static ($client, $entityType, $uniqueIdentifiers);
   }
 
-  public function getEntityKeysAsStrings(): array {
-    $keys = [];
-
-    foreach ($this->getUniqueIdentifiers() as $uniqueIdentifier) {
-      if (!is_array($uniqueIdentifier)) {
-        continue;
-      }
-
-      $keys[] = $this->buildEntityKeyString($uniqueIdentifier);
-    }
-
-    return $keys;
-  }
-
+  /**
+   * @return UniqueIdentifier[]
+   */
   public function getUniqueIdentifiers(): array {
     return $this->uniqueIdentifiers;
   }
 
-  public function setUniqueIdentifiers(array $uniqueIdentifiers) {
-    $this->uniqueIdentifiers = $uniqueIdentifiers;
-  }
-
-  private function buildEntityKeyString(array $uniqueIdentifier): string {
-    $keys = $this->buildUniqueIdentifier($uniqueIdentifier);
-
-    $key = $this->getEntityType() . '::' . $keys;
-
-    if (!empty($this->parameterPath)) {
-      $key = $key . '::' . $this->parameterPath;
-    }
-
-    return $this->getClient() . '::' . $key;
-  }
-
-  private function buildUniqueIdentifier(array $uniqueIdentifier, bool $onlyValuesPart = FALSE): string {
-    $keys = '';
-    $values = '';
-    if (count($uniqueIdentifier) > 1) {
-      foreach ($uniqueIdentifier as $key => $value) {
-        $keys = empty($keys) ? $key : $keys . '+' . $key;
-        $values = empty($values) ? $value : $values . '+' . $value;
-      }
-    } else {
-      $keys = key($uniqueIdentifier);
-      $values = current($uniqueIdentifier);
-    }
-
-    if ($onlyValuesPart) {
-      return $values;
-    }
-
-    return $keys . '::' . $values;
+  private function buildEntityKeyString(UniqueIdentifier $uniqueIdentifier): string {
+    $identifierString = $uniqueIdentifier->getAsString();
+    return $this->getClient() . '::' . $this->getEntityType() . '::' . $identifierString;
   }
 
   public function getEntityType(): string {
@@ -131,63 +77,18 @@ class EntityKey {
   }
 
   public function getFirstUniqueIdentifierAsString(): string {
-    $firstIdentifier = $this->getUniqueIdentifiers();
-
-    if (isset($firstIdentifier[0])) {
-      $firstIdentifier = $firstIdentifier[0];
-    }
-
-    return $this->buildUniqueIdentifier($firstIdentifier, TRUE);
+    return implode(',', $this->getFirstUniqueIdentifier()->getIdentifierValues());
   }
 
   public function __toString(): string {
     return $this->getFirstEntityKeyAsString();
   }
 
+  private function getFirstUniqueIdentifier(): UniqueIdentifier {
+    return reset($this->uniqueIdentifiers);
+  }
+
   public function getFirstEntityKeyAsString(): string {
-    $firstIdentifier = $this->getUniqueIdentifiers();
-    if (isset($firstIdentifier[0])) {
-      $firstIdentifier = $firstIdentifier[0];
-    }
-
-    return $this->buildEntityKeyString($firstIdentifier);
+    return $this->buildEntityKeyString($this->getFirstUniqueIdentifier());
   }
-
-  public function getParameterPath(): string {
-    return $this->parameterPath ?? '';
-  }
-
-  public function isEqual(EntityKey $secondEntityKey): bool {
-    if ($this->getClient() != $secondEntityKey->getClient()) {
-      return FALSE;
-    }
-
-    if ($this->getEntityType() != $secondEntityKey->getEntityType()) {
-      return FALSE;
-    }
-
-    $serializedThis = $this->serializeUniqueIdentifiers($this->uniqueIdentifiers);
-    $serializedSecond = $this->serializeUniqueIdentifiers($secondEntityKey->getUniqueIdentifiers());
-
-    foreach ($serializedThis as $identifier) {
-      if (!in_array($identifier, $serializedSecond)) {
-        return FALSE;
-      }
-    }
-
-    return TRUE;
-  }
-
-  public function serializeUniqueIdentifiers(array $uniqueIdentifiers): array {
-    $ret = [];
-    foreach ($uniqueIdentifiers as $uniqueIdentifier) {
-      if (is_array($uniqueIdentifier)) {
-        ksort($uniqueIdentifier);
-        $ret[] = serialize($uniqueIdentifier);
-      }
-    }
-
-    return $ret;
-  }
-
 }

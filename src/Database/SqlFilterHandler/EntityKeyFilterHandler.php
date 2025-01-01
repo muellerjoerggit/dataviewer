@@ -41,7 +41,7 @@ class EntityKeyFilterHandler extends AbstractFilterHandler implements SqlFilterH
 
     foreach ($uniqueIdentifiers as $uniqueIdentifier) {
       $innerExpressions = [];
-      foreach ($uniqueIdentifier as $property => $propertyValues) {
+      foreach ($uniqueIdentifier->iterateIdentifier() as $property => $propertyValues) {
         $table = $schema->getBaseTable();
 
         if (!is_scalar($property) || empty($table)) {

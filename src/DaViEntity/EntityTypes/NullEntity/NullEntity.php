@@ -6,6 +6,7 @@ use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
+use App\DaViEntity\UniqueIdentifier;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyItemInterface;
 use App\Logger\LogItems\LogItemInterface;
@@ -61,7 +62,7 @@ class NullEntity implements EntityInterface {
     return new EntityKey(
       $this->client,
       self::ENTITY_TYPE,
-      [['id' => $this->getPropertyItem('id')->getFirstValue()]]
+      [(new UniqueIdentifier())->addIdentifier('id', $this->getPropertyItem('id')->getFirstValue())]
     );
   }
 

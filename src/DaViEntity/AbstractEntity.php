@@ -59,11 +59,11 @@ abstract class AbstractEntity implements EntityInterface {
     $ret = [];
     $uniqueProperties = $this->schema->getUniqueProperties();
     foreach ($uniqueProperties as $properties) {
-      $temp = [];
+      $temp = new UniqueIdentifier();
       foreach ($properties as $property) {
         $propertyItem = $this->getPropertyItem($property);
         $propertyValue = $propertyItem->getFirstValue();
-        $temp[$property] = $propertyValue;
+        $temp->addIdentifier($property, $propertyValue);
       }
       $ret[] = $temp;
     }
