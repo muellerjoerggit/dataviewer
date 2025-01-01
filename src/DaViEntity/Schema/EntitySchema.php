@@ -283,7 +283,7 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function getSearchProperties(): array {
-    return $this->searchProperties;
+    return $this->searchProperties ?? $this->getEntityLabelProperties();
   }
 
   public function setSearchProperties(array $searchProperties): EntitySchemaInterface {

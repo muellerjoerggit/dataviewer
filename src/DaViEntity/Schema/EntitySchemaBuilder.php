@@ -17,6 +17,7 @@ class EntitySchemaBuilder {
   private const string YAML_PARAM_TYPE = 'entityType';
   private const string YAML_PARAM_LABEL = 'entityLabel';
   private const string YAML_PARAM_LABEL_PROPERTIES = 'labelProperties';
+  private const string YAML_PARAM_SEARCH_PROPERTIES = 'searchProperties';
   private const string YAML_PARAM_UNIQUE_PROPERTIES = 'uniqueProperties';
   private const string YAML_PARAM_OVERVIEW = 'entityOverview';
   private const string YAML_PARAM_EXT_OVERVIEW = 'extendedEntityOverview';
@@ -57,6 +58,10 @@ class EntitySchemaBuilder {
       ->setUniqueProperties($yaml[self::YAML_PARAM_UNIQUE_PROPERTIES])
       ->setEntityLabelProperties($yaml[self::YAML_PARAM_LABEL_PROPERTIES] ?? $yaml[self::YAML_PARAM_UNIQUE_PROPERTIES])
     ;
+
+    if(isset($yaml[self::YAML_PARAM_SEARCH_PROPERTIES]) && is_array($yaml[self::YAML_PARAM_SEARCH_PROPERTIES])) {
+      $schema->setSearchProperties($yaml[self::YAML_PARAM_SEARCH_PROPERTIES]);
+    }
 
     if(isset($yaml[self::YAML_PARAM_OVERVIEW]) && is_array($yaml[self::YAML_PARAM_OVERVIEW])) {
       $schema->setEntityOverviewProperties($yaml[self::YAML_PARAM_OVERVIEW]);

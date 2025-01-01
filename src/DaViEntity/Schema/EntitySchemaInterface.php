@@ -91,4 +91,8 @@ interface EntitySchemaInterface {
    */
   public function iterateTableReferences(): \Generator;
 
+  public function setSearchProperties(array $searchProperties): EntitySchemaInterface;
+
+  public function getSearchProperties(): array;
+
 }

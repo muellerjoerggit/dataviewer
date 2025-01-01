@@ -31,7 +31,7 @@ abstract class AbstractEntitySearch implements EntitySearchInterface {
     $searchProperties = $schema->getSearchProperties();
     $queryBuilder->setMaxResults(15);
 
-    if(empty($searchString)) {
+    if(empty($searchString) || empty($searchProperties)) {
       return;
     }
 

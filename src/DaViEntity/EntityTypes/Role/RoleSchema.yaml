@@ -13,6 +13,9 @@ extendedEntityOverview:
   rol_id:
   title:
   description:
+searchProperties:
+  - "title"
+  - "description"
 database:
   baseTable: "role"
 properties:
