@@ -19,6 +19,7 @@ class DaViEntityManager {
     private readonly EntityTypesRegister $entityTypesRegister,
     private readonly EntityTypeSchemaRegister $schemaRegister,
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
+    private readonly MainRepository $mainRepository,
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
@@ -35,9 +36,9 @@ class DaViEntityManager {
     return $controller->loadMultipleEntities($filterContainer, $options);
   }
 
-  public function loadAggregatedEntityData($input, string $client, string|AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $columnsBlacklist = []): array|TableData {
+  public function loadAggregatedEntityData($input, string $client, string|AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $options = []): array|TableData {
     $controller = $this->getEntityController($input);
-    return $controller->loadAggregatedData($client, $aggregation, $filterContainer, $columnsBlacklist);
+    return $controller->loadAggregatedData($client, $aggregation, $filterContainer, $options);
   }
 
   public function getEntityLabel(mixed $entityKey): string {
@@ -63,6 +64,10 @@ class DaViEntityManager {
   }
 
   public function getEntity(EntityKey $entityKey): EntityInterface {
+    if($this->mainRepository->entityExists($entityKey)) {
+      return $this->mainRepository->getEntity($entityKey);
+    }
+
     return $this->loadEntityByEntityKey($entityKey);
   }
 
@@ -73,7 +78,11 @@ class DaViEntityManager {
 
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
     $controller = $this->getEntityController($entityKey);
-    return $controller->loadEntityByEntityKey($entityKey);
+    $entity = $controller->loadEntityByEntityKey($entityKey);
+    if(!$this->mainRepository->entityExists($entityKey)) {
+      $this->mainRepository->addEntity($entity);
+    }
+    return $entity;
   }
 
   public function createNullEntity(): EntityInterface {

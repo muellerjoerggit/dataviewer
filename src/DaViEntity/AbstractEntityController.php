@@ -27,6 +27,7 @@ abstract class AbstractEntityController implements EntityControllerInterface{
     protected readonly EntityRefinerInterface $entityRefiner,
     protected readonly EntityValidatorInterface $entityValidator,
     protected readonly AdditionalDataProviderLocator $additionalDataProviderLocator,
+    protected readonly MainRepository $mainRepository,
   ) {
     $this->schema = $this->getEntitySchema();
   }
@@ -76,13 +77,14 @@ abstract class AbstractEntityController implements EntityControllerInterface{
       return $this->creator->createMissingEntity($entityKey, $this->schema);
     } else {
       $entity = $this->creator->createEntity($this->schema, $entityKey->getClient(), reset($data));
+      $this->mainRepository->addEntity($entity);
       $this->refineEntity($entity);
       return $entity;
     }
   }
 
-  public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = null, array $columnsBlacklist = []): array | TableData {
-    return $this->dataMapper->fetchAggregatedData($client, $this->schema, $aggregation, $filterContainer, $columnsBlacklist);
+  public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = null, array $options = []): array | TableData {
+    return $this->dataMapper->fetchAggregatedData($client, $this->schema, $aggregation, $filterContainer, $options);
   }
 
   public function preRenderEntity(EntityInterface $entity): array {
