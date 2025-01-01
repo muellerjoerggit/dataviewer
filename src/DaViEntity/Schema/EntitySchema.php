@@ -297,7 +297,7 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function getTableReference(string $internalName): TableReferenceConfiguration {
-    return $this->tableReferences[$internalName] ?? TableReferenceConfiguration::createNullConfig($this->entityType . '-' . $internalName);
+    return $this->tableReferences[$internalName] ?? TableReferenceConfiguration::createNullConfig($this->entityType . '-' . $internalName, $this->getEntityType());
   }
 
   public function iterateTableReferences(): \Generator {

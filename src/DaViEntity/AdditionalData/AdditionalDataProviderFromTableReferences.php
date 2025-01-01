@@ -27,7 +27,7 @@ class AdditionalDataProviderFromTableReferences implements AdditionalDataProvide
       $columns = $schema->getTableReferenceColumns($internalName);
       $options = [EntityDataMapperInterface::OPTION_COLUMNS => $columns];
       $queryBuilder = $this->entityManager->getBaseQueryBuilder($referencedEntityType, $entity->getClient(), $options);
-      $handler->addWhereCondition($queryBuilder, $tableReference, $entity);
+      $handler->addWhereConditionValue($queryBuilder, $tableReference, $entity);
       $result = $this->executeQueryBuilderInternal($queryBuilder, [], []);
       $result = array_reduce($result, 'array_merge_recursive', []);
       $entityCreator = $this->entityCreatorLocator->getEntityCreator($entity::class);

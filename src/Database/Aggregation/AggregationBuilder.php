@@ -11,9 +11,9 @@ class AggregationBuilder {
     private readonly AggregationHandlerLocator $aggregationHandlerLocator
   ) {}
 
-  public function fetchAggregatedData(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $columnsBlacklist = []): mixed {
+  public function fetchAggregatedData(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): mixed {
     $handler = $this->aggregationHandlerLocator->getAggregationHandler($aggregationConfiguration);
-    $handler->buildAggregatedQueryBuilder($schema, $queryBuilder, $aggregationConfiguration, $columnsBlacklist);
+    $handler->buildAggregatedQueryBuilder($schema, $queryBuilder, $aggregationConfiguration, $options);
     return $handler->processingAggregatedData($queryBuilder, $schema, $aggregationConfiguration);
   }
 

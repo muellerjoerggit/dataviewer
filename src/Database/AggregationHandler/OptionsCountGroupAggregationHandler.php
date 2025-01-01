@@ -3,6 +3,7 @@
 namespace App\Database\AggregationHandler;
 
 use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\Aggregation\AggregationHandlerInterface;
 use App\Database\DaViQueryBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
@@ -18,15 +19,18 @@ class OptionsCountGroupAggregationHandler extends AbstractAggregationHandler {
     $this->formatterHandlerLocator = $formatterHandlerLocator;
   }
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $columnsBlacklist = []): void {
-    $columns = $aggregationConfiguration->getProperties();
-    foreach ($columns as $column => $expressionName) {
-      if (!is_string($column) || array_key_exists($column, $columnsBlacklist)) {
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
+    $properties = $aggregationConfiguration->getProperties();
+    $blackList = $options[AggregationHandlerInterface::YAML_PARAM_PROPERTY_BLACKLIST] ?? [];
+
+    $queryBuilder->select('COUNT(*) AS ' . AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN);
+    foreach ($properties as $property => $expressionName) {
+      if (!is_string($property) || array_key_exists($property, $blackList)) {
         continue;
       }
-      $queryBuilder->Select('COUNT(' . $column . ') AS ' . $expressionName);
-      $queryBuilder->addSelect($column);
-      $queryBuilder->addGroupBy($column);
+
+      $queryBuilder->addSelect($property);
+      $queryBuilder->addGroupBy($property);
     }
   }
 

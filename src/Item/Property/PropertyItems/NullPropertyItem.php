@@ -2,14 +2,20 @@
 
 namespace App\Item\Property\PropertyItems;
 
-use App\Item\NullItem;
+use App\Item\AbstractNullItem;
 use App\Item\Property\PropertyConfiguration;
 use App\Item\Property\PropertyItemInterface;
 
-class NullPropertyItem extends NullItem implements PropertyItemInterface {
+class NullPropertyItem extends AbstractNullItem implements PropertyItemInterface {
+
+  protected PropertyConfiguration $itemConfiguration;
 
   public function __construct() {
     $this->itemConfiguration = new PropertyConfiguration('NullItem');
+  }
+
+  public function getConfiguration(): PropertyConfiguration {
+    return $this->itemConfiguration;
   }
 
 }

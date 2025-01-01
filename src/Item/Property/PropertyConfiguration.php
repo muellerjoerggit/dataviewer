@@ -20,7 +20,7 @@ class PropertyConfiguration extends ItemConfiguration {
   private TableReferenceConfiguration $tableReference;
 
   public function getColumn(): string {
-    return $this->column;
+    return $this->column ?? '';
   }
 
   public function setColumn(string $column): PropertyConfiguration {

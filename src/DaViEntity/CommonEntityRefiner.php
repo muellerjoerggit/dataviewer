@@ -16,8 +16,7 @@ class CommonEntityRefiner implements EntityRefinerInterface {
   ) {}
 
   public function refineEntity(EntityInterface $entity): EntityInterface {
-    foreach ($entity->getSchema()
-      ->iterateProperties() as $property => $itemConfiguration) {
+    foreach ($entity->getSchema()->iterateProperties() as $property => $itemConfiguration) {
       if (!$entity->hasPropertyItem($property)) {
         $item = $this->propertyBuilder->createProperty($itemConfiguration, NULL);
         $entity->setPropertyItem($property, $item);

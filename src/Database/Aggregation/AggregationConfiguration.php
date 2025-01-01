@@ -41,12 +41,7 @@ class AggregationConfiguration {
   }
 
   public function getProperties(): array {
-    return $this->properties ?? [];
-  }
-
-  public function setProperties(array $properties): AggregationConfiguration {
-    $this->properties = $properties;
-    return $this;
+    return $this->getSetting('properties', []);
   }
 
   public function getName(): string {

@@ -28,7 +28,7 @@ interface EntityDataMapperInterface {
 
   public function fetchEntityData(EntitySchema $schema, FilterContainer $filters, array $options = []): array;
 
-  public function fetchAggregatedData(string $client, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration, FilterContainer $filterContainer = NULL, array $columnsBlacklist = []): mixed;
+  public function fetchAggregatedData(string $client, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration, FilterContainer $filterContainer = NULL): mixed;
 
   public function getEntityList(EntitySchema $schema, FilterContainer $filterContainer): EntityList;
 

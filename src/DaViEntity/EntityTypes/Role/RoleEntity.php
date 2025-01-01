@@ -19,4 +19,6 @@ class RoleEntity extends AbstractEntity {
 
   private $count_user;
 
+  private $count_user_status;
+
 }

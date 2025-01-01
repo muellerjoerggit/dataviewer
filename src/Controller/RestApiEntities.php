@@ -61,7 +61,7 @@ class RestApiEntities extends AbstractController {
   #[Route(path: '/api/entities/{entityKey}', name: 'app_api_get_entity', methods: ['GET'])]
   public function getEntityByEntityKeyApi(DaViEntityManager $entityManager, string $entityKey): Response {
     $entityKey = EntityKey::createFromString($entityKey);
-    $entity = $entityManager->loadEntityByEntityKey($entityKey);
+    $entity = $entityManager->getEntity($entityKey);
     $preRendered = $entityManager->preRenderEntity($entity);
 
     return $this->json($preRendered);

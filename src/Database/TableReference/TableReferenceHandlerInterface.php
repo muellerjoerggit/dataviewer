@@ -14,9 +14,13 @@ interface TableReferenceHandlerInterface {
   public const string YAML_PARAM_CONDITION = 'condition';
   public const string YAML_PARAM_CONDITION_PROPERTIES = 'properties';
 
+  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): void;
+
+  public function joinTableConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): void;
+
   public function getReferencedTableName(TableReferenceConfiguration $tableReferenceConfiguration): string;
 
   public function getReferencedEntityType(TableReferenceConfiguration $tableReferenceConfiguration): string;
 
-  public function addWhereCondition(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): void;
+  public function addWhereConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): bool;
 }

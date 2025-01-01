@@ -58,8 +58,17 @@ aggregations:
     title: "Anzahl Benutzer mit Rollen"
     description: "Anzahl Benutzer mit der Rolle"
     handler:
+      CountAggregationHandler:
+        header:
+          count_column: "Anzahl Benutzer"
+  count_users_status:
+    title: "Anzahl Benutzer mit Rollen"
+    description: "Anzahl Benutzer mit der Rolle"
+    handler:
       CountGroupAggregationHandler:
-        columns:
+        properties:
+          usr_id.active: "active"
           rol_id: "count_role"
         header:
           count_role: "Anzahl Benutzer"
+          active: "Benutzer Status"

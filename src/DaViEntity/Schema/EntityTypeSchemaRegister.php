@@ -3,22 +3,26 @@
 namespace App\DaViEntity\Schema;
 
 use App\DaViEntity\EntityTypeAttributesReader;
+use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemConfigurationInterface;
+use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
+use App\Item\Property\PropertyConfiguration;
+use App\Item\Property\PropertyItemInterface;
 
 class EntityTypeSchemaRegister {
 
   private array $schemas = [];
 
   private array $paths = [];
-
   private array $propertyConfigFromPath = [];
 
   public function __construct(
     private readonly EntityTypesRegister $entityTypesRegister,
     private readonly EntitySchemaBuilder $entitySchemaBuilder,
     private readonly EntityTypeAttributesReader $entityTypeClassReader,
+    private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
   ) {
-    $this->buildSchema('NullEntity');
+    $this->buildSchema(NullEntity::ENTITY_TYPE);
   }
 
   private function buildSchema(string $entityType): void {
@@ -26,17 +30,17 @@ class EntityTypeSchemaRegister {
     $this->schemas[$entityType] = $this->entitySchemaBuilder->buildSchema($schemaFile);
   }
 
-  public function resolvePath(string $path, string $entityType, $originallyPath = '') {
-    $ret = [];
+  public function getPropertyConfigurationFromPath(string $path, string $entityType): PropertyConfiguration {
+    [$entityType, $property] = $this->getEntityTypePropertyFromPath($path, $entityType);
 
-    if (isset($this->paths[$path])) {
-      return $this->paths[$path];
-    }
+    return $this->getPropertyConfiguration($entityType, $property);
+  }
 
-    if (empty($originallyPath)) {
-      $originallyPath = $path;
-    }
+  public function getPropertyConfiguration(string $entityType, string $property): PropertyConfiguration {
+    return $this->getEntityTypeSchema($entityType)->getProperty($property);
+  }
 
+  private function getEntityTypePropertyFromPath(string $path, string $entityType): array  {
     $separatorPos = strpos($path, '.');
     if ($separatorPos) {
       $pathSection = substr($path, 0, $separatorPos);
@@ -50,33 +54,16 @@ class EntityTypeSchemaRegister {
 
     $itemConfiguration = $schema->getProperty($pathSection);
     if ($itemConfiguration->hasEntityReferenceHandler() && !empty($path)) {
-      $entityReferenceSetting = $itemConfiguration->getEntityReferenceHandlerSetting();
-      $targetEntityType = $entityReferenceSetting['target_entity_type'] ?? '';
-      $targetProperty = $entityReferenceSetting['target_property'] ?? '';
+      $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
+      $targetEntityType = $handler->getTargetEntityType($itemConfiguration);
+      $targetProperty = $handler->getTargetProperty($itemConfiguration);
 
-      if (empty($targetEntityType) || empty($targetProperty)) {
-        return $ret;
+      if (!empty($targetEntityType) && !empty($targetProperty)) {
+        return $this->getEntityTypePropertyFromPath($path, $targetEntityType);
       }
-
-      $targetSchema = $this->getEntityTypeSchema($targetEntityType);
-
-      $ret[$entityType] = [
-        'source_table' => $schema->getBaseTable(),
-        'target_table' => $targetSchema->getBaseTable(),
-        'source_property' => $pathSection,
-        'target_property' => $targetProperty,
-      ];
-
-      $ret = array_merge($this->resolvePath($path, $targetEntityType, $originallyPath), $ret);
-    } else {
-      $ret[$entityType]['column'] = $pathSection;
-      $ret[$entityType]['source_table'] = $schema->getBaseTable();
-      $this->propertyConfigFromPath[$originallyPath] = $itemConfiguration;
     }
 
-    $this->paths[$originallyPath] = $ret;
-
-    return $ret;
+    return [$entityType, $pathSection];
   }
 
   public function getSchemaFromEntityClass(string $entityClass): EntitySchema {
@@ -85,7 +72,7 @@ class EntityTypeSchemaRegister {
 
   public function getEntityTypeSchema(string $entityType): EntitySchema {
     if (!$this->hasEntitySchema($entityType)) {
-      $entityType = 'NullEntity';
+      $entityType = NullEntity::ENTITY_TYPE;
     }
 
     if (!isset($this->schemas[$entityType])) {
@@ -107,8 +94,8 @@ class EntityTypeSchemaRegister {
     return FALSE;
   }
 
-  public function getItemConfigurationFromPath(string $path): ItemConfigurationInterface|bool {
-    return $this->propertyConfigFromPath[$path] ?? FALSE;
-  }
+//  public function getItemConfigurationFromPath(string $path): ItemConfigurationInterface|bool {
+//    return $this->propertyConfigFromPath[$path] ?? FALSE;
+//  }
 
 }

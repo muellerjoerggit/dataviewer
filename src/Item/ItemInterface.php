@@ -36,8 +36,6 @@ interface ItemInterface {
 
   public function getValues(): mixed;
 
-  public function getConfiguration(): ItemConfigurationInterface;
-
   public function isRedError(): bool;
 
   public function setRedError(bool $redError): ItemInterface;
@@ -45,6 +43,5 @@ interface ItemInterface {
   public function isYellowError(): bool;
 
   public function setYellowError(bool $yellowError): ItemInterface;
-
 
 }

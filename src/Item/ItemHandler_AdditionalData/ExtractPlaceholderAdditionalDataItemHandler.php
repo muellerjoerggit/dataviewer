@@ -17,7 +17,7 @@ class ExtractPlaceholderAdditionalDataItemHandler implements AdditionalDataItemH
   public function getValues(EntityInterface $entity, string $property): TableData|array {
     $item = $entity->getPropertyItem($property);
     $itemConfiguration = $item->getConfiguration();
-    $handlerSetting = $itemConfiguration->getLazyLoaderSettings();
+    $handlerSetting = $itemConfiguration->getAdditionalDataSetting();
     $sourceProperties = $handlerSetting['sourceProperty'] ?? NULL;
     $mode = $handlerSetting['mode'] ?? NULL;
 

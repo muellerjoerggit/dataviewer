@@ -9,16 +9,21 @@ class TableReferenceConfiguration {
 	private array $settings = [];
 
 	public function __construct(
-       private readonly string $handler,
-       private readonly string $name
-    ) {}
+    private readonly string $handler,
+    private readonly string $name,
+    private readonly string $fromEntityType
+  ) {}
 
-  public static function create(string $handler, string $name): TableReferenceConfiguration {
-      return new self($handler, $name);
+  public static function create(string $handler, string $name, string $fromEntityType ): TableReferenceConfiguration {
+      return new self($handler, $name, $fromEntityType);
   }
 
-  public static function createNullConfig(string $name): TableReferenceConfiguration {
-    return new self(NullTableReferenceHandler::class, $name);
+  public static function createNullConfig(string $name, string $fromEntityType ): TableReferenceConfiguration {
+    return new self(NullTableReferenceHandler::class, $name, $fromEntityType);
+  }
+
+  public function getFromEntityType(): string {
+    return $this->fromEntityType;
   }
 
 	public function getName(): string {

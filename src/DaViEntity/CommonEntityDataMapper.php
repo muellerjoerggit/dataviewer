@@ -82,17 +82,11 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     return $this->executeQueryBuilder($queryBuilder);
   }
 
-  public function fetchAggregatedData(
-    string $client,
-    EntitySchema $schema,
-    AggregationConfiguration $aggregationConfiguration,
-    FilterContainer $filterContainer = null,
-    array $columnsBlacklist = []
-  ): mixed {
+  public function fetchAggregatedData(string $client, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration, FilterContainer $filterContainer = null, array $options = []): mixed {
     $queryBuilder = $this->buildQueryFromSchema($schema, $client);
 
     $this->sqlFilterBuilder->buildFilteredQueryMultipleFilters($queryBuilder, $filterContainer, $schema);
-    return $this->aggregationBuilder->fetchAggregatedData($schema, $queryBuilder, $aggregationConfiguration, $columnsBlacklist);
+    return $this->aggregationBuilder->fetchAggregatedData($schema, $queryBuilder, $aggregationConfiguration, $options);
   }
 
   public function getEntityList(EntitySchema $schema, FilterContainer $filterContainer): EntityList {

@@ -91,4 +91,14 @@ class EntityKey {
   public function getFirstEntityKeyAsString(): string {
     return $this->buildEntityKeyString($this->getFirstUniqueIdentifier());
   }
+
+  public function getEntityKeysAsStrings(): array {
+    $keys = [];
+
+    foreach ($this->getUniqueIdentifiers() AS $uniqueIdentifier) {
+      $keys[] = $this->buildEntityKeyString($uniqueIdentifier);
+    }
+
+    return $keys;
+  }
 }

@@ -46,8 +46,7 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
 		$targetEntityType = $filterDefinition->getSetting(EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE, '');
 		if(empty($targetEntityType)) {
 			$handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($config);
-			$entityTypes = $handler->getTargetEntityTypes($config);
-			$targetEntityType = reset($entityTypes);
+      $targetEntityType = $handler->getTargetEntityType($config);
 		}
 
 		$targetSchema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);

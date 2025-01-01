@@ -24,16 +24,15 @@ class AggregationFilterAdditionalDataItemHandler implements AdditionalDataItemHa
     $additionalDataSetting = $itemConfiguration->getAdditionalDataSetting();
     $targetEntityType = $additionalDataSetting['target_entity'];
     $aggregationSettings = $additionalDataSetting['aggregation'] ?? [];
-    $columnsBlacklist = $aggregationSettings['columns_blacklist'] ?? [];
     $aggregationKey = $aggregationSettings['key'] ?? '';
+    $options = $additionalDataSetting[AdditionalDataItemHandlerInterface::YAML_PARAM_OPTIONS] ?? [];
     if (empty($aggregationKey) || empty($targetEntityType)) {
       return [];
     }
     $schema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);
     $filterContainer = $this->prepareFilterContainer($schema, $itemConfiguration, $entity);
     $aggregationDefinition = $schema->getAggregation($aggregationKey);
-    $data = $this->daViEntityManager->loadAggregatedEntityData($targetEntityType, $entity->getClient(), $aggregationDefinition, $filterContainer, $columnsBlacklist);
-    return $data;
+    return $this->daViEntityManager->loadAggregatedEntityData($targetEntityType, $entity->getClient(), $aggregationDefinition, $filterContainer, $options);
   }
 
   protected function prepareFilterContainer(EntitySchema $schema, ItemConfigurationInterface $itemConfiguration, EntityInterface $entity): FilterContainer {

@@ -10,6 +10,8 @@ use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
 
 class NullTableReferenceHandler implements TableReferenceHandlerInterface {
 
+  public function joinTableConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): void {}
+
   public function getReferencedTableName(TableReferenceConfiguration $tableReferenceConfiguration): string {
     return '';
   }
@@ -18,6 +20,10 @@ class NullTableReferenceHandler implements TableReferenceHandlerInterface {
     return NullEntity::ENTITY_TYPE;
   }
 
-  public function addWhereCondition(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): void {}
+  public function addWhereConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): bool {
+    return false;
+  }
+
+  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): void {}
 
 }

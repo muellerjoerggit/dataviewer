@@ -2,6 +2,7 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
+use App\Database\TableReference\TableReferenceConfigurationBuilder;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -16,9 +17,10 @@ class EntityReferenceOptionsItemHandler extends CommonEntityReferenceItemHandler
 	public function __construct(
     DaViEntityManager $entityManager,
     ValidatorItemHandlerLocator $validatorHandlerLocator,
-    EntityTypeSchemaRegister $schemaRegister
+    EntityTypeSchemaRegister $schemaRegister,
+    TableReferenceConfigurationBuilder $tableReferenceConfigurationBuilder
   ) {
-		parent::__construct($entityManager, $validatorHandlerLocator, $schemaRegister);
+		parent::__construct($entityManager, $validatorHandlerLocator, $schemaRegister, $tableReferenceConfigurationBuilder);
 	}
 
 	public function iterateEntityKeys(EntityInterface $entity, string $property): \Generator {
@@ -39,17 +41,6 @@ class EntityReferenceOptionsItemHandler extends CommonEntityReferenceItemHandler
 				$entityKey = $this->buildEntityKeys($value, $itemConfiguration, $entity->getClient());
 				yield $entityKey;
 			}
-		}
-	}
-
-	public function getTargetEntityTypes(ItemConfigurationInterface $itemConfiguration): array {
-		$referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-		$entityType = $referenceSettings['target_entity_type'] ?? '';
-
-		if(!empty($entityType)) {
-			return [$entityType];
-		} else {
-			return [];
 		}
 	}
 

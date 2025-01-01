@@ -5,7 +5,7 @@ namespace App\Item;
 use App\DaViEntity\EntityKey;
 use Generator;
 
-class AbstractItem implements ItemInterface, ReferenceItemInterface {
+abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
 
   protected mixed $values;
 
@@ -14,10 +14,6 @@ class AbstractItem implements ItemInterface, ReferenceItemInterface {
   protected bool $yellowError = FALSE;
 
   protected array $entityKeys = [];
-
-  public function __construct(
-    protected ItemConfigurationInterface $configuration
-  ) {}
 
   public function countValues(): int {
     return count($this->getValuesAsArray());
@@ -127,9 +123,7 @@ class AbstractItem implements ItemInterface, ReferenceItemInterface {
     return $values;
   }
 
-  public function getConfiguration(): ItemConfigurationInterface {
-    return $this->configuration;
-  }
+  abstract public function getConfiguration();
 
   private function castValue(mixed $value) {
     if (is_array($value)) {
