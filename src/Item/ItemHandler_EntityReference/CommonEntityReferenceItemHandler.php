@@ -5,6 +5,7 @@ namespace App\Item\ItemHandler_EntityReference;
 use App\Database\TableReference\TableReferenceConfiguration;
 use App\Database\TableReference\TableReferenceConfigurationBuilder;
 use App\Database\TableReference\TableReferenceHandlerInterface;
+use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
@@ -14,6 +15,7 @@ use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\DaViEntity\EntityInterface;
+use App\Services\AppNamespaces;
 
 class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface {
 
@@ -135,7 +137,8 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 
   public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceConfiguration {
     $property = $itemConfiguration->getItemName();
-    $config['CommonTableReferenceHandler'] = [
+    $handler = AppNamespaces::getShortName(CommonTableReferenceHandler::class);
+    $config[$handler] = [
       TableReferenceHandlerInterface::YAML_PARAM_ENTITY_TYPE => $this->getTargetEntityType($itemConfiguration),
       TableReferenceHandlerInterface::YAML_PARAM_CONDITION => [
         TableReferenceHandlerInterface::YAML_PARAM_CONDITION_PROPERTIES => [
