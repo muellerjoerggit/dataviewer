@@ -19,6 +19,8 @@ class AppNamespaces {
 
   public const string SYMFONY_CONSTRAINTS = 'Symfony\\Component\\Validator\\Constraints';
 
+  public const string NAMESPACE_EXPORT_TASK = 'App\\Services\\BackgroundTaskCommands\\';
+
   public static function buildNamespace(string $namespace, string ...$parts): string {
     $namespace = str_ends_with($namespace, '\\') ? substr($namespace, 0, -1) : $namespace;
     return array_reduce($parts, function($result, $part) {

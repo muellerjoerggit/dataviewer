@@ -14,12 +14,12 @@ class DirectoryFileRegister {
     #[Autowire('%kernel.project_dir%')] private $rootDir
   ) {}
 
-  public function getEntityTypesDir(): string {
-    return $this->getSrcDir() . '/DaViEntity/EntityTypes';
-  }
-
   public function getSrcDir(): string {
     return $this->getRootDir() . '/src';
+  }
+
+  public function getEntityTypesDir(): string {
+    return $this->getSrcDir() . '/DaViEntity/EntityTypes';
   }
 
   public function getRootDir(): string {
@@ -45,6 +45,14 @@ class DirectoryFileRegister {
 
   public function getCommonErrorCodes(): array {
     return $this->parseYamlFromFile($this->getSrcDir() . '/Services/Validation/CommonErrorCodes.yaml');
+  }
+
+  public function getTaskCommandDir(): string {
+    return $this->getSrcDir() . '/Services/BackgroundTaskCommands';
+  }
+
+  public function getTempDir(): string {
+    return sys_get_temp_dir();
   }
 
 }
