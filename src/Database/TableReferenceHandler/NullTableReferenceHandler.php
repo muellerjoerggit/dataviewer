@@ -24,6 +24,8 @@ class NullTableReferenceHandler implements TableReferenceHandlerInterface {
     return false;
   }
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): void {}
+  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, bool $innerJoin = false, string | null $condition = null): void {}
+
+  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): void {}
 
 }
