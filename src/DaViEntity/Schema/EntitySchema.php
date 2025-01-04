@@ -20,7 +20,7 @@ class EntitySchema implements EntitySchemaInterface {
 
   private string $baseTable;
   private array $columns = [];
-  private int $database;
+  private string $database;
 
   private array $properties;
 
@@ -52,7 +52,7 @@ class EntitySchema implements EntitySchemaInterface {
     return $this->database;
   }
 
-  public function setDatabase(int $database): EntitySchema {
+  public function setDatabase(string $database): EntitySchema {
     $this->database = $database;
     return $this;
   }

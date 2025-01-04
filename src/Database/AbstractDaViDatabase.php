@@ -7,7 +7,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
-class DaViDatabase implements DatabaseInterface {
+abstract class AbstractDaViDatabase implements DatabaseInterface {
 
   protected const string DATABASE_PREFIX = '';
 
@@ -117,5 +117,6 @@ class DaViDatabase implements DatabaseInterface {
       return 0;
     }
   }
+
 
 }

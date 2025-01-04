@@ -18,7 +18,8 @@ extendedEntityOverview:
 searchProperties:
   - "firstname"
   - "lastname"
-database:
+databaseConfig:
+  database: "one"
   baseTable: "usr_data"
   tableReferences:
     roleMapping:

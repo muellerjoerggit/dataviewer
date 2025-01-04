@@ -2,7 +2,7 @@
 
 namespace App\Development\ExampleData;
 
-use App\Database\DaViDatabase;
+use App\Database\DaViDatabaseOne;
 use App\Services\TimeConverter;
 use App\SymfonyEntity\Client;
 use DateTime;
@@ -112,7 +112,7 @@ class GenerateExampleUserData extends AbstractMaker {
   ];
 
   public function __construct(
-    private readonly DaViDatabase $database,
+    private readonly DaViDatabaseOne $database,
     private readonly EntityManagerInterface $entityManager,
     private readonly TimeConverter $timeConverter,
   ) {}

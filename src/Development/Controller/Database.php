@@ -2,18 +2,18 @@
 
 namespace App\Development\Controller;
 
-use App\Database\DaViDatabase;
+use App\Database\DaViDatabaseOne;
 use App\Database\SqlFilter\FilterContainer;
 use App\DaViEntity\DaViEntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class Database extends AbstractController {
 
-  public function connection(DaViDatabase $database): void {
+  public function connection(DaViDatabaseOne $database): void {
     dd($database->getConnection('employees'));
   }
 
-  public function testDb(DaViDatabase $database): void {
+  public function testDb(DaViDatabaseOne $database): void {
     $queryBuilder = $database->createQueryBuilder('employees');
     $queryBuilder
       ->select('*')

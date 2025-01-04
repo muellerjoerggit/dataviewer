@@ -3,6 +3,8 @@
 namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfigurationBuilder;
+use App\Database\DaViDatabaseOne;
+use App\Database\DaViDatabaseTwo;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
 use App\Database\TableReference\TableReferenceConfigurationBuilder;
 use App\Item\Property\PropertyConfigurationBuilder;
@@ -22,6 +24,7 @@ class EntitySchemaBuilder {
   private const string YAML_PARAM_OVERVIEW = 'entityOverview';
   private const string YAML_PARAM_EXT_OVERVIEW = 'extendedEntityOverview';
 
+  private const string YAML_PARAM_DATABASE_CONFIG = 'databaseConfig';
   private const string YAML_PARAM_DATABASE = 'database';
   private const string YAML_PARAM_BASE_TABLE = 'baseTable';
   private const string YAML_PARAM_TABLE_REFERENCES = 'tableReferences';
@@ -73,12 +76,23 @@ class EntitySchemaBuilder {
   }
 
   private function fillDatabaseDetails(EntitySchemaInterface $schema, array $yaml): void {
-    if(!isset($yaml[self::YAML_PARAM_DATABASE])) {
+    if(!isset($yaml[self::YAML_PARAM_DATABASE_CONFIG])) {
       return;
     }
 
-    $yaml = $yaml[self::YAML_PARAM_DATABASE];
+    $yaml = $yaml[self::YAML_PARAM_DATABASE_CONFIG];
     $schema->setBaseTable($yaml[self::YAML_PARAM_BASE_TABLE]);
+    $database = DaViDatabaseOne::class;
+
+    if($yaml[self::YAML_PARAM_DATABASE]){
+      $database = match($yaml[self::YAML_PARAM_DATABASE]) {
+        'one' => DaViDatabaseOne::class,
+        'two' => DaViDatabaseTwo::class,
+        default => $database,
+      };
+    }
+
+    $schema->setDatabase($database);
 
     if(isset($yaml[self::YAML_PARAM_TABLE_REFERENCES])) {
       $this->tableReferenceConfigurationBuilder->processYaml($yaml[self::YAML_PARAM_TABLE_REFERENCES], $schema);

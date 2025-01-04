@@ -13,7 +13,8 @@ entityOverview:
 extendedEntityOverview:
   usr_id:
   rol_id:
-database:
+databaseConfig:
+  database: "one"
   baseTable: "role_user_map"
 properties:
   usr_id:
