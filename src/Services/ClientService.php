@@ -6,13 +6,11 @@ use App\SymfonyRepository\ClientRepository;
 
 class ClientService {
 
-  private ClientRepository $clientRepository;
-
   private array $clients;
 
-  public function __construct(ClientRepository $clientRepository) {
-    $this->clientRepository = $clientRepository;
-
+  public function __construct(
+    private readonly ClientRepository $clientRepository
+  ) {
     $this->initClients();
   }
 
