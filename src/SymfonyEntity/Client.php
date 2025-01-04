@@ -21,6 +21,9 @@ class Client {
   #[ORM\Column(length: 255, nullable: TRUE)]
   private ?string $url = NULL;
 
+  #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+  private ?Version $version = NULL;
+
   public function getClientId(): ?string {
     return $this->client_id;
   }
@@ -57,6 +60,16 @@ class Client {
 
   public function setUrl(?string $url): static {
     $this->url = $url;
+
+    return $this;
+  }
+
+  public function getVersion(): ?Version {
+    return $this->version;
+  }
+
+  public function setVersion(?Version $version): static {
+    $this->version = $version;
 
     return $this;
   }
