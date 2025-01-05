@@ -48,7 +48,7 @@ class EntitySchema implements EntitySchemaInterface {
     $this->addFilterGroup($filterGroup);
   }
 
-  public function getDatabase(): int {
+  public function getDatabase(): string {
     return $this->database;
   }
 

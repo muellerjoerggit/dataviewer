@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\Attribute;
+namespace App\Database\BaseQuery;
 
 use Attribute;
 

@@ -48,9 +48,7 @@ class DaViQueryBuilder extends QueryBuilder {
 
     $groupBys = array_unique($this->groupByOnHold);
 
-    foreach ($groupBys as $groupBy) {
-      parent::addGroupBy($groupBy);
-    }
+    array_map(function($groupBy) {parent::addGroupBy($groupBy);}, $groupBys);
 
     $this->resetOnHold();
   }

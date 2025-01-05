@@ -2,12 +2,11 @@
 
 namespace App\DaViEntity\Schema;
 
+use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
 use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
-use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\Property\PropertyConfiguration;
-use App\Item\Property\PropertyItemInterface;
 
 class EntityTypeSchemaRegister {
 
@@ -66,7 +65,7 @@ class EntityTypeSchemaRegister {
     return [$entityType, $pathSection];
   }
 
-  public function getSchemaFromEntityClass(string $entityClass): EntitySchema {
+  public function getSchemaFromEntityClass(string | EntityInterface $entityClass): EntitySchema {
     return $this->getEntityTypeSchema($this->entityTypeClassReader->getEntityType($entityClass));
   }
 

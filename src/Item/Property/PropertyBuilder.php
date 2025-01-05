@@ -9,7 +9,7 @@ use Throwable;
 
 class PropertyBuilder {
 
-  public function createProperty(ItemConfigurationInterface $configuration, $values): PropertyItemInterface {
+  public function createProperty(PropertyConfiguration $configuration, $values): PropertyItemInterface {
     try {
       $property = new PropertyItem($configuration);
       $property->setRawValues($values);

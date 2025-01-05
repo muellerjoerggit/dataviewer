@@ -26,14 +26,6 @@ interface EntityDataMapperInterface {
 
   public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder;
 
-  public function fetchEntityData(EntitySchema $schema, FilterContainer $filters, array $options = []): array;
-
   public function fetchAggregatedData(string $client, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration, FilterContainer $filterContainer = NULL): mixed;
-
-  public function getEntityList(EntitySchema $schema, FilterContainer $filterContainer): EntityList;
-
-  public function buildEntityKeyColumn(DaViQueryBuilder $queryBuilder, EntitySchema $schema): void;
-
-  public function buildLabelColumn(DaViQueryBuilder $queryBuilder, EntitySchema $schema, bool $withEntityLabel = false): void;
 
 }

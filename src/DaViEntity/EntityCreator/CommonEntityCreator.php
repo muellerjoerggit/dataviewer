@@ -1,8 +1,11 @@
 <?php
 
-namespace App\DaViEntity;
+namespace App\DaViEntity\EntityCreator;
 
+use App\DaViEntity\EntityInterface;
+use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
+use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\Item\Property\PropertyBuilder;
 
@@ -10,10 +13,12 @@ class CommonEntityCreator implements EntityCreatorInterface {
 
   public function __construct(
     private readonly EntityTypesRegister $entityTypesRegister,
+    private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
     private readonly PropertyBuilder $propertyBuilder
   ) {}
 
-  public function createEntity(EntitySchema $schema, string $client, array $row): EntityInterface {
+  public function createEntity(string $entityClass, string $client, array $row): EntityInterface {
+    $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityClass);
     $entity = $this->createEntityObject($schema, $client);
     $this->processRow($entity, $row);
     return $entity;
@@ -42,7 +47,8 @@ class CommonEntityCreator implements EntityCreatorInterface {
     $entity->setPropertyItem($property, $item);
   }
 
-  public function createMissingEntity(EntityKey $entityKey, EntitySchema $schema): EntityInterface {
+  public function createMissingEntity(EntityKey $entityKey): EntityInterface {
+    $schema = $this->entityTypeSchemaRegister->getEntityTypeSchema($entityKey->getEntityType());
     $entity = $this->createEntityObject($schema, $entityKey->getClient());
     $uniqueIdentifiers = $entityKey->getUniqueIdentifiers();
 

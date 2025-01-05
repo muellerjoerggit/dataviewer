@@ -18,7 +18,7 @@ class Entities extends AbstractController {
   }
 
   public function getEntityByEntityKey(DaViEntityManager $entityManager): void {
-    $entityKey = EntityKey::createFromString('umbrella::Role::rol_id::2');
+    $entityKey = EntityKey::createFromString('umbrella::User::usr_id::2');
     dd($entityManager->loadEntityByEntityKey($entityKey));
   }
 

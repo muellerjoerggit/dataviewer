@@ -5,6 +5,7 @@ namespace App\DaViEntity\EntityTypes\NullEntity;
 use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
+use App\DaViEntity\EntityRepository\EntityRepository;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueIdentifier;
 use App\Item\ItemInterface;
@@ -13,6 +14,7 @@ use App\Logger\LogItems\LogItemInterface;
 use Generator;
 
 #[EntityType(name: 'NullEntity')]
+#[EntityRepository(entityRepositoryClass: NullRepository::class)]
 class NullEntity implements EntityInterface {
 
   public const string ENTITY_TYPE = 'NullEntity';

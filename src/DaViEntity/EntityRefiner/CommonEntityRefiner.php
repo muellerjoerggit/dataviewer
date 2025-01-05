@@ -1,7 +1,8 @@
 <?php
 
-namespace App\DaViEntity;
+namespace App\DaViEntity\EntityRefiner;
 
+use App\DaViEntity\EntityInterface;
 use App\Item\ItemHandler_AdditionalData\AdditionalDataItemHandlerLocator;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\Property\PropertyBuilder;
@@ -15,7 +16,7 @@ class CommonEntityRefiner implements EntityRefinerInterface {
     private readonly AdditionalDataItemHandlerLocator $additionalDataItemHandlerLocator
   ) {}
 
-  public function refineEntity(EntityInterface $entity): EntityInterface {
+  public function refineEntity(EntityInterface $entity): void {
     foreach ($entity->getSchema()->iterateProperties() as $property => $itemConfiguration) {
       if (!$entity->hasPropertyItem($property)) {
         $item = $this->propertyBuilder->createProperty($itemConfiguration, NULL);
@@ -37,8 +38,6 @@ class CommonEntityRefiner implements EntityRefinerInterface {
         }
       }
     }
-
-    return $entity;
   }
 
 }

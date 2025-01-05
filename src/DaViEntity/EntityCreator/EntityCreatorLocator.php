@@ -1,7 +1,8 @@
 <?php
 
-namespace App\DaViEntity;
+namespace App\DaViEntity\EntityCreator;
 
+use App\DaViEntity\EntityTypeAttributesReader;
 use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -16,7 +17,7 @@ class EntityCreatorLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityCreator(string $entityTypeClass): EntityCreatorInterface {
+  public function getEntityCreator(string | EntityCreator $entityTypeClass): EntityCreatorInterface {
     $entityCreatorClass = $this->entityTypeAttributesReader->getEntityCreatorClass($entityTypeClass);
 
     if($this->has($entityCreatorClass)) {

@@ -43,8 +43,9 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     }
 
     $innerJoin = $tableReferenceConfiguration->getSetting(TableReferenceHandlerInterface::YAML_PARAM_INNER_JOIN, false);
+    $condition = $this->getWhereConditionColumn($queryBuilder, $tableReferenceConfiguration);
 
-    $this->joinTable($queryBuilder, $tableReferenceConfiguration, $innerJoin);
+    $this->joinTable($queryBuilder, $tableReferenceConfiguration, $innerJoin, $condition);
   }
 
   public function getReferencedTableName(TableReferenceConfiguration $tableReferenceConfiguration): string {

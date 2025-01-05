@@ -21,8 +21,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
     $propertiesRenderArray = [];
     $parameterRenderArray = [];
 
-    foreach ($entity->getSchema()
-      ->iterateProperties() as $property => $config) {
+    foreach ($entity->getSchema()->iterateProperties() as $property => $config) {
       $item = $entity->getPropertyItem($property);
       $handler = $this->preRenderingItemHandlerLocator->getPreRenderingHandlerFromItem($item->getConfiguration());
       $propertiesRenderArray[] = $handler->getComponentPreRenderArray($entity, $property);
@@ -47,7 +46,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
       }
     }
 
-    $renderArray = [
+    return [
       'entityKey' => $entity->getEntityKeyAsObj()->getFirstEntityKeyAsString(),
       'entityOverview' => $this->buildEntityOverview($entity),
       'label' => $this->entityManager->getEntityLabel($entity),
@@ -61,8 +60,6 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
       'logsByLevel' => $logsByLevel,
       'entityActions' => [],
     ];
-
-    return $renderArray;
   }
 
   public function buildEntityOverview(EntityInterface $entity, array $options = []): array {

@@ -5,8 +5,15 @@ namespace App\DaViEntity;
 use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\FilterContainer;
+use App\Database\SqlFilter\SqlFilter;
+use App\Database\SqlFilter\SqlFilterDefinition;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
+use App\DaViEntity\EntityCreator\EntityCreatorLocator;
+use App\DaViEntity\EntityDataProvider\EntityDataProviderLocator;
+use App\DaViEntity\EntityListSearch\EntityListSearchLocator;
+use App\DaViEntity\EntityRepository\EntityRepositoryInterface;
+use App\DaViEntity\EntityRepository\EntityRepositoryLocator;
 use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
@@ -20,11 +27,12 @@ class DaViEntityManager {
     private readonly EntityTypeSchemaRegister $schemaRegister,
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
     private readonly MainRepository $mainRepository,
+    private readonly EntityListSearchLocator $entityListSearchLocator,
+    private readonly EntityRepositoryLocator $entityRepositoryLocator,
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
-    $controller = $this->getEntityController($entityType);
-    return $controller->loadEntityData($filterContainer, $options);
+    return $this->getEntityRepositoryFromEntityType($entityType)->loadEntityData($filterContainer, $options);
   }
 
   public function getEntityController($input): EntityControllerInterface {
@@ -32,8 +40,7 @@ class DaViEntityManager {
   }
 
   public function loadMultipleEntities(string $entityType, FilterContainer $filterContainer, array $options = []): array {
-    $controller = $this->getEntityController($entityType);
-    return $controller->loadMultipleEntities($filterContainer, $options);
+    return $this->getEntityRepositoryFromEntityType($entityType)->loadMultipleEntities($filterContainer, $options);
   }
 
   public function loadAggregatedEntityData($input, string $client, string|AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $options = []): array|TableData {
@@ -72,17 +79,13 @@ class DaViEntityManager {
   }
 
   public function getEntityListFromSearchString(string $client, string $entityType, string $searchString): array {
-    $controller = $this->getEntityController($entityType);
-    return $controller->getEntityListFromSearchString($client, $searchString);
+    $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
+    $entityListSearch = $this->entityListSearchLocator->getEntityListSearchClass($entityClass);
+    return $entityListSearch->getEntityListFromSearchString($entityClass, $client, $searchString);
   }
 
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
-    $controller = $this->getEntityController($entityKey);
-    $entity = $controller->loadEntityByEntityKey($entityKey);
-    if(!$this->mainRepository->entityExists($entityKey)) {
-      $this->mainRepository->addEntity($entity);
-    }
-    return $entity;
+    return $this->getEntityRepositoryFromEntityType($entityKey->getEntityType())->loadEntityByEntityKey($entityKey);
   }
 
   public function createNullEntity(): EntityInterface {
@@ -140,13 +143,16 @@ class DaViEntityManager {
   }
 
   public function getEntityList(string $entityType, FilterContainer $filterContainer): EntityList {
-    $controller = $this->getEntityController($entityType);
-    return $controller->getEntityList($filterContainer);
+    return $this->getEntityRepositoryFromEntityType($entityType)->getEntityList($filterContainer);
   }
 
-  public function getBaseQueryBuilder(string $entityType, string $client, array $options = []): DaViQueryBuilder {
-    $controller = $this->getEntityController($entityType);
-    return $controller->buildQueryFromSchema($client, $options);
+  protected function getEntityRepository(string | EntityInterface $entityClass): EntityRepositoryInterface {
+    return $this->entityRepositoryLocator->getEntityRepository($entityClass);
+  }
+
+  protected function getEntityRepositoryFromEntityType(string $entityType): EntityRepositoryInterface {
+    $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
+    return $this->getEntityRepository($entityClass);
   }
 
 }

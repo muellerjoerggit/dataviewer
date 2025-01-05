@@ -23,13 +23,13 @@ class PropertyConfigurationBuilder {
   public function buildPropertyConfiguration(array $config, string $propertyName, EntitySchema $schema): PropertyConfiguration {
     $propertyConfiguration = $this->createPropertyConfiguration($propertyName);
     if(isset($config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED])) {
-      $this->buildPreDefinedConfiguration($config, $propertyConfiguration, $schema);
+      $config = array_replace_recursive($this->buildPreDefinedConfiguration($config), $config);
     }
 
     return $this->fillPropertyConfiguration($config, $propertyConfiguration, $schema);
   }
 
-  private function buildPreDefinedConfiguration(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
+  private function buildPreDefinedConfiguration(array $config): array {
     $preDefined = $config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED];
     if(!is_array($preDefined)) {
       $preDefined = [$preDefined];
@@ -41,13 +41,17 @@ class PropertyConfigurationBuilder {
       return $preDefinedConfigurations[$preDefinedName] ?? [];
     }, $preDefined);
 
+    $ret = [];
+
     foreach($preDefined as $preDefinedConfig) {
       if(empty($preDefinedConfig)) {
         continue;
       }
 
-      $propertyConfiguration = $this->fillPropertyConfiguration($preDefinedConfig, $propertyConfiguration, $schema);
+      $ret = array_replace_recursive($ret, $preDefinedConfig);
     }
+
+    return $ret;
   }
 
   private function createPropertyConfiguration(string $propertyName): ?PropertyConfiguration {
@@ -134,7 +138,7 @@ class PropertyConfigurationBuilder {
     );
 
     foreach ($config[PropertyConfiguration::YAML_PARAM_FILTER] as $key => $filter) {
-      if($propertyConfiguration->hasTableReference() || !isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
+      if($propertyConfiguration->hasTableReference() || !$propertyConfiguration->hasColumn()) {
         return;
       }
 

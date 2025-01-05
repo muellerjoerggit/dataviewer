@@ -1,11 +1,11 @@
 <?php
 
-namespace App\DaViEntity\Attribute;
+namespace App\DaViEntity\EntityCreator;
 
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityCreator {
+final class EntityCreator{
 
   public const string CLASS_PROPERTY = 'entityCreator';
 

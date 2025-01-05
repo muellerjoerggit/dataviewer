@@ -1,27 +1,37 @@
 <?php
 
-namespace App\Database;
+namespace App\Database\BaseQuery;
 
+use App\Database\DatabaseLocator;
+use App\Database\DaViQueryBuilder;
 use App\DaViEntity\EntityDataMapperInterface;
+use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonBaseQuery {
+class CommonBaseQuery implements BaseQueryInterface {
 
   public function __construct(
     private readonly DatabaseLocator $databaseLocator,
     private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister
   ) {}
 
-  public function buildQueryFromSchema(string $entityTypeClass, string $client, array $options = []): DaViQueryBuilder {
+  public function buildQueryFromSchema(string | EntityInterface $entityTypeClass, string $client, array $options = []): DaViQueryBuilder {
     $options = $this->getDefaultQueryOptions($options);
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityTypeClass);
 
     $baseTable = $schema->getBaseTable();
-    if ($options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]) {
+    if (
+      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
+      && empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
+    ) {
       $columns = $schema->getColumns();
-    }
-    else {
+    } elseif (
+      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
+      && !empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
+    ) {
+      $columns = $options[EntityDataMapperInterface::OPTION_COLUMNS];
+    } else {
       $columns = [];
     }
 
