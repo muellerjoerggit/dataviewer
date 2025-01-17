@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityTypes\NullEntity;
+namespace App\EntityTypes\NullEntity;
 
 use App\DaViEntity\AbstractEntityController;
 use App\DaViEntity\EntityInterface;

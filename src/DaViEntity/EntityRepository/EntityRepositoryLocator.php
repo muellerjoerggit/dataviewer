@@ -4,7 +4,7 @@ namespace App\DaViEntity\EntityRepository;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
-use App\DaViEntity\EntityTypes\NullEntity\NullRepository;
+use App\EntityTypes\NullEntity\NullRepository;
 use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityTypes\User;
+namespace App\EntityTypes\User;
 
 use App\Database\BaseQuery\BaseQuery;
 use App\Database\BaseQuery\CommonBaseQuery;

@@ -3,20 +3,15 @@
 namespace App\DaViEntity;
 
 use App\Database\Aggregation\AggregationConfiguration;
-use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\FilterContainer;
-use App\Database\SqlFilter\SqlFilter;
-use App\Database\SqlFilter\SqlFilterDefinition;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
-use App\DaViEntity\EntityCreator\EntityCreatorLocator;
-use App\DaViEntity\EntityDataProvider\EntityDataProviderLocator;
 use App\DaViEntity\EntityListSearch\EntityListSearchLocator;
 use App\DaViEntity\EntityRepository\EntityRepositoryInterface;
 use App\DaViEntity\EntityRepository\EntityRepositoryLocator;
-use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
+use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemInterface;
 

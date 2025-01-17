@@ -2,7 +2,7 @@
 
 namespace App\DaViEntity;
 
-use App\DaViEntity\EntityTypes\NullEntity\NullEntityController;
+use App\EntityTypes\NullEntity\NullEntityController;
 use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityTypes\NullEntity;
+namespace App\EntityTypes\NullEntity;
 
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\EntityList;

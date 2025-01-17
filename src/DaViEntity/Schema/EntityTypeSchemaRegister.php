@@ -4,7 +4,7 @@ namespace App\DaViEntity\Schema;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
-use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
+use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\Property\PropertyConfiguration;
 

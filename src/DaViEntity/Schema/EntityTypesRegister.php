@@ -6,7 +6,7 @@ use App\DaViEntity\EntityControllerInterface;
 use App\DaViEntity\EntityControllerLocator;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
+use App\EntityTypes\NullEntity\NullEntity;
 use Generator;
 use Symfony\Component\Finder\SplFileInfo;
 

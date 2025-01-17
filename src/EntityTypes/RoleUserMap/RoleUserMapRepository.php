@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityTypes\Role;
+namespace App\EntityTypes\RoleUserMap;
 
 use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
 use App\DaViEntity\EntityCreator\EntityCreatorLocator;
@@ -11,7 +11,7 @@ use App\DaViEntity\EntityRepository\AbstractEntityRepository;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
 
-class RoleRepository extends AbstractEntityRepository {
+class RoleUserMapRepository extends AbstractEntityRepository {
 
   public function __construct(
     EntityTypesRegister $entityTypesRegister,
@@ -30,7 +30,7 @@ class RoleRepository extends AbstractEntityRepository {
       $additionalDataProviderLocator,
       $entityRefinerLocator,
       $entityListProviderLocator,
-      RoleEntity::class
+      RoleUserMapEntity::class
     );
   }
 

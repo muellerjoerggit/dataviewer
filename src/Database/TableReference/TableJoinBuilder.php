@@ -3,9 +3,9 @@
 namespace App\Database\TableReference;
 
 use App\Database\DaViQueryBuilder;
-use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 
 class TableJoinBuilder {

@@ -2,7 +2,7 @@
 
 namespace App\DaViEntity;
 
-use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
+use App\EntityTypes\NullEntity\NullEntity;
 
 class MainRepository {
 

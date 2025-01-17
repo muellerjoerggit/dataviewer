@@ -4,7 +4,7 @@ namespace App\Services;
 
 class AppNamespaces {
 
-  public const string ENTITY_TYPE_NAMESPACE = 'App\\DaViEntity\\EntityTypes';
+  public const string ENTITY_TYPE_NAMESPACE = 'App\\EntityTypes';
 
   public const string NAMESPACE_ENTITY_REFERENCE_ITEM_HANDLER = 'App\\Item\\ItemHandler_EntityReference';
   public const string NAMESPACE_PRE_RENDERING_ITEM_HANDLER = 'App\\Item\\ItemHandler_PreRendering';

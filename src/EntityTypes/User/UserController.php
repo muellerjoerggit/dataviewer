@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityTypes\User;
+namespace App\EntityTypes\User;
 
 use App\DaViEntity\AbstractEntityController;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;

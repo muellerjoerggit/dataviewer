@@ -186,6 +186,12 @@ class EntitySchemaBuilder {
   }
 
   private function fillDatabaseDetails(EntitySchemaInterface $schema, array $yaml): void {
+    if(!isset($yaml[self::YAML_PARAM_DATABASE_CONFIG])) {
+      return;
+    }
+
+    $yaml = $yaml[self::YAML_PARAM_DATABASE_CONFIG];
+
     if(isset($yaml[self::YAML_PARAM_TABLE_REFERENCES])) {
       $this->tableReferenceConfigurationBuilder->processYaml($yaml[self::YAML_PARAM_TABLE_REFERENCES], $schema);
     }

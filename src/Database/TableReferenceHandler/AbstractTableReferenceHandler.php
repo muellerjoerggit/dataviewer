@@ -6,8 +6,8 @@ use App\Database\DaViQueryBuilder;
 use App\Database\TableReference\TableReferenceConfiguration;
 use App\Database\TableReference\TableReferenceHandlerInterface;
 use App\DaViEntity\EntityInterface;
-use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\EntityTypes\NullEntity\NullEntity;
 
 abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInterface {
 

@@ -19,7 +19,7 @@ class DirectoryFileRegister {
   }
 
   public function getEntityTypesDir(): string {
-    return $this->getSrcDir() . '/DaViEntity/EntityTypes';
+    return $this->getSrcDir() . '/EntityTypes';
   }
 
   public function getRootDir(): string {

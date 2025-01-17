@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityTypes\RoleUserMap;
+namespace App\EntityTypes\RoleUserMap;
 
 use App\DaViEntity\AbstractEntityController;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
