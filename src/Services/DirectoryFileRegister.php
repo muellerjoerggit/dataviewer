@@ -27,7 +27,7 @@ class DirectoryFileRegister {
   }
 
   public function getPreDefinedPropertyConfiguration(): array {
-    $file = $this->getSrcDir() . '/Item/PropertyAttr/preDefinedPropertyConfiguration.yaml';
+    $file = $this->getSrcDir() . '/Item/Property/preDefinedPropertyConfiguration.yaml';
     return $this->parseYamlFromFile($file);
   }
 
