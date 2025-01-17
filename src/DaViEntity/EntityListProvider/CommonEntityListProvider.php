@@ -50,7 +50,6 @@ class CommonEntityListProvider implements EntityListProviderInterface {
     $this->sqlFilterBuilder->buildFilteredQueryMultipleFilters($queryBuilder, $filterContainer, $schema);
 
     $countQueryBuilder = clone $queryBuilder;
-
     $queryResult = $this->executeQueryBuilderInternal($queryBuilder, [], []);
     $database = $this->databaseLocator->getDatabaseBySchema($schema);
     $entityCount = $database->getCountResultFromQueryBuilder($countQueryBuilder);

@@ -26,7 +26,8 @@ class EntityTypeSchemaRegister {
 
   private function buildSchema(string $entityType): void {
     $schemaFile = $this->entityTypesRegister->getSchemaFile($entityType);
-    $this->schemas[$entityType] = $this->entitySchemaBuilder->buildSchema($schemaFile);
+    $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
+    $this->schemas[$entityType] = $this->entitySchemaBuilder->buildSchema($schemaFile, $entityClass);
   }
 
   public function getPropertyConfigurationFromPath(string $path, string $entityType): PropertyConfiguration {

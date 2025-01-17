@@ -50,7 +50,7 @@ trait EntityPropertyTrait {
   }
 
   public function hasPropertyItem(string $property): bool {
-    return $this->schema->hasProperty($property) && property_exists($this, $property) && $this->{$property} instanceof ItemInterface;
+    return $this->schema->hasProperty($property) && property_exists($this, $property) && isset($this->{$property});
   }
 
   public function setPropertyItem(string $property, ItemInterface $item): EntityInterface {

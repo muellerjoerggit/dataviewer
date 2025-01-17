@@ -42,7 +42,9 @@ use App\Item\Property\PropertyItemInterface;
   EntityDataProvider(dataProviderClass: CommonSqlEntityDataProvider::class),
   EntityListProvider(entityListClass: CommonEntityListProvider::class),
 ]
-#[DatabaseAttr(databaseClass: DaViDatabaseOne::class, baseTable: 'role'),
+#[DatabaseAttr(
+  databaseClass: DaViDatabaseOne::class,
+  baseTable: 'role'),
 ]
 class RoleEntity extends AbstractEntity {
 

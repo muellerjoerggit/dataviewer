@@ -11,4 +11,8 @@ class UniquePropertyAttr {
     public readonly string $name = 'primary'
   ) {}
 
+  public function getName(): string {
+    return $this->name;
+  }
+
 }

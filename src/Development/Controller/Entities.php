@@ -33,7 +33,7 @@ class Entities extends AbstractController {
     SqlFilterBuilder $sqlFilterBuilder
   ): void {
     //    $entityType = 'User';
-    $entityType = 'RoleUserMap';
+    $entityType = 'Role';
     $filters = [];
     $client = 'umbrella';
     $schema = $schemaRegister->getEntityTypeSchema($entityType);

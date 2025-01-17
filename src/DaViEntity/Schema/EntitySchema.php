@@ -319,7 +319,7 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   /**
-   * @return array<string>
+   * @return string[]
    */
   public function getTableReferenceColumns(string $tableReferenceInternalName): array {
     return $this->tableReferenceColumns[$tableReferenceInternalName] ?? [];

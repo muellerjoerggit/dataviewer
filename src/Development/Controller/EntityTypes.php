@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class EntityTypes extends AbstractController {
 
   public function getEntityTypes(EntityTypeSchemaRegister $schemaRegister): void {
-    dd($schemaRegister->getEntityTypeSchema('User'));
+    dd($schemaRegister->getEntityTypeSchema('Role'));
   }
 
 }

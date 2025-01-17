@@ -34,8 +34,7 @@ class EntityTypesReader {
 
   public function read(): array {
     $finder = new Finder();
-    $finder->directories()
-      ->in($this->directoryFileRegister->getEntityTypesDir());
+    $finder->directories()->in($this->directoryFileRegister->getEntityTypesDir());
 
     $ret = [];
     foreach ($finder as $directory) {

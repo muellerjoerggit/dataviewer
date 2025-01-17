@@ -233,7 +233,7 @@ class ItemConfiguration implements ItemConfigurationInterface {
   }
 
   public function getVersion(): VersionInformation | null {
-    return $this->version;
+    return $this->version ?? null;
   }
 
   public function setVersion(VersionInformation $version): ItemConfiguration {
