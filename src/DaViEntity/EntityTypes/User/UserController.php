@@ -3,9 +3,9 @@
 namespace App\DaViEntity\EntityTypes\User;
 
 use App\DaViEntity\AbstractEntityController;
-use App\DaViEntity\Attribute\EntityType;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 
-#[EntityType(name: "User")]
+#[EntityTypeAttr(name: "User")]
 class UserController extends AbstractEntityController {
 
 }

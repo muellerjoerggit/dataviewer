@@ -2,6 +2,7 @@
 
 namespace App\Database\BaseQuery;
 
+use App\Database\ColumnsService;
 use App\Database\DatabaseLocator;
 use App\Database\DaViQueryBuilder;
 use App\DaViEntity\EntityDataMapperInterface;
@@ -13,36 +14,22 @@ class CommonBaseQuery implements BaseQueryInterface {
 
   public function __construct(
     private readonly DatabaseLocator $databaseLocator,
-    private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister
+    private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
+    private readonly ColumnsService $columnsService,
   ) {}
 
   public function buildQueryFromSchema(string | EntityInterface $entityTypeClass, string $client, array $options = []): DaViQueryBuilder {
     $options = $this->getDefaultQueryOptions($options);
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityTypeClass);
 
-    $baseTable = $schema->getBaseTable();
-    if (
-      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
-      && empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
-    ) {
-      $columns = $schema->getColumns();
-    } elseif (
-      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
-      && !empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
-    ) {
-      $columns = $options[EntityDataMapperInterface::OPTION_COLUMNS];
-    } else {
-      $columns = [];
-    }
-
     $queryBuilder = $this->getQueryBuilder($schema, $client);
+    $columns = $this->columnsService->getColumns($entityTypeClass, $client, $options);
 
     foreach ($columns as $property => $column) {
       $queryBuilder->addSelect($column . ' AS ' . $property);
     }
 
-
-    $queryBuilder->from($baseTable);
+    $queryBuilder->from($schema->getBaseTable());
     $queryBuilder->setMaxResults($options[EntityDataMapperInterface::OPTION_LIMIT]);
 
     return $queryBuilder;

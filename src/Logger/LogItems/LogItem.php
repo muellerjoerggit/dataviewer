@@ -9,19 +9,19 @@ use Symfony\Component\Uid\Uuid;
 
 class LogItem implements LogItemInterface {
 
-  protected string $message;
+  protected string $message = '';
 
   protected array $rawLogs = [];
 
   protected DateTime $dateTime;
 
-  protected string $level;
+  protected string $level = '';
 
-  protected string $title;
+  protected string $title = '';
 
   protected Uuid $uuid;
 
-  public function __construct(string $message, $title, string $level, DateTime $dateTime, array $rawLogs = []) {
+  public function __construct(string $message, string $title, string $level, DateTime $dateTime, array $rawLogs = []) {
     $this->message = $message;
     $this->title = $title;
     $this->dateTime = $dateTime;

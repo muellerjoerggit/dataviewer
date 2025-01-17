@@ -86,7 +86,7 @@ abstract class AbstractValidatorItemHandler implements ValidatorItemHandlerInter
     $logItem = DaViErrorLogItem::createDaViErrorLogItem(
       'Error: Invalid validation result',
       'Invalid validation result',
-      LogItemInterface::LOG_LEVEL_DAVI_ERROR
+      LogItemInterface::LOG_LEVEL_INTERNAL_ERROR
     );
     $this->logger->addLog($logItem);
   }

@@ -12,10 +12,10 @@ class AppNamespaces {
   public const string NAMESPACE_ADDITIONAL_DATA_ITEM_HANDLER = 'App\\Item\\ItemHandler_AdditionalData';
   public const string NAMESPACE_VALIDATOR_ITEM_HANDLER = 'App\\Item\\ItemHandler_Validator';
 
-  public const string SQL_FILTER_HANDLER = 'App\\Database\\SqlFilterHandler';
+  public const string SQL_FILTER_HANDLER = 'App\\DatabaseAttr\\SqlFilterHandler';
 
-  public const string AGGREGATION_HANDLER = 'App\\Database\\AggregationHandler';
-  public const string TABLE_REFERENCE_HANDLER = 'App\\Database\\TableReferenceHandler';
+  public const string AGGREGATION_HANDLER = 'App\\DatabaseAttr\\AggregationHandler';
+  public const string TABLE_REFERENCE_HANDLER = 'App\\DatabaseAttr\\TableReferenceHandler';
 
   public const string SYMFONY_CONSTRAINTS = 'Symfony\\Component\\Validator\\Constraints';
 

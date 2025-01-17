@@ -3,9 +3,9 @@
 namespace App\DaViEntity\EntityTypes\Role;
 
 use App\DaViEntity\AbstractEntityController;
-use App\DaViEntity\Attribute\EntityType;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 
-#[EntityType(name: "Role")]
+#[EntityTypeAttr(name: "Role")]
 class RoleController extends AbstractEntityController {
 
 }

@@ -9,21 +9,22 @@ use Doctrine\ORM\Mapping as ORM;
 class Version {
 
   #[ORM\Id]
-  #[ORM\GeneratedValue]
   #[ORM\Column]
   private ?string $id = NULL;
 
   #[ORM\Column(length: 100)]
   private ?string $label = NULL;
 
-  #[ORM\OneToOne(targetEntity: self::class, inversedBy: 'successor', cascade: [
-    'persist',
-    'remove',
-  ])]
+  #[ORM\OneToOne(targetEntity: self::class, inversedBy: 'successor')]
   private ?self $predecessor = NULL;
 
-  #[ORM\OneToOne(targetEntity: self::class, cascade: ['persist', 'remove'])]
+  #[ORM\OneToOne(targetEntity: self::class)]
   private ?self $successor = NULL;
+
+  public function setId(string $id): static {
+    $this->id = $id;
+    return $this;
+  }
 
   public function getId(): ?string {
     return $this->id;

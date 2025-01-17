@@ -3,8 +3,11 @@
 namespace App\Development\ExampleData;
 
 use App\Database\DaViDatabaseOne;
+use App\Database\SymfonyDatabase;
 use App\Services\TimeConverter;
 use App\SymfonyEntity\Client;
+use App\SymfonyEntity\Version;
+use App\SymfonyRepository\VersionRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -111,10 +114,16 @@ class GenerateExampleUserData extends AbstractMaker {
     'locussolus' => 'LOCUS SOLUS',
   ];
 
+  private const array VERSIONS = [
+    '1.0', '1.1', '1.2', '1.3'
+  ];
+
   public function __construct(
     private readonly DaViDatabaseOne $database,
     private readonly EntityManagerInterface $entityManager,
     private readonly TimeConverter $timeConverter,
+    private readonly SymfonyDatabase $symfonyDatabase,
+    private readonly VersionRepository $versionRepository,
   ) {}
 
   public static function getCommandName(): string {
@@ -128,29 +137,76 @@ class GenerateExampleUserData extends AbstractMaker {
   public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator) {
     $connectionDDL = $this->database->createConnectionWithoutDbName();
 
-    foreach (self::CLIENTS as $clientId => $clientName) {
-      $exists = $this->entityManager->find(Client::class, $clientId);
+    try {
 
-      if (!$exists) {
-        $client =
-          (new Client())
-            ->setName($clientName)
-            ->setClientId($clientId)
-            ->setDatabaseName($clientId);
+    if($this->symfonyDatabase->tableExists('client') && $this->symfonyDatabase->tableExists('version')) {
+      $this->symfonyDatabase->getConnection()->executeQuery('TRUNCATE client, version;');
+    }
 
-        $this->entityManager->persist($client);
-        $this->entityManager->flush();
+    $predecessor = null;
+    foreach (self::VERSIONS as $versionString) {
+      $version = $this->entityManager->find(Version::class, $versionString);
+
+      if(!$version) {
+        $version =
+          (new Version())
+            ->setId($versionString)
+            ->setLabel($versionString)
+        ;
       }
 
-      $stmt = $connectionDDL->prepare("DROP DATABASE IF EXISTS $clientId;");
-      $stmt->executeStatement();
+      if($predecessor instanceof Version) {
+        $version->setPredecessor($predecessor);
+        $predecessor->setSuccessor($version);
+        $this->entityManager->persist($predecessor);
+      }
 
-      $stmt = $connectionDDL->prepare("CREATE DATABASE IF NOT EXISTS $clientId;");
-      $stmt->executeStatement();
+      $this->entityManager->persist($version);
+      $this->entityManager->flush();
 
-      $connection = $this->database->getConnection($clientId);
+      $predecessor = $version;
+    }
 
-      $stmt = $connection->prepare("
+    $versions = $this->versionRepository->findAll();
+
+    foreach (self::CLIENTS as $clientId => $clientName) {
+      $client = $this->entityManager->find(Client::class, $clientId);
+
+
+        if (!$client) {
+          $client =
+            (new Client())
+              ->setName($clientName)
+              ->setClientId($clientId)
+              ->setDatabaseName($clientId);
+
+//          if (!empty($versions)) {
+//            $clientVersion = $versions[array_rand($versions)] ?? NULL;
+//            $client->setVersion($clientVersion);
+//          }
+
+          $this->entityManager->persist($client);
+          $this->entityManager->flush();
+        }
+    }
+
+    foreach (self::CLIENTS as $clientId => $clientName) {
+      $client = $this->entityManager->find(Client::class, $clientId);
+
+      if (!$client) {
+        continue;
+      }
+
+      try {
+        $stmt = $connectionDDL->prepare("DROP DATABASE IF EXISTS $clientId;");
+        $stmt->executeStatement();
+
+        $stmt = $connectionDDL->prepare("CREATE DATABASE IF NOT EXISTS $clientId;");
+        $stmt->executeStatement();
+
+        $connection = $this->database->getConnection($clientId);
+
+        $stmt = $connection->prepare("
         CREATE TABLE usr_data (
             usr_id INT AUTO_INCREMENT PRIMARY KEY,
             firstname VARCHAR(150),
@@ -158,20 +214,21 @@ class GenerateExampleUserData extends AbstractMaker {
             email VARCHAR(150),
             active TINYINT,
             inactivation_date DATETIME)");
-      $stmt->executeStatement();
+        $stmt->executeStatement();
 
-      $stmt = $connection->prepare("
+        $stmt = $connection->prepare("
         CREATE TABLE role (
             rol_id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(150),
             description VARCHAR(250))");
-      $stmt->executeStatement();
+        $stmt->executeStatement();
 
-      $stmt = $connection->prepare("
+        $stmt = $connection->prepare("
         CREATE TABLE role_user_map (
             rol_id INT,
             usr_id INT)");
-      $stmt->executeStatement();
+        $stmt->executeStatement();
+      } catch (\Exception $exception) {dd($exception, $connection);}
 
       $rolesSql = 'INSERT INTO role (rol_id, title) VALUE ';
 
@@ -213,6 +270,8 @@ class GenerateExampleUserData extends AbstractMaker {
       $stmt = $connection->prepare($userRolesSql);
       $stmt->executeStatement();
     }
+
+    } catch (\Exception $e) {dd($e);}
   }
 
   public function __call(string $name, array $arguments) {}

@@ -4,7 +4,6 @@ namespace App\DaViEntity;
 
 use App\Database\BaseQuery\BaseQuery;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
-use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityColumnBuilder\EntityColumnBuilder;
 use App\DaViEntity\EntityCreator\EntityCreator;
 use App\DaViEntity\EntityDataProvider\EntityDataProvider;
@@ -14,6 +13,7 @@ use App\DaViEntity\EntityListSearch\EntityListSearch;
 use App\DaViEntity\EntityRefiner\EntityRefiner;
 use App\DaViEntity\EntityRepository\EntityRepository;
 use App\DaViEntity\EntityTypes\NullEntity\NullEntity;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -51,7 +51,7 @@ class EntityTypeAttributesReader {
 
   public function getEntityType(string | EntityInterface $classname): ?string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityType::class, EntityType::NAME_PROPERTY, NullEntity::ENTITY_TYPE);
+    return $this->getAttributeKey($classname, EntityTypeAttr::class, EntityTypeAttr::NAME_PROPERTY, NullEntity::ENTITY_TYPE);
   }
 
   public function getBaseQueryClass(string | EntityInterface $classname): string {

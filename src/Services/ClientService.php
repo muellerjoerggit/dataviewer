@@ -24,6 +24,7 @@ class ClientService {
         'name' => $client->getName(),
         'databaseName' => $client->getDatabaseName(),
         'url' => $client->getUrl(),
+        'version' => $client->getVersion(),
       ];
     }
   }
@@ -56,11 +57,18 @@ class ClientService {
   }
 
   public function isClient(string $client): bool {
+    if(!isset($this->clients[$client])) {
+      $this->initClients();
+    }
     return isset($this->clients[$client]);
   }
 
   public function getClientUrl(string $client): string {
     return $this->clients[$client]['url'] ?? '';
+  }
+
+  public function getClientVersion(string $client): string {
+    return $this->clients[$client]['version'] ?? '';
   }
 
 }

@@ -66,7 +66,7 @@ class Logger {
   }
 
   public function logBacktrace(): LogItemInterface {
-    $logItem = LogItem::createLogItem('', 'Stacktrace', LogItemInterface::LOG_LEVEL_DAVI_DEBUG);
+    $logItem = LogItem::createLogItem('', 'Stacktrace', LogItemInterface::LOG_LEVEL_INTERNAL_DEBUG);
     $backtraceArray = debug_backtrace();
     $backtrace = '';
     foreach ($backtraceArray as $trace) {

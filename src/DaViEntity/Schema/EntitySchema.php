@@ -43,6 +43,8 @@ class EntitySchema implements EntitySchemaInterface {
   private array $entityOverview = [];
   private array $extendedEntityOverview = [];
 
+  private array $propertyVersions = [];
+
   public function __construct() {
     $filterGroup = new FilterGroup(EntitySchemaInterface::WITHOUT_FILTER_GROUP);
     $this->addFilterGroup($filterGroup);
@@ -107,6 +109,11 @@ class EntitySchema implements EntitySchemaInterface {
     if($property->hasColumn() && !$property->hasTableReference()) {
       $this->columns[$name] = $property->getColumn();
     }
+
+    if($property->hasVersion()) {
+      $this->propertyVersions[$name] = $property->getVersion();
+    }
+
     return $this;
   }
 
@@ -316,6 +323,14 @@ class EntitySchema implements EntitySchemaInterface {
    */
   public function getTableReferenceColumns(string $tableReferenceInternalName): array {
     return $this->tableReferenceColumns[$tableReferenceInternalName] ?? [];
+  }
+
+  public function getVersionedProperties(): array {
+    return array_keys($this->versionedProperties ?? []);
+  }
+
+  public function getPropertiesKeys(): array {
+    return array_keys($this->properties ?? []);
   }
 
 }

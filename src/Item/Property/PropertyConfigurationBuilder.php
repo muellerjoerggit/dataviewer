@@ -11,6 +11,8 @@ use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 use App\Services\DirectoryFileRegister;
+use App\Services\Version\VersionInformation;
+use App\Services\Version\VersionService;
 
 class PropertyConfigurationBuilder {
 
@@ -68,6 +70,10 @@ class PropertyConfigurationBuilder {
 
     if(isset($config[PropertyConfiguration::YAML_PARAM_FILTER])) {
       $this->fillFilter($config, $propertyConfiguration, $schema);
+    }
+
+    if(isset($config[VersionService::YAML_PARAM_VERSION])) {
+      $this->fillVersion($config, $propertyConfiguration);
     }
 
     return $propertyConfiguration;
@@ -158,6 +164,13 @@ class PropertyConfigurationBuilder {
 
   private function fillHandler(array $config, PropertyConfiguration $propertyConfiguration): void {
     $propertyConfiguration->fillHandler($config[PropertyConfiguration::YAML_PARAM_HANDLER]);
+  }
+
+  private function fillVersion(array $yaml, PropertyConfiguration $propertyConfiguration): void {
+    if(isset($yaml[VersionService::YAML_PARAM_SINCE_VERSION])) {
+      $version = new VersionInformation($yaml[VersionService::YAML_PARAM_SINCE_VERSION], VersionInformation::TYPE_SINCE_VERSION);
+      $propertyConfiguration->setVersion($version);
+    }
   }
 
 }

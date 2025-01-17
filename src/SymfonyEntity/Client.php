@@ -21,7 +21,7 @@ class Client {
   #[ORM\Column(length: 255, nullable: TRUE)]
   private ?string $url = NULL;
 
-  #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+  #[ORM\OneToOne]
   private ?Version $version = NULL;
 
   public function getClientId(): ?string {

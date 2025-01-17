@@ -2,10 +2,10 @@
 
 namespace App\DaViEntity\EntityTypes\NullEntity;
 
-use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\EntityRepository\EntityRepository;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueIdentifier;
 use App\Item\ItemInterface;
@@ -13,7 +13,7 @@ use App\Item\Property\PropertyItemInterface;
 use App\Logger\LogItems\LogItemInterface;
 use Generator;
 
-#[EntityType(name: 'NullEntity')]
+#[EntityTypeAttr(name: 'NullEntity')]
 #[EntityRepository(entityRepositoryClass: NullRepository::class)]
 class NullEntity implements EntityInterface {
 

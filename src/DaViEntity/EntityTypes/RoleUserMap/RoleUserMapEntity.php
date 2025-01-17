@@ -5,7 +5,6 @@ namespace App\DaViEntity\EntityTypes\RoleUserMap;
 use App\Database\BaseQuery\BaseQuery;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\DaViEntity\AbstractEntity;
-use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityColumnBuilder\CommonEntityColumnBuilder;
 use App\DaViEntity\EntityColumnBuilder\EntityColumnBuilder;
 use App\DaViEntity\EntityCreator\CommonEntityCreator;
@@ -19,9 +18,10 @@ use App\DaViEntity\EntityListSearch\EntityListSearch;
 use App\DaViEntity\EntityRefiner\CommonEntityRefiner;
 use App\DaViEntity\EntityRefiner\EntityRefiner;
 use App\DaViEntity\EntityRepository\EntityRepository;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 
-#[EntityType(name: 'RoleUserMap')]
+#[EntityTypeAttr(name: 'RoleUserMap')]
 #[EntityRepository(entityRepositoryClass: RoleUserMapRepository::class)]
 #[BaseQuery(baseQuery: CommonBaseQuery::class)]
 #[EntityListSearch(entityListSearch: CommonEntitySearch::class)]

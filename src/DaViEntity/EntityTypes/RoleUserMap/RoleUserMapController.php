@@ -3,9 +3,9 @@
 namespace App\DaViEntity\EntityTypes\RoleUserMap;
 
 use App\DaViEntity\AbstractEntityController;
-use App\DaViEntity\Attribute\EntityType;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 
-#[EntityType(name: "RoleUserMap")]
+#[EntityTypeAttr(name: "RoleUserMap")]
 class RoleUserMapController extends AbstractEntityController {
 
 }

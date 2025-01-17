@@ -2,9 +2,9 @@
 
 namespace App\DaViEntity\Schema;
 
-use App\DaViEntity\Attribute\EntityType;
 use App\DaViEntity\EntityControllerInterface;
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\Services\AppNamespaces;
 use App\Services\DirectoryFileRegister;
 use ReflectionClass;
@@ -112,7 +112,7 @@ class EntityTypesReader {
   }
 
   public static function getEntityTypeFromReflection(ReflectionClass $reflectionClass): string {
-    $attributes = $reflectionClass->getAttributes(EntityType::class);
+    $attributes = $reflectionClass->getAttributes(EntityTypeAttr::class);
     return empty($attributes) ? '' : $attributes[0]->getArguments()['name'] ?? '';
   }
 

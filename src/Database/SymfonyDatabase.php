@@ -19,7 +19,7 @@ class SymfonyDatabase {
   private Logger $logger;
 
   public function __construct(ManagerRegistry $doctrine, Logger $logger) {
-    $this->connection = $doctrine->getManager('symfony')->getConnection();
+    $this->connection = $doctrine->getManager()->getConnection();
     $this->logger = $logger;
   }
 

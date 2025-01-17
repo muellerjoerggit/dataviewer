@@ -4,6 +4,7 @@ namespace App\Item;
 
 use App\Item\ItemHandler\ItemHandlerInterface;
 use App\Services\AppNamespaces;
+use App\Services\Version\VersionInformation;
 use Generator;
 
 class ItemConfiguration implements ItemConfigurationInterface {
@@ -21,6 +22,8 @@ class ItemConfiguration implements ItemConfigurationInterface {
   protected array $handlerSettings = [];
 
   protected array $settings = [];
+
+  protected VersionInformation $version;
 
   public function __construct(
     protected readonly string $name
@@ -228,5 +231,20 @@ class ItemConfiguration implements ItemConfigurationInterface {
     $this->settings = $settings;
     return $this;
   }
+
+  public function getVersion(): VersionInformation | null {
+    return $this->version;
+  }
+
+  public function setVersion(VersionInformation $version): ItemConfiguration {
+    $this->version = $version;
+    return $this;
+  }
+
+  public function hasVersion(): bool {
+    return isset($this->version);
+  }
+
+
 
 }
