@@ -14,7 +14,7 @@ class File {
   private ?int $id = NULL;
 
   #[ORM\Column(length: 255)]
-  private ?string $server_filename = NULL;
+  private ?string $path = NULL;
 
   #[ORM\Column(length: 255)]
   private ?string $filename = NULL;
@@ -29,12 +29,12 @@ class File {
     return $this->id;
   }
 
-  public function getServerFilename(): ?string {
-    return $this->server_filename;
+  public function getPath(): ?string {
+    return $this->path;
   }
 
-  public function setServerFilename(string $server_filename): static {
-    $this->server_filename = $server_filename;
+  public function setPath(string $path): static {
+    $this->path = $path;
 
     return $this;
   }

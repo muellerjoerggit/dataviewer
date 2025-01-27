@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dateien{% endblock %}
+
+{% block body %}
+    <div>
+        <ul>
+            {% for file in files %}
+                <li class="mt-1">{{ file.id }} {{ file.name }}: <a class="border border-input ml-2" href="{{ file.url }}" >downloaden</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
