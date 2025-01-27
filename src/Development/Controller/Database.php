@@ -29,7 +29,7 @@ class Database extends AbstractController {
 
   public function fetchEntityList(DaViEntityManager $entityManager): void {
     $container = new FilterContainer('employees');
-    dd($entityManager->getEntityList('Employee', $container));
+    dd($entityManager->getEntityListFromEntityType('Employee', $container));
   }
 
 }
