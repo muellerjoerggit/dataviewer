@@ -137,8 +137,41 @@ class DaViEntityManager {
     return $ret;
   }
 
-  public function getEntityList(string $entityType, FilterContainer $filterContainer): EntityList {
+  public function getEntityList(string $entityClass, FilterContainer $filterContainer): EntityList {
+    return $this->getEntityRepository($entityClass)->getEntityList($filterContainer);
+  }
+
+  public function getEntityListFromEntityType(string $entityType, FilterContainer $filterContainer): EntityList {
     return $this->getEntityRepositoryFromEntityType($entityType)->getEntityList($filterContainer);
+  }
+
+  /**
+   * @return EntityInterface[]
+   */
+  public function getEntitiesFromEntityPath(array $entityPath, EntityInterface $baseEntity): array {
+    $currentEntities = [$baseEntity];
+
+    foreach ($entityPath as $propertyKey) {
+      $entities = [];
+      foreach ($currentEntities as $currentEntity) {
+        if(!$currentEntity->hasPropertyItem($propertyKey)) {
+          return [];
+        }
+        $propertyItem = $currentEntity->getPropertyItem($propertyKey);
+
+        if(!$propertyItem->hasEntityKeys()) {
+          return [];
+        }
+
+        foreach ($propertyItem->iterateEntityKeys() as $entityKey) {
+          $entities[] = $this->getEntity($entityKey);
+        }
+      }
+
+      $currentEntities = $entities;
+    }
+
+    return $currentEntities;
   }
 
   protected function getEntityRepository(string | EntityInterface $entityClass): EntityRepositoryInterface {

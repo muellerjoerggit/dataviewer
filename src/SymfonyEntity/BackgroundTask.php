@@ -31,10 +31,10 @@ class BackgroundTask {
   private ?string $description = NULL;
 
   #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: TRUE)]
-  private ?\DateTimeInterface $start = NULL;
+  private ?\DateTimeInterface $startDate = NULL;
 
   #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: TRUE)]
-  private ?\DateTimeInterface $end = NULL;
+  private ?\DateTimeInterface $endDate = NULL;
 
   #[ORM\OneToOne(mappedBy: 'task', cascade: ['persist', 'remove'])]
   private ?TaskConfiguration $taskConfiguration = NULL;
@@ -89,22 +89,22 @@ class BackgroundTask {
     return $this;
   }
 
-  public function getStart(): ?\DateTimeInterface {
-    return $this->start;
+  public function getStartDate(): ?\DateTimeInterface {
+    return $this->startDate;
   }
 
-  public function setStart(?\DateTimeInterface $start): static {
-    $this->start = $start;
+  public function setStartDate(?\DateTimeInterface $startDate): static {
+    $this->startDate = $startDate;
 
     return $this;
   }
 
-  public function getEnd(): ?\DateTimeInterface {
-    return $this->end;
+  public function getEndDate(): ?\DateTimeInterface {
+    return $this->endDate;
   }
 
-  public function setEnd(?\DateTimeInterface $end): static {
-    $this->end = $end;
+  public function setEndDate(?\DateTimeInterface $endDate): static {
+    $this->endDate = $endDate;
 
     return $this;
   }
@@ -154,7 +154,7 @@ class BackgroundTask {
   public function addTaskResult(TaskResult $taskResult): static {
     if (!$this->taskResults->contains($taskResult)) {
       $this->taskResults->add($taskResult);
-      $taskResult->setBackgroundTask($this);
+      $taskResult->setTask($this);
     }
 
     return $this;
@@ -163,8 +163,8 @@ class BackgroundTask {
   public function removeTaskResult(TaskResult $taskResult): static {
     if ($this->taskResults->removeElement($taskResult)) {
       // set the owning side to null (unless already changed)
-      if ($taskResult->getBackgroundTask() === $this) {
-        $taskResult->setBackgroundTask(NULL);
+      if ($taskResult->getTask() === $this) {
+        $taskResult->setTask(NULL);
       }
     }
 

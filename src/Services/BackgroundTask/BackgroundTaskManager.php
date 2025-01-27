@@ -7,6 +7,9 @@ use App\Services\DirectoryFileRegister;
 use App\SymfonyEntity\BackgroundTask;
 use App\SymfonyEntity\TaskConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\PhpExecutableFinder;
@@ -20,10 +23,11 @@ class BackgroundTaskManager {
 
 	public function __construct(
     private readonly EntityManagerInterface $entityManager,
-    DirectoryFileRegister $directoryFileRegister
+    private readonly LoggerInterface $logger,
+    private readonly DirectoryFileRegister $directoryFileRegister,
   ) {
-		$dir = $directoryFileRegister->getTaskCommandDir();
-		$this->getAllValidCommands($dir);
+		$this->getAllValidCommands($directoryFileRegister->getTaskCommandDir());
+    $this->logger->debug('Background task manager started');
 	}
 
 	private function getAllValidCommands(string $dir): void {
@@ -44,6 +48,7 @@ class BackgroundTaskManager {
 				$className = AppNamespaces::buildNamespace(AppNamespaces::NAMESPACE_EXPORT_TASK, $shortName);
 
 				if(!$this->validateTaskClass($className)) {
+          $this->logger->debug("Command invalid class '$className'");
 					continue;
 				}
 
@@ -97,28 +102,35 @@ class BackgroundTaskManager {
 
 	private function validateTaskClass(string $className): bool {
 		try {
-			$reflection = new \ReflectionClass($className);
-		} catch (\ReflectionException $e) {
+			$reflection = new ReflectionClass($className);
+		} catch (ReflectionException $e) {
 			return false;
 		}
 
-		if(array_key_exists (BackgroundTaskInterface::class, $reflection->getInterfaces())) {
+		if(array_key_exists(BackgroundTaskInterface::class, $reflection->getInterfaces())) {
 			return true;
 		}
 
 		return false;
 	}
 
-	public function executeTask(BackgroundTask $task): void {
+	public function executeTask(BackgroundTask $task): bool {
 		$taskConfiguration = $task->getTaskConfiguration();
 		$command = 'task:' . $taskConfiguration->getCommand();
 
 		if(!in_array($command, $this->commands)) {
-			return;
+      $this->logger->debug("Invalid Command '$command'");
+      $this->logger->debug("Available commands: " . implode(', ', $this->commands));
+			return false;
 		}
 
 		$phpBinaryPath = (new PhpExecutableFinder())->find();
+    $consoleDir = $this->directoryFileRegister->getConsoleDir();
 
-		shell_exec($phpBinaryPath . ' -d max_execution_time=' . self::MAX_EXECUTION_TIME . ' /var/www/html/bin/console ' . $command . ' ' . $task->getId() . ' 2>/dev/null >/dev/null &');
+		$result = shell_exec($phpBinaryPath . ' -d max_execution_time=' . self::MAX_EXECUTION_TIME . ' ' . $consoleDir . ' ' . $command . ' ' . $task->getId() . ' 2>/dev/null >/dev/null &');
+
+    $this->logger->debug("Command '$command' started with output $result");
+
+    return true;
 	}
 }

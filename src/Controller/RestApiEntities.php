@@ -31,7 +31,7 @@ class RestApiEntities extends AbstractController {
       $filterContainer->setLimit(500);
     }
 
-    $entityList = $entityManager->getEntityList($entityType, $filterContainer);
+    $entityList = $entityManager->getEntityListFromEntityType($entityType, $filterContainer);
     $entities = [];
 
     foreach ($entityList->iterateEntityList() as $entityKeyString => $entityData) {
