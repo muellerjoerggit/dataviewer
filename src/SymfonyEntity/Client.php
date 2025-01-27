@@ -21,7 +21,7 @@ class Client {
   #[ORM\Column(length: 255, nullable: TRUE)]
   private ?string $url = NULL;
 
-  #[ORM\OneToOne]
+  #[ORM\ManyToOne(targetEntity: Version::class)]
   private ?Version $version = NULL;
 
   public function getClientId(): ?string {
