@@ -180,10 +180,10 @@ class GenerateExampleUserData extends AbstractMaker {
               ->setClientId($clientId)
               ->setDatabaseName($clientId);
 
-//          if (!empty($versions)) {
-//            $clientVersion = $versions[array_rand($versions)] ?? NULL;
-//            $client->setVersion($clientVersion);
-//          }
+          if (!empty($versions)) {
+            $clientVersion = $versions[array_rand($versions)] ?? NULL;
+            $client->setVersion($clientVersion);
+          }
 
           $this->entityManager->persist($client);
           $this->entityManager->flush();
@@ -206,6 +206,12 @@ class GenerateExampleUserData extends AbstractMaker {
 
         $connection = $this->database->getConnection($clientId);
 
+        $version = $client->getVersion();
+        $versionId = '';
+        if($version instanceof Version) {
+          $versionId = $version->getId();
+        }
+
         $stmt = $connection->prepare("
         CREATE TABLE usr_data (
             usr_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -215,6 +221,11 @@ class GenerateExampleUserData extends AbstractMaker {
             active TINYINT,
             inactivation_date DATETIME)");
         $stmt->executeStatement();
+
+        if($versionId === '1.3') {
+          $stmt = $connection->prepare("ALTER TABLE usr_data ADD COLUMN second_email VARCHAR(150) DEFAULT NULL;");
+          $stmt->executeStatement();
+        }
 
         $stmt = $connection->prepare("
         CREATE TABLE role (
@@ -236,8 +247,12 @@ class GenerateExampleUserData extends AbstractMaker {
         $rolesSql .= "($id, '$title'),";
       }
 
-      $userSql = 'INSERT INTO usr_data (usr_id, firstname, lastname, email, active, inactivation_date) VALUE ';
-      $userRolesSql = 'INSERT INTO role_user_map (rol_id, usr_id) VALUE ';
+      $userSql = 'INSERT INTO usr_data (usr_id, firstname, lastname, email, active, inactivation_date) VALUES ';
+      $userRolesSql = 'INSERT INTO role_user_map (rol_id, usr_id) VALUES ';
+
+      if($versionId === '1.3') {
+        $userSql = 'INSERT INTO usr_data (usr_id, firstname, lastname, email, active, inactivation_date, second_email) VALUES ';
+      }
 
       for ($usrId = 1; $usrId <= 1000; $usrId++) {
         $firstname = self::FIRSTNAMES[array_rand(self::FIRSTNAMES)];
@@ -247,7 +262,13 @@ class GenerateExampleUserData extends AbstractMaker {
         $begin = new DateTime('2020-01-01');
         $end = new DateTime('2023-12-31');
         $inactiveDate = $active ? 'NULL' : '"' . $this->timeConverter->randomDateTime($begin, $end) . '"';
-        $userSql .= "($usrId, '$firstname', '$lastname', '$email', $active, $inactiveDate),";
+
+        if($versionId === '1.3') {
+          $secondEmail = "$lastname.$firstname@example.com";
+          $userSql .= "($usrId, '$firstname', '$lastname', '$email', $active, $inactiveDate, '$secondEmail'),";
+        } else {
+          $userSql .= "($usrId, '$firstname', '$lastname', '$email', $active, $inactiveDate),";
+        }
 
         $numberRoles = rand(2, 12);
         $roles = array_rand(self::ROLES, $numberRoles);

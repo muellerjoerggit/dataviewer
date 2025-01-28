@@ -15,7 +15,7 @@ class Version {
   #[ORM\Column(length: 100)]
   private ?string $label = NULL;
 
-  #[ORM\OneToOne(targetEntity: self::class, inversedBy: 'successor')]
+  #[ORM\OneToOne(targetEntity: self::class)]
   private ?self $predecessor = NULL;
 
   #[ORM\OneToOne(targetEntity: self::class)]

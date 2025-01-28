@@ -75,9 +75,9 @@ properties:
           targetEntityType: "Role"
           target_property: "rol_id"
       preRenderingItemHandler: "EntityReferencePreRenderingItemHandler"
-#  second_email:
-#    preDefined: "String"
-#    label: "Mail"
-#    column: "second_mail"
-#    version:
-#      sinceVersion: "1.5"
+  second_email:
+    preDefined: "String"
+    label: "Mail"
+    column: "second_mail"
+    version:
+      sinceVersion: "1.5"

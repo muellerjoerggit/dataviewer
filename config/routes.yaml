@@ -47,3 +47,13 @@ when@dev:
     dev_entity_types_get:
       path: /dev/entity/types/get
       controller: App\Development\Controller\EntityTypes::getEntityTypes
+
+  # export
+    dev_export:
+      path: /dev/export/get
+      controller: App\Development\Controller\Export::export
+
+  # background_tast
+    create_background_taks:
+      path: /dev/task/create
+      controller: App\Development\Controller\BackgroundTasks::create

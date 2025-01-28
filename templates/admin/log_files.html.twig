@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log-Files{% endblock %}
+
+{% block body %}
+	<div>
+		{% if error %}
+			<p>{{ error }}</p>
+		{% endif %}
+
+		<p>Log-Verzeichnis: {{ logDir }}</p>
+
+		<ul>
+			{% for file in files %}
+				<li class="mt-1">{{ file.fileName }} ({{ file.fileSize }} MByte): <a class="border border-input ml-2" href="{{ file.fileUrl }}" >anzeigen</a> <a class="border border-input ml-2" href="{{ file.fileDownloadUrl }}" >downloaden</a></li>
+			{% endfor %}
+		</ul>
+
+	</div>
+{% endblock %}

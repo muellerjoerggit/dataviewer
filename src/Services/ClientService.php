@@ -19,12 +19,14 @@ class ClientService {
 
     foreach ($clients as $client) {
       $clientId = $client->getClientId();
+      $version = $client->getVersion();
+      $versionId = $version ? $version->getId() : '';
       $this->clients[$clientId] = [
         'clientId' => $clientId,
         'name' => $client->getName(),
         'databaseName' => $client->getDatabaseName(),
         'url' => $client->getUrl(),
-        'version' => $client->getVersion(),
+        'version' => $versionId,
       ];
     }
   }

@@ -73,7 +73,7 @@ class PropertyConfigurationBuilder {
     }
 
     if(isset($config[VersionService::YAML_PARAM_VERSION])) {
-      $this->fillVersion($config, $propertyConfiguration);
+      $this->fillVersion($config[VersionService::YAML_PARAM_VERSION], $propertyConfiguration);
     }
 
     return $propertyConfiguration;

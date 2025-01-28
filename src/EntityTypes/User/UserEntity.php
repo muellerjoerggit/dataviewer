@@ -78,4 +78,6 @@ class UserEntity extends AbstractEntity {
 
   private $roles;
 
+  private $second_mail;
+
 }

@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -11,7 +14,8 @@ use Symfony\Component\Yaml\Yaml;
 class DirectoryFileRegister {
 
   public function __construct(
-    #[Autowire('%kernel.project_dir%')] private $rootDir
+    #[Autowire('%kernel.project_dir%')] private $rootDir,
+    private readonly ParameterBagInterface $parameterBag,
   ) {}
 
   public function getSrcDir(): string {
@@ -51,8 +55,31 @@ class DirectoryFileRegister {
     return $this->getSrcDir() . '/Services/BackgroundTaskCommands';
   }
 
+  public function getConsoleDir(): string {
+    return $this->getRootDir() . '/bin/console';
+  }
+
   public function getTempDir(): string {
     return sys_get_temp_dir();
+  }
+
+  public function getTempFileName(int $fileType): string {
+    $prefix = match($fileType) {
+      FileService::FILE_TYPE_EXPORT => 'exp_',
+      default => 'tmp_',
+    };
+
+    return (new Filesystem())->tempnam($this->getTempDir(), $prefix);
+  }
+
+  public function getLogDir(): string {
+    try {
+      $logDir = $this->parameterBag->get('kernel.logs_dir');
+    } catch (ParameterNotFoundException $exception) {
+      $logDir = '';
+    }
+
+    return $logDir;
   }
 
 }

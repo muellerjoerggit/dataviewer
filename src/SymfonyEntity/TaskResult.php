@@ -9,12 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: TaskResultRepository::class)]
 class TaskResult {
 
-  public const TYPE_URL = 1;
+  public const int TYPE_URL = 1;
+  public const int TYPE_FILE = 2;
+  public const int TYPE_ENTITY_LIST = 3;
 
-  public const TYPE_ENTITY_LIST = 2;
-
-  public const VALID_TYPES = [
+  public const array VALID_TYPES = [
     self::TYPE_URL,
+    self::TYPE_FILE,
     self::TYPE_ENTITY_LIST,
   ];
 
@@ -23,7 +24,7 @@ class TaskResult {
   #[ORM\Column]
   private ?int $id = NULL;
 
-  #[ORM\OneToOne(inversedBy: 'taskResult', cascade: ['persist', 'remove'])]
+  #[ORM\ManyToOne(inversedBy: 'taskResult')]
   #[ORM\JoinColumn(nullable: FALSE)]
   private ?BackgroundTask $task = NULL;
 
@@ -32,11 +33,6 @@ class TaskResult {
 
   #[ORM\Column]
   private ?int $type = NULL;
-
-  #[ORM\ManyToOne(inversedBy: 'taskResults')]
-  #[ORM\JoinColumn(nullable: FALSE)]
-  private ?BackgroundTask $backgroundTask = NULL;
-
   public function getId(): ?int {
     return $this->id;
   }
@@ -67,16 +63,6 @@ class TaskResult {
 
   public function setType(int $type): static {
     $this->type = $type;
-
-    return $this;
-  }
-
-  public function getBackgroundTask(): ?BackgroundTask {
-    return $this->backgroundTask;
-  }
-
-  public function setBackgroundTask(?BackgroundTask $backgroundTask): static {
-    $this->backgroundTask = $backgroundTask;
 
     return $this;
   }
