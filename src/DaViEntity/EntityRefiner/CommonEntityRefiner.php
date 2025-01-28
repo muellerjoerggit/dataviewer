@@ -31,10 +31,11 @@ class CommonEntityRefiner implements EntityRefinerInterface {
         $item->setRawValues($data);
       }
 
-      if ($itemConfiguration->hasEntityReferenceHandler() && $item instanceof ReferenceItemInterface) {
+      if ($itemConfiguration->hasEntityReferenceHandler()) {
         $handler = $this->referenceHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-        foreach ($handler->iterateEntityKeys($entity, $property) as $entityKey) {
-          $item->addEntityKey($entityKey);
+        $collection = $handler->buildEntityKeyCollection($entity, $property);
+        if($collection) {
+          $item->setRawValues($collection);
         }
       }
     }

@@ -3,6 +3,7 @@
 namespace App\Item\ItemHandler_EntityReference;
 
 use App\Database\TableReference\TableReferenceConfiguration;
+use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
@@ -18,19 +19,14 @@ interface EntityReferenceItemHandlerInterface {
 
 	public function getEntityOverview($entityKey, array $options = []): array;
 
-  /**
-   * @return \Generator <EntityKey>
-   */
-	public function iterateEntityKeys(EntityInterface $entity, string $property): \Generator;
-
-	public function getEntityKeys(EntityInterface $entity, string $property): array;
-
-  public function buildEntityKeys($value, ItemConfigurationInterface $itemConfiguration, string $client): ?EntityKey;
+  public function buildEntityKey($value, ItemConfigurationInterface $itemConfiguration, string $client): ?EntityKey;
 
   public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceConfiguration;
 
   public function getTargetEntityType(ItemConfigurationInterface $itemConfiguration): string;
 
   public function getTargetProperty(ItemConfigurationInterface $itemConfiguration): string;
+
+  public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null;
 
 }

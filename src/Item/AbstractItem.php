@@ -2,6 +2,8 @@
 
 namespace App\Item;
 
+use App\DataCollections\ArrayInterface;
+use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\EntityKey;
 use Generator;
 
@@ -13,6 +15,9 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
 
   protected bool $yellowError = FALSE;
 
+  /**
+   * @deprecated
+   */
   protected array $entityKeys = [];
 
   public function countValues(): int {
@@ -20,11 +25,12 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
   }
 
   public function getValuesAsArray(): array {
-    $values = $this->getRawValues();
-    if (is_scalar($values)) {
-      return [$values];
-    } elseif (is_array($values)) {
-      return $values;
+    if (is_scalar($this->values)) {
+      return [$this->values];
+    } elseif (is_array($this->values)) {
+      return $this->values;
+    } elseif ($this->values instanceof ArrayInterface) {
+      return $this->values->toArray();
     } else {
       return [];
     }
@@ -163,30 +169,37 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
   }
 
   public function iterateEntityKeys(): Generator {
-    foreach ($this->entityKeys as $entityKey) {
-      yield $entityKey;
+    if($this->hasEntityKeys()) {
+      foreach ($this->values->iterateEntityKeys() as $entityKey) {
+        yield $entityKey;
+      }
+    } else {
+      yield from [];
     }
+
   }
 
-  public function getEntityKey(): array|EntityKey {
+  public function getEntityKey(): array | EntityKey {
+    $multiple = $this->getConfiguration()->isCardinalityMultiple();
     if (!$this->hasEntityKeys()) {
-      return [];
+      $key = EntityKey::createNullEntityKey();
+      return $multiple ? [$key] : $key;
     }
 
-    if (!$this->getConfiguration()->isCardinalityMultiple()) {
-      return reset($this->entityKeys);
-    }
-    return $this->entityKeys;
+    return $multiple ? $this->values->getAllEntityKeys() : $this->values->getFirstEntityKey();
   }
 
   public function hasEntityKeys(): bool {
-    return !empty($this->entityKeys);
+    return $this->values instanceof EntityKeyCollection && $this->values->hasEntityKeys();
   }
 
   public function countEntityKeys(): int {
-    return count($this->entityKeys);
+    return $this->values instanceof EntityKeyCollection ? $this->values->countEntityKeys() : 0;
   }
 
+  /**
+   * @deprecated
+   */
   public function addEntityKey(EntityKey|array $entityKeys): ItemInterface {
     if (is_array($entityKeys)) {
       foreach ($entityKeys as $entityKey) {
@@ -204,12 +217,11 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
   }
 
   public function getFirstEntityKey(): EntityKey {
-    if (!$this->hasEntityKeys()) {
-      return EntityKey::createNullEntityKey();
+    if ($this->hasEntityKeys()) {
+      return $this->values->getFirstEntityKey();
     }
 
-    $entityKeys = $this->entityKeys;
-    return reset($entityKeys);
+    return EntityKey::createNullEntityKey();
   }
 
 }

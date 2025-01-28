@@ -6,6 +6,7 @@ use App\Database\TableReference\TableReferenceConfiguration;
 use App\Database\TableReference\TableReferenceConfigurationBuilder;
 use App\Database\TableReference\TableReferenceHandlerInterface;
 use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
+use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
@@ -26,44 +27,6 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     protected readonly TableReferenceConfigurationBuilder $tableReferenceConfigurationBuilder,
 	) {}
 
-	public function getEntityKeys(EntityInterface $entity, string $property): array {
-		$ret = [];
-		foreach ($this->iterateEntityKeys($entity, $property) as $entityKey) {
-			$ret[] = $entityKey;
-		}
-		return $ret;
-	}
-
-	public function iterateEntityKeys(EntityInterface $entity, string $property): \Generator {
-		$item = $entity->getPropertyItem($property);
-
-		if($item->hasEntityKeys()) {
-			$iteratorData = $item->iterateEntityKeys();
-		} else {
-			$iteratorData = $item->getValuesAsOneDimensionalArray();
-		}
-
-		foreach ($iteratorData as $value) {
-			if($value instanceof EntityKey) {
-				yield $value;
-				continue;
-			}
-
-			if(!$this->validateReferenceValue($entity, $property, $value)) {
-				continue;
-			}
-
-			if(is_scalar($value)) {
-				$entityKey = $this->buildEntityKeys($value, $item->getConfiguration(), $entity->getClient());
-				if(!($entityKey instanceof EntityKey)) {
-					continue;
-				}
-				$item->addEntityKey($entityKey);
-				yield $entityKey;
-			}
-		}
-	}
-
   protected function validateReferenceValue(EntityInterface $entity, string $property, $value): bool {
     $targetItemConfiguration = $this->getTargetItemConfiguration($entity->getPropertyItem($property)->getConfiguration());
     $validatorHandlers = $this->validatorHandlerLocator->getValidatorHandlerFromItem($targetItemConfiguration);
@@ -75,7 +38,6 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
       }
       $validationResult = $validationHandler->validateValueFromItemConfiguration($targetItemConfiguration, $value, $client);
 
-      // $validationHandler->reset();
       if(!$validationResult) {
         return false;
       }
@@ -84,7 +46,7 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     return true;
   }
 
-	public function buildEntityKeys($value, ItemConfigurationInterface $itemConfiguration, string $client): ?EntityKey	{
+	public function buildEntityKey($value, ItemConfigurationInterface $itemConfiguration, string $client): ?EntityKey	{
     [$entityType, $property] = $this->getTargetSetting($itemConfiguration);
 
 		if(empty($entityType) || empty($property)) {
@@ -126,7 +88,7 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
   }
 
   public function getLabelFromValue(ItemConfigurationInterface $itemConfiguration, $value, string $client): string {
-    $entityKey = $this->buildEntityKeys($value, $itemConfiguration, $client);
+    $entityKey = $this->buildEntityKey($value, $itemConfiguration, $client);
     return $this->entityManager->getEntityLabel($entityKey) ?? '';
   }
 
@@ -148,6 +110,28 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     ];
     $key = 'ref_' . $property;
     return $this->tableReferenceConfigurationBuilder->buildTableReferenceConfiguration($config, $key, $schema);
+  }
+
+  public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null {
+    $collection = new EntityKeyCollection();
+    $item = $entity->getPropertyItem($property);
+    $values = $item->getValuesAsArray();
+
+    foreach ($values as $value) {
+      if(!$this->validateReferenceValue($entity, $property, $value)) {
+        continue;
+      }
+
+      if(is_scalar($value)) {
+        $entityKey = $this->buildEntityKey($value, $item->getConfiguration(), $entity->getClient());
+        if(!($entityKey instanceof EntityKey)) {
+          continue;
+        }
+        $collection->addKey($entityKey, $value);
+      }
+    }
+
+    return $collection->hasValues() ? $collection : null;
   }
 
 }

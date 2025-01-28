@@ -3,8 +3,10 @@
 namespace App\Item\ItemHandler_EntityReference;
 
 use App\Database\TableReference\TableReferenceConfigurationBuilder;
+use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
@@ -38,7 +40,7 @@ class EntityReferenceOptionsItemHandler extends CommonEntityReferenceItemHandler
 			}
 
 			if(!is_array($value)) {
-				$entityKey = $this->buildEntityKeys($value, $itemConfiguration, $entity->getClient());
+				$entityKey = $this->buildEntityKey($value, $itemConfiguration, $entity->getClient());
 				yield $entityKey;
 			}
 		}
@@ -51,8 +53,34 @@ class EntityReferenceOptionsItemHandler extends CommonEntityReferenceItemHandler
 			return $options[$value]['label'] ?? $value;
 		}
 
-		$entityKey = $this->buildEntityKeys($value, $itemConfiguration, $client);
+		$entityKey = $this->buildEntityKey($value, $itemConfiguration, $client);
 		return $this->entityManager->getEntityLabel($entityKey) ?? '';
 	}
+
+  public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null {
+    $collection = new EntityKeyCollection();
+    $item = $entity->getPropertyItem($property);
+    $values = $item->getValuesAsArray();
+
+    $itemConfiguration = $item->getConfiguration();
+    $options = $itemConfiguration->getSetting('options', []);
+
+    foreach ($values as $value) {
+      if(in_array($value, $options) || !$this->validateReferenceValue($entity, $property, $value)) {
+        $collection->addRawValue($value);
+        continue;
+      }
+
+      if(is_scalar($value)) {
+        $entityKey = $this->buildEntityKey($value, $item->getConfiguration(), $entity->getClient());
+        if(!($entityKey instanceof EntityKey)) {
+          continue;
+        }
+        $collection->addKey($entityKey, $value);
+      }
+    }
+
+    return $collection->hasValues() ? $collection : null;
+  }
 
 }

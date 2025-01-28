@@ -119,15 +119,8 @@ class DaViEntityManager {
     }
 
     $item = $currentEntity->getPropertyItem($pathSection);
-    if ($item->getConfiguration()
-        ->hasEntityReferenceHandler() && !empty($path)) {
-      $itemConfiguration = $item->getConfiguration();
-      $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-
-      foreach ($handler->iterateEntityKeys($currentEntity, $pathSection) as $entityKey) {
-        if (!$entityKey) {
-          continue;
-        }
+    if ($item->getConfiguration()->hasEntityReferenceHandler() && !empty($path)) {
+      foreach ($item->iterateEntityKeys() as $entityKey) {
         $ret = array_merge($this->getItemsFromPath($path, $entityKey), $ret);
       }
     } elseif ($item instanceof ItemInterface) {

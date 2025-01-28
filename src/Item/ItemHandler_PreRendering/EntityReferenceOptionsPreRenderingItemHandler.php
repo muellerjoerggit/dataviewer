@@ -30,7 +30,7 @@ class EntityReferenceOptionsPreRenderingItemHandler extends EntityReferencePreRe
         $entities[] = $this->buildValueArray($value);
       }
 
-      $entityKey = $handler->buildEntityKeys($value, $itemConfiguration, $entity->getClient());
+      $entityKey = $handler->buildEntityKey($value, $itemConfiguration, $entity->getClient());
       $entities[] = $this->buildEntityArray($entityKey, $entityOverviewOptions);
     }
 

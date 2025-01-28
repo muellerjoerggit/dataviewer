@@ -65,7 +65,7 @@ class EntityReferenceValidatorItemHandler extends AbstractValidatorItemHandler i
     $referenceHandler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($item->getConfiguration());
     $referencedEntities = [];
 
-    foreach ($referenceHandler->iterateEntityKeys($entity, $property) as $entityKey) {
+    foreach ($item->iterateEntityKeys() as $entityKey) {
       if (!$entityKey) {
         continue;
       }
@@ -148,7 +148,7 @@ class EntityReferenceValidatorItemHandler extends AbstractValidatorItemHandler i
 
   public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
     $referenceHandler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-    $entityKey = $referenceHandler->buildEntityKeys($value, $itemConfiguration, $client);
+    $entityKey = $referenceHandler->buildEntityKey($value, $itemConfiguration, $client);
     $referencedEntity = $this->entityManager->getEntity($entityKey);
     //		$this->entityManager->validateEntity($referencedEntity);
 

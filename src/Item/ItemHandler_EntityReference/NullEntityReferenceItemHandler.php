@@ -3,6 +3,7 @@
 namespace App\Item\ItemHandler_EntityReference;
 
 use App\Database\TableReference\TableReferenceConfiguration;
+use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
@@ -17,7 +18,7 @@ class NullEntityReferenceItemHandler implements EntityReferenceItemHandlerInterf
     return yield from [];
   }
 
-  public function buildEntityKeys($value, ItemConfigurationInterface|ItemInterface $itemConfiguration, string $client): ?EntityKey {
+  public function buildEntityKey($value, ItemConfigurationInterface|ItemInterface $itemConfiguration, string $client): ?EntityKey {
     return NULL;
   }
 
@@ -47,6 +48,10 @@ class NullEntityReferenceItemHandler implements EntityReferenceItemHandlerInterf
 
   public function getTargetProperty(ItemConfigurationInterface $itemConfiguration): string {
     return 'id';
+  }
+
+  public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection|null {
+    return null;
   }
 
 }
