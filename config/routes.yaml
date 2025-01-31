@@ -53,7 +53,16 @@ when@dev:
       path: /dev/export/get
       controller: App\Development\Controller\Export::export
 
-  # background_tast
-    create_background_taks:
+  # background_task
+    dev_create_background_task:
       path: /dev/task/create
       controller: App\Development\Controller\BackgroundTasks::create
+
+    # versions
+    dev_version_list:
+        path: /dev/version/list
+        controller: App\Development\Controller\Version::getVersionList
+
+    dev_version_since:
+        path: /dev/version/since
+        controller: App\Development\Controller\Version::getVersionSince

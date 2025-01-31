@@ -13,4 +13,8 @@ final class EntityListSearch {
     public readonly string $entityListSearch
   ) {}
 
+  public function getEntityListSearch(): string {
+    return $this->entityListSearch;
+  }
+
 }

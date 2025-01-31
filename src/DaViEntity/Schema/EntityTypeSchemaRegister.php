@@ -83,7 +83,7 @@ class EntityTypeSchemaRegister {
   }
 
   public function hasEntitySchema(string $entityType): bool {
-    if (isset($this->schemas[$entityType])) {
+    if (isset($this->schemas[$entityType]) && $this->schemas[$entityType] instanceof EntitySchema) {
       return TRUE;
     }
 

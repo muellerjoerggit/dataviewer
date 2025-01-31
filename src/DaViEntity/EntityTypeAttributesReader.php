@@ -11,14 +11,74 @@ use App\DaViEntity\EntityLabel\EntityLabelCrafter;
 use App\DaViEntity\EntityListProvider\EntityListProvider;
 use App\DaViEntity\EntityListSearch\EntityListSearch;
 use App\DaViEntity\EntityRefiner\EntityRefiner;
-use App\DaViEntity\EntityRepository\EntityRepository;
+use App\DaViEntity\EntityRepository\EntityRepositoryAttr;
+use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\SchemaAttributesContainer;
 use App\EntityTypes\NullEntity\NullEntity;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 
 class EntityTypeAttributesReader {
+
+  public function buildSchemaAttributesContainer(string $entityClass): SchemaAttributesContainer {
+    $container = new SchemaAttributesContainer();
+    $reflection = $this->reflectClass($entityClass);
+
+    if(!$reflection) {
+      return $container;
+    }
+
+    foreach($reflection->getAttributes() as $attribute) {
+      $instance = $attribute->newInstance();
+      $this->addAttributeInstanceToContainer($container, $instance);
+    }
+
+    return $container;
+  }
+
+  public function addAttributeInstanceToContainer(SchemaAttributesContainer $container, mixed $attribute): void {
+    if(!is_object($attribute)) {
+      return;
+    }
+
+    switch(get_class($attribute)) {
+      case EntityTypeAttr::class:
+        $container->setEntityTypeAttr($attribute);
+        break;
+      case DatabaseAttr::class:
+        $container->setDatabaseAttr($attribute);
+        break;
+      case EntityRepositoryAttr::class:
+        $container->addRepositoryAttribute($attribute);
+        break;
+      case BaseQuery::class:
+        $container->addBaseQueryAttribute($attribute);
+        break;
+      case EntityListSearch::class:
+        $container->addEntityListSearchAttribute($attribute);
+        break;
+      case EntityDataProvider::class:
+        $container->addDataProviderAttribute($attribute);
+        break;
+      case EntityCreator::class:
+        $container->addCreatorAttribute($attribute);
+        break;
+      case EntityRefiner::class:
+        $container->addRefinerAttribute($attribute);
+        break;
+      case EntityColumnBuilder::class:
+        $container->addColumnBuilderAttribute($attribute);
+        break;
+      case EntityListProvider::class:
+        $container->addListProviderAttribute($attribute);
+        break;
+      case AdditionalDataProvider::class:
+        $container->addAdditionalDataProviderAttribute($attribute);
+        break;
+    }
+  }
 
   private function reflectClass(string $classname): ?ReflectionClass {
     try {
@@ -91,7 +151,7 @@ class EntityTypeAttributesReader {
 
   public function getRepositoryClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityRepository::class, EntityRepository::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, EntityRepositoryAttr::class, EntityRepositoryAttr::CLASS_PROPERTY, '');
   }
 
   public function getEntityDataProviderClass(string | EntityInterface $classname): string {

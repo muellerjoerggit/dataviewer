@@ -14,6 +14,10 @@ final class EntityTypeAttr {
     public readonly string $label = ''
   ) {}
 
+  public function getName(): string {
+    return $this->name;
+  }
+
   public function getLabel(): string {
     return empty($this->label) ? $this->name : $this->label;
   }

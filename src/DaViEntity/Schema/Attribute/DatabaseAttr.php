@@ -16,4 +16,14 @@ class DatabaseAttr {
     return !empty($this->databaseClass) && !empty($this->baseTable);
   }
 
+  public function getDatabaseClass(): string {
+    return $this->databaseClass;
+  }
+
+  public function getBaseTable(): string {
+    return $this->baseTable;
+  }
+
+
+
 }

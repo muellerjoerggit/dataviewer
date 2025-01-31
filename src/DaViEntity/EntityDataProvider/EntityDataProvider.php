@@ -13,4 +13,8 @@ final class EntityDataProvider {
     public readonly string $dataProviderClass,
   ) {}
 
+  public function getDataProviderClass(): string {
+    return $this->dataProviderClass;
+  }
+
 }

@@ -13,4 +13,8 @@ final class BaseQuery {
     public readonly string $baseQuery
   ) {}
 
+  public function getBaseQuery(): string {
+    return $this->baseQuery;
+  }
+
 }

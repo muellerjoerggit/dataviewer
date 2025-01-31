@@ -18,7 +18,7 @@ use App\DaViEntity\EntityListSearch\CommonEntitySearch;
 use App\DaViEntity\EntityListSearch\EntityListSearch;
 use App\DaViEntity\EntityRefiner\CommonEntityRefiner;
 use App\DaViEntity\EntityRefiner\EntityRefiner;
-use App\DaViEntity\EntityRepository\EntityRepository;
+use App\DaViEntity\EntityRepository\EntityRepositoryAttr;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
@@ -31,7 +31,7 @@ use App\Item\Property\Attribute\SearchPropertyAttr;
 use App\Item\Property\Attribute\UniquePropertyAttr;
 use App\Item\Property\PropertyItemInterface;
 
-#[EntityRepository(entityRepositoryClass: RoleRepository::class)]
+#[EntityRepositoryAttr(entityRepositoryClass: RoleRepository::class)]
 #[EntityTypeAttr(name: 'Role', label: 'Role'),
 ]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
