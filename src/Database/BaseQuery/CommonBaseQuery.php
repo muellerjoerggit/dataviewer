@@ -2,20 +2,20 @@
 
 namespace App\Database\BaseQuery;
 
-use App\Database\ColumnsService;
 use App\Database\DatabaseLocator;
 use App\Database\DaViQueryBuilder;
 use App\DaViEntity\EntityDataMapperInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\DaViEntity\Schema\VersionProperties;
 
 class CommonBaseQuery implements BaseQueryInterface {
 
   public function __construct(
     private readonly DatabaseLocator $databaseLocator,
     private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
-    private readonly ColumnsService $columnsService,
+    private readonly VersionProperties $versionsProperties,
   ) {}
 
   public function buildQueryFromSchema(string | EntityInterface $entityTypeClass, string $client, array $options = []): DaViQueryBuilder {
@@ -23,7 +23,9 @@ class CommonBaseQuery implements BaseQueryInterface {
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityTypeClass);
 
     $queryBuilder = $this->getQueryBuilder($schema, $client);
-    $columns = $this->columnsService->getColumns($entityTypeClass, $client, $options);
+
+    $columns = $this->getColumnsFromOptions($schema, $options);
+    $columns = $this->versionsProperties->filterPropertyKeysByVersion($entityTypeClass, $columns, $client);
 
     foreach ($columns as $property => $column) {
       $queryBuilder->addSelect($column . ' AS ' . $property);
@@ -48,6 +50,24 @@ class CommonBaseQuery implements BaseQueryInterface {
 
   protected function getQueryBuilder(EntitySchema $schema, string $client): DaViQueryBuilder {
     return $this->databaseLocator->getDatabaseBySchema($schema)->createQueryBuilder($client);
+  }
+
+  private function getColumnsFromOptions(EntitySchema $schema, array $options): array {
+    if (
+      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
+      && empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
+    ) {
+      $columns = $schema->getColumns();
+    } elseif (
+      $options[EntityDataMapperInterface::OPTION_WITH_COLUMNS]
+      && !empty($options[EntityDataMapperInterface::OPTION_COLUMNS])
+    ) {
+      $columns = $options[EntityDataMapperInterface::OPTION_COLUMNS];
+    } else {
+      $columns = [];
+    }
+
+    return $columns;
   }
   
 }

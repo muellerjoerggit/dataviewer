@@ -4,6 +4,7 @@ namespace App\Services\Version;
 
 class VersionInformation {
 
+  public const int TYPE_ALL_VERSIONS = 0;
   public const int TYPE_SINCE_VERSION = 1;
 
   /**
