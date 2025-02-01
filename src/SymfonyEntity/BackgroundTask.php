@@ -11,10 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: BackgroundTaskRepository::class)]
 class BackgroundTask {
 
-  public const STATUS_IDLE = 1;
-  public const STATUS_RUNNING = 2;
-  public const STATUS_ERROR = 3;
-  public const STATUS_FINISHED = 4;
+  public const int STATUS_IDLE = 1;
+  public const int STATUS_RUNNING = 2;
+  public const int STATUS_ERROR = 3;
+  public const int STATUS_FINISHED = 4;
 
   #[ORM\Id]
   #[ORM\GeneratedValue]
@@ -48,7 +48,7 @@ class BackgroundTask {
   /**
    * @var Collection<int, TaskResult>
    */
-  #[ORM\OneToMany(targetEntity: TaskResult::class, mappedBy: 'backgroundTask', orphanRemoval: TRUE)]
+  #[ORM\OneToMany(targetEntity: TaskResult::class, mappedBy: 'task')]
   private Collection $taskResults;
 
   public function __construct() {
@@ -155,17 +155,6 @@ class BackgroundTask {
     if (!$this->taskResults->contains($taskResult)) {
       $this->taskResults->add($taskResult);
       $taskResult->setTask($this);
-    }
-
-    return $this;
-  }
-
-  public function removeTaskResult(TaskResult $taskResult): static {
-    if ($this->taskResults->removeElement($taskResult)) {
-      // set the owning side to null (unless already changed)
-      if ($taskResult->getTask() === $this) {
-        $taskResult->setTask(NULL);
-      }
     }
 
     return $this;

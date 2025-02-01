@@ -24,7 +24,7 @@ class TaskResult {
   #[ORM\Column]
   private ?int $id = NULL;
 
-  #[ORM\ManyToOne(inversedBy: 'taskResult')]
+  #[ORM\ManyToOne(targetEntity: BackgroundTask::class, inversedBy: 'taskResult')]
   #[ORM\JoinColumn(nullable: FALSE)]
   private ?BackgroundTask $task = NULL;
 

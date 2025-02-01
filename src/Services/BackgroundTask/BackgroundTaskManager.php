@@ -84,17 +84,17 @@ class BackgroundTaskManager {
 		return $task;
 	}
 
-	private function createTaskConfiguration(string $className, mixed $configuration): TaskConfiguration | bool {
+	private function createTaskConfiguration(string $className, mixed $configuration): TaskConfiguration | null {
 		$taskConfiguration = new TaskConfiguration();
 
 		if(!$this->validateTaskClass($className)) {
-			return false;
+			return null;
 		}
 
 		$result = call_user_func([$className, 'buildTaskConfiguration'], $taskConfiguration, $configuration);
 
 		if(!$result) {
-			return false;
+			return null;
 		}
 
 		return $taskConfiguration;

@@ -6,6 +6,7 @@ use App\Database\SqlFilter\FilterContainer;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
+use App\Services\BackgroundTask\BackgroundTaskManager;
 use App\Services\Export\ExportConfiguration\ExportConfiguration;
 use App\Services\Export\ExportConfiguration\ExportEntityPathConfiguration;
 use App\Services\Export\ExportData\ExportData;
@@ -21,7 +22,7 @@ class CsvExport {
     private readonly DaViEntityManager $entityManager,
   ) {}
 
-  public function export(ExportConfiguration $exportConfig, ?TrackerInterface $progress = null): string {
+  public function export(ExportConfiguration $exportConfig, ?TrackerInterface $tracker = null): string {
     if(!$exportConfig->isValid()) {
       return '';
     }
@@ -45,9 +46,14 @@ class CsvExport {
       $exportData->addRow($row);
       $count++;
 
-      if($progress && $count % 50 === 0) {
-        $progress->setProgress("$count / $total $label exportiert");
-        if($progress->isTerminated()) {
+      if($tracker && $count % 50 === 0) {
+        $tracker->setProgress(json_encode([
+          'type' => BackgroundTaskManager::PROGRESS_TYPE_COUNT_ENTITIES,
+          'label' => $label,
+          'processedEntities' => $count,
+          'totalEntities' => $total
+        ]));
+        if($tracker->isTerminated()) {
           return '';
         }
       }

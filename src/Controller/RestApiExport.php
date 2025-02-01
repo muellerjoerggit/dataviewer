@@ -7,6 +7,8 @@ use App\Services\BackgroundTaskCommands\ExportBackgroundTask;
 use App\Services\Export\CsvExport;
 use App\Services\Export\ExportConfigurationBuilder;
 use App\Services\Export\ExportEntityTypeConfiguration;
+use App\SymfonyEntity\BackgroundTask;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,16 +31,18 @@ class RestApiExport extends AbstractController{
   }
 
   #[Route(path: '/api/export/task/start', name: 'app_api_export_task_start', methods: ['POST'])]
-  public function generateExport(Request $request, BackgroundTaskManager $backgroundTaskManager): Response {
+  public function generateExport(Request $request, BackgroundTaskManager $backgroundTaskManager, LoggerInterface $logger): Response {
     $exportRequest = $request->toArray();
     $task = $backgroundTaskManager->createTask(ExportBackgroundTask::class, $exportRequest);
 
     if(!$task || !$backgroundTaskManager->executeTask($task)) {
-      return $this->json(['status' => 'Error']);
-
+      return $this->json(['taskId' => -1]);
     };
 
-    return $this->json(['status' => 'Startet', 'task' => $task->getId()]);
+    $taskId = $task->getId();
+    $logger->info("Export started $taskId");
+
+    return $this->json(['taskId' => $taskId]);
   }
 
 }
