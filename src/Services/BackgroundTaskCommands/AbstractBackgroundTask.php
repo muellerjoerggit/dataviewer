@@ -113,4 +113,12 @@ abstract class AbstractBackgroundTask extends Command implements BackgroundTaskI
     return array_key_exists(TrackerInterface::class, $reflection->getInterfaces());
   }
 
+  public static function getTaskName(mixed $configuration): string {
+    return '';
+  }
+
+  public static function getTaskDescription(mixed $configuration): string {
+    return '';
+  }
+
 }

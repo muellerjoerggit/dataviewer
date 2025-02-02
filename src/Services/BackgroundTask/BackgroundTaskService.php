@@ -2,6 +2,7 @@
 
 namespace App\Services\BackgroundTask;
 
+use App\Services\DateTimeConverter;
 use App\SymfonyEntity\BackgroundTask;
 use App\SymfonyRepository\BackgroundTaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +12,7 @@ class BackgroundTaskService {
   public function __construct(
     private readonly EntityManagerInterface $entityManager,
     private readonly BackgroundTaskRepository $backgroundTaskRepository,
+    private readonly DateTimeConverter $dateTimeConverter
   ) {}
 
   public function getBackgroundTaskByTaskId(int $taskId): BackgroundTask | null {
@@ -47,8 +49,8 @@ class BackgroundTaskService {
       'name' => $task->getName(),
       'status' => $task->getStatus(),
       'description' => $task->getDescription() ?? '',
-      'start' => $task->getStartDate(),
-      'end' => $task->getEndDate(),
+      'start' => $this->dateTimeConverter->formatDateTime($task->getStartDate()),
+      'end' => $this->dateTimeConverter->formatDateTime($task->getEndDate()),
       'progress' => json_decode($task->getProgress(), true)
     ];
 

@@ -14,6 +14,15 @@ class ExportConfigurationBuilder {
 
   public const string START_ENTITY_PATH = '::start::';
 
+  public const string CONFIG_EXPORT = 'export';
+  public const string CONFIG_CLIENT = 'client';
+  public const string CONFIG_PATH = 'path';
+  public const string CONFIG_TARGET_ENTITY = 'targetEntityType';
+  public const string CONFIG_PROPERTIES = 'properties';
+  public const string CONFIG_PROPERTY_KEY = 'propertyKey';
+  public const string CONFIG_PROPERTY_LABEL = 'label';
+  public const string CONFIG_PROPERTY_COUNT = 'count';
+
   public function __construct(
     private readonly EntityTypeSchemaRegister $schemaRegister,
     private readonly EntityTypesRegister $entityTypesRegister,
@@ -21,10 +30,10 @@ class ExportConfigurationBuilder {
   ) {}
 
   public function build(array $configArray): ExportConfiguration {
-    $configuration = new ExportConfiguration($configArray['client']);
-    foreach ($configArray['export'] as $pathKey => $exportPath) {
-      $path = $exportPath['path']['path'] ?? [];
-      $entityType = $exportPath['path']['targetEntityType'];
+    $configuration = new ExportConfiguration($configArray[self::CONFIG_CLIENT]);
+    foreach ($configArray[self::CONFIG_EXPORT] as $pathKey => $exportPath) {
+      $path = $exportPath[self::CONFIG_PATH][self::CONFIG_PATH] ?? [];
+      $entityType = $exportPath[self::CONFIG_PATH][self::CONFIG_TARGET_ENTITY];
       $schema = $this->schemaRegister->getEntityTypeSchema($entityType);
 
       if($pathKey === self::START_ENTITY_PATH) {
@@ -37,17 +46,17 @@ class ExportConfigurationBuilder {
       $pathConfig = new ExportEntityPathConfiguration($path);
       $configuration->addEntityPath($pathConfig);
 
-      $properties = $exportPath['properties'] ?? [];
+      $properties = $exportPath[self::CONFIG_PROPERTIES] ?? [];
       foreach ($properties as $key => $propertyArray) {
-        $property = $propertyArray['propertyKey'];
+        $property = $propertyArray[self::CONFIG_PROPERTY_KEY];
         $propertyConfig = new ExportPropertyConfig(
           $key,
           $schema->getProperty($property),
         );
 
         $propertyConfig
-          ->setLabel($propertyArray['label'] ?? '')
-          ->setCount($propertyArray['count'] ?? 0);
+          ->setLabel($propertyArray[self::CONFIG_PROPERTY_LABEL] ?? '')
+          ->setCount($propertyArray[self::CONFIG_PROPERTY_COUNT] ?? 0);
 
         $pathConfig->addPropertyConfig($propertyConfig);
       }

@@ -86,4 +86,17 @@ class ExportBackgroundTask extends AbstractBackgroundTask {
     return AbstractBackgroundTask::buildTaskConfigurationInternal($taskConfiguration, 'export', $configuration);
   }
 
+  public static function getTaskName(mixed $configuration): string {
+    $entity = $configuration[ExportConfigurationBuilder::CONFIG_EXPORT][ExportConfigurationBuilder::START_ENTITY_PATH][ExportConfigurationBuilder::CONFIG_PATH][ExportConfigurationBuilder::CONFIG_TARGET_ENTITY] ?? '';
+    return 'Export ' . $entity;
+  }
+
+  public static function getTaskDescription(mixed $configuration): string {
+    $description = 'Export Entitäten: ';
+    foreach ($configuration[ExportConfigurationBuilder::CONFIG_EXPORT] as $exportPath) {
+      $description .= $exportPath[ExportConfigurationBuilder::CONFIG_PATH][ExportConfigurationBuilder::CONFIG_TARGET_ENTITY] . ', ';
+    }
+    return $description;
+  }
+
 }

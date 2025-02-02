@@ -8,4 +8,8 @@ interface BackgroundTaskInterface {
 
 	public static function buildTaskConfiguration(TaskConfiguration $taskConfiguration, mixed $configuration): bool;
 
+  public static function getTaskName(mixed $configuration): string;
+
+  public static function getTaskDescription(mixed $configuration): string;
+
 }

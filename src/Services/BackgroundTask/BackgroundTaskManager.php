@@ -66,14 +66,23 @@ class BackgroundTaskManager {
 
 	public function createTask(string $className, mixed $configuration): BackgroundTask | bool {
 		$task = new BackgroundTask();
+
+    if(!$this->validateTaskClass($className)) {
+      return false;
+    }
+
 		$taskConfiguration = $this->createTaskConfiguration($className, $configuration);
 
 		if(!$taskConfiguration) {
 			return false;
 		}
 
+    $name = call_user_func([$className, 'getTaskName'], $configuration);
+    $description = call_user_func([$className, 'getTaskDescription'], $configuration);
+
 		$task
-			->setName('')
+			->setName($name)
+      ->setDescription($description)
 			->setTaskConfiguration($taskConfiguration)
 			->setStatus(BackgroundTask::STATUS_IDLE)
 			->setTerminate(false);
@@ -86,10 +95,6 @@ class BackgroundTaskManager {
 
 	private function createTaskConfiguration(string $className, mixed $configuration): TaskConfiguration | null {
 		$taskConfiguration = new TaskConfiguration();
-
-		if(!$this->validateTaskClass($className)) {
-			return null;
-		}
 
 		$result = call_user_func([$className, 'buildTaskConfiguration'], $taskConfiguration, $configuration);
 

@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use DateMalformedStringException;
 use DateTime;
 use DateTimeInterface;
 
-class TimeConverter {
+class DateTimeConverter {
 
   public function secondsToTime(int $seconds): string {
     if ($seconds === 0) {
@@ -23,6 +24,22 @@ class TimeConverter {
     $datetime = new DateTime();
     $datetime->setTimestamp($random);
     return $datetime->format($format);
+  }
+
+  public function formatDateTime(DateTimeInterface | string | null $dateTime): string {
+    if($dateTime === null) {
+      return '';
+    }
+
+    if(is_string($dateTime)) {
+      try {
+        $dateTime = new DateTime($dateTime);
+      } catch (DateMalformedStringException $e) {
+        return $dateTime;
+      }
+    }
+
+    return $dateTime->format('d.m.Y H:i');
   }
 
 }
