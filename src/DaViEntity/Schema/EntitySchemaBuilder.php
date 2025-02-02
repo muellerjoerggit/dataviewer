@@ -73,6 +73,10 @@ class EntitySchemaBuilder {
 
     $this->fillSpecialProperties($reflection, $schema);
 
+    if($attributesContainer->hasEntityActions()){
+      $this->fillEntityActions($schema, $attributesContainer);
+    }
+
     return $schema;
   }
 
@@ -81,6 +85,16 @@ class EntitySchemaBuilder {
       return new ReflectionClass($entityClass);
     } catch (\ReflectionException $exception) {
       return null;
+    }
+  }
+
+  private function fillEntityActions(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    foreach($container->iterateEntityActionConfigAttributes() as $attribute) {
+      if(!$attribute->isValid()) {
+        continue;
+      }
+
+      $schema->addEntityAction($attribute);
     }
   }
 

@@ -7,6 +7,7 @@ use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 use App\Logger\LogItemPreRendering\LogItemPreRenderingHandlerLocator;
 use App\Logger\LogItems\LogItemInterface;
+use App\Services\EntityAction\EntityActionPreRenderingBuilder;
 
 class CommonEntityViewBuilder implements EntityViewBuilderInterface {
 
@@ -14,7 +15,8 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
     private readonly PreRenderingItemHandlerLocator $preRenderingItemHandlerLocator,
     private readonly DaViEntityManager $entityManager,
     private readonly ValueFormatterItemHandlerLocator $valueFormatterItemHandlerLocator,
-    private readonly LogItemPreRenderingHandlerLocator $logItemPreRenderingLocator
+    private readonly LogItemPreRenderingHandlerLocator $logItemPreRenderingLocator,
+    private readonly EntityActionPreRenderingBuilder $actionPreRenderingBuilder,
   ) {}
 
   public function preRenderEntity(EntityInterface $entity): array {
@@ -58,7 +60,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
       'parameters' => $parameterRenderArray,
       'showLogs' => !empty($logsByLevel),
       'logsByLevel' => $logsByLevel,
-      'entityActions' => [],
+      'entityActions' => $this->actionPreRenderingBuilder->buildEntityActions($entity),
     ];
   }
 
@@ -112,7 +114,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
   }
 
   protected function getOverviewFallback(EntityInterface $entity): array {
-    $properties = array_flip($entity->getSchema()->getFirstUniqueProperty());
+    $properties = array_flip($entity->getSchema()->getFirstUniqueProperties());
     return array_map(function($value) {
       return NULL;
     }, $properties);

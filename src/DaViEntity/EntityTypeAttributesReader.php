@@ -18,6 +18,7 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\SchemaAttributesContainer;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Services\AbstractAttributesReader;
+use App\Services\EntityAction\EntityActionConfigAttrInterface;
 use ReflectionAttribute;
 
 class EntityTypeAttributesReader extends AbstractAttributesReader {
@@ -45,6 +46,9 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
 
     if($attribute instanceof TableReferenceAttrInterface) {
       $container->addTableReferenceAttribute($attribute);
+      return;
+    } elseif ($attribute instanceof EntityActionConfigAttrInterface) {
+      $container->addEntityActionConfigAttribute($attribute);
       return;
     }
 

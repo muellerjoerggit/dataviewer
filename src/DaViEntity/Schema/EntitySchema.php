@@ -12,6 +12,7 @@ use App\Database\TableReferenceHandler\Attribute\TableReferenceAttr;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
+use App\Services\EntityAction\EntityActionConfigAttrInterface;
 use Generator;
 
 class EntitySchema implements EntitySchemaInterface {
@@ -44,6 +45,8 @@ class EntitySchema implements EntitySchemaInterface {
 
   private array $entityOverview = [];
   private array $extendedEntityOverview = [];
+
+  private array $entityActions = [];
 
   public function __construct(
     private readonly string $entityClass,
@@ -328,6 +331,20 @@ class EntitySchema implements EntitySchemaInterface {
    */
   public function getTableReferenceColumns(string $tableReferenceInternalName): array {
     return $this->tableReferenceColumns[$tableReferenceInternalName] ?? [];
+  }
+
+  public function addEntityAction(EntityActionConfigAttrInterface $actionConfiguration): EntitySchemaInterface {
+    if($actionConfiguration->isValid()) {
+      $this->entityActions[] = $actionConfiguration;
+    }
+
+    return $this;
+  }
+
+  public function iterateEntityActions(): Generator {
+    foreach($this->entityActions as $actionConfiguration) {
+      yield $actionConfiguration;
+    }
   }
 
 }

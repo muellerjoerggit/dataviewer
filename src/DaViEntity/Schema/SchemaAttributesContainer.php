@@ -15,6 +15,7 @@ use App\DaViEntity\EntityRepository\EntityRepositoryAttr;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\Item\Property\PropertyAttributesContainer;
+use App\Services\EntityAction\EntityActionConfigAttrInterface;
 use Generator;
 
 class SchemaAttributesContainer {
@@ -71,6 +72,11 @@ class SchemaAttributesContainer {
    * @var TableReferenceAttrInterface[]
    */
   private array $tableReferenceAttributes = [];
+
+  /**
+   * @var EntityActionConfigAttrInterface[]
+   */
+  private array $entityActionAttributes = [];
 
   /**
    * @var PropertyAttributesContainer[]
@@ -152,6 +158,24 @@ class SchemaAttributesContainer {
     foreach ($this->tableReferenceAttributes as $tableReferenceAttr) {
       yield $tableReferenceAttr;
     }
+  }
+
+  public function addEntityActionConfigAttribute(EntityActionConfigAttrInterface $entityActionAttribute): SchemaAttributesContainer {
+    $this->entityActionAttributes[] = $entityActionAttribute;
+    return $this;
+  }
+
+  /**
+   * @return Generator<EntityActionConfigAttrInterface>
+   */
+  public function iterateEntityActionConfigAttributes(): Generator {
+    foreach ($this->entityActionAttributes as $entityActionAttribute) {
+      yield $entityActionAttribute;
+    }
+  }
+
+  public function hasEntityActions(): bool {
+    return !empty($this->entityActionAttributes);
   }
 
   public function addPropertyContainer(PropertyAttributesContainer $container, string $key): SchemaAttributesContainer {
