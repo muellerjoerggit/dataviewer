@@ -36,7 +36,17 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
     }
   }
 
+  public function getValues(): mixed {
+    return $this->values;
+  }
+
   public function getRawValues(): mixed {
+    if($this->values instanceof EntityKeyCollection) {
+      return $this->values->getAllRawValues();
+    } elseif($this->values instanceof ArrayInterface) {
+      return $this->values->toArray();
+    }
+
     return $this->values ?? NULL;
   }
 
@@ -116,7 +126,7 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
     return $ret;
   }
 
-  public function getValues(): mixed {
+  public function getCastValues(): mixed {
     if ($this->isValuesNull()) {
       return NULL;
     }

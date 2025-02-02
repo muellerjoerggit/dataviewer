@@ -31,7 +31,7 @@ trait EntityPropertyTrait {
     }
 
     if ($value instanceof ItemInterface) {
-      $value = $value->getValues();
+      $value = $value->getCastValues();
     }
 
     return $value;

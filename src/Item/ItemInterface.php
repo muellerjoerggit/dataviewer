@@ -16,6 +16,9 @@ interface ItemInterface {
   public const int DATA_TYPE_FLOAT = 8;
   public const int DATA_TYPE_UNKNOWN = 20;
 
+  public const int CARDINALITY_SINGLE = 1;
+  public const int CARDINALITY_MULTIPLE = 2;
+
   public function countValues(): int;
 
   public function getValuesAsArray(): array;
@@ -34,7 +37,7 @@ interface ItemInterface {
 
   public function getValuesAsOneDimensionalArray(): array;
 
-  public function getValues(): mixed;
+  public function getCastValues(): mixed;
 
   public function isRedError(): bool;
 
@@ -43,5 +46,7 @@ interface ItemInterface {
   public function isYellowError(): bool;
 
   public function setYellowError(bool $yellowError): ItemInterface;
+
+  public function getValues(): mixed;
 
 }

@@ -46,7 +46,7 @@ abstract class AbstractNullItem implements ItemInterface {
     return [];
   }
 
-  public function getValues(): mixed {
+  public function getCastValues(): mixed {
     return null;
   }
 
@@ -64,5 +64,9 @@ abstract class AbstractNullItem implements ItemInterface {
 
   public function setYellowError(bool $yellowError): ItemInterface {
     return $this;
+  }
+
+  public function getValues(): mixed {
+    return null;
   }
 }

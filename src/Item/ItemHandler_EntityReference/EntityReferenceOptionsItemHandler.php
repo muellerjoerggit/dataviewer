@@ -2,7 +2,6 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\TableReference\TableReferenceConfigurationBuilder;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
@@ -20,9 +19,8 @@ class EntityReferenceOptionsItemHandler extends CommonEntityReferenceItemHandler
     DaViEntityManager $entityManager,
     ValidatorItemHandlerLocator $validatorHandlerLocator,
     EntityTypeSchemaRegister $schemaRegister,
-    TableReferenceConfigurationBuilder $tableReferenceConfigurationBuilder
   ) {
-		parent::__construct($entityManager, $validatorHandlerLocator, $schemaRegister, $tableReferenceConfigurationBuilder);
+		parent::__construct($entityManager, $validatorHandlerLocator, $schemaRegister);
 	}
 
 	public function iterateEntityKeys(EntityInterface $entity, string $property): \Generator {
