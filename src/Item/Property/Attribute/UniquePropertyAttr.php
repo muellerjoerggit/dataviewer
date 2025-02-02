@@ -5,7 +5,7 @@ namespace App\Item\Property\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class UniquePropertyAttr {
+class UniquePropertyAttr extends AbstractPropertyAttribute {
 
   public function __construct(
     public readonly string $name = 'primary'

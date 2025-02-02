@@ -2,7 +2,7 @@
 
 namespace App\Item\Property;
 
-use App\Database\TableReference\TableReferenceConfiguration;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\Item\ItemConfiguration;
 use App\Item\ItemInterface;
 use Doctrine\DBAL\ArrayParameterType;
@@ -17,7 +17,7 @@ class PropertyConfiguration extends ItemConfiguration {
   public const string YAML_PARAM_REFERENCED_COLUMN = 'referencedColumn';
 
   private string $column;
-  private TableReferenceConfiguration $tableReference;
+  private TableReferenceAttrInterface $tableReference;
 
   public function getColumn(): string {
     return $this->column ?? '';
@@ -57,11 +57,11 @@ class PropertyConfiguration extends ItemConfiguration {
     }
   }
 
-  public function getTableReference(): TableReferenceConfiguration {
+  public function getTableReference(): TableReferenceAttrInterface {
     return $this->tableReference;
   }
 
-  public function setTableReference(TableReferenceConfiguration $tableReference): PropertyConfiguration {
+  public function setTableReference(TableReferenceAttrInterface $tableReference): PropertyConfiguration {
     $this->tableReference = $tableReference;
     return $this;
   }

@@ -3,6 +3,7 @@
 namespace App\Database\TableReference;
 
 use App\Database\DaViQueryBuilder;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\EntityTypes\NullEntity\NullEntity;
@@ -16,7 +17,7 @@ class TableJoinBuilder {
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
   ) {}
 
-  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): void {
+  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration): void {
     $handler = $this->locator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
     $handler->joinTableConditionColumn($queryBuilder, $tableReferenceConfiguration);
   }
@@ -33,7 +34,7 @@ class TableJoinBuilder {
         $targetEntityType = $handler->getTargetEntityType($propertyConfig);
       } elseif($propertyConfig->hasTableReference()) {
         $tableReferenceConfig = $propertyConfig->getTableReference();
-        $targetEntityType = $tableReferenceConfig->getSetting(TableReferenceHandlerInterface::YAML_PARAM_ENTITY_TYPE, NullEntity::ENTITY_TYPE);
+        $targetEntityType = $tableReferenceConfig->getToEntityClass();
       } else {
         break;
       }

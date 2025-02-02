@@ -4,7 +4,7 @@ namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfigurationBuilder;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
-use App\Database\TableReference\TableReferenceConfigurationBuilder;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityOverviewSchemaAttr as EntityOverviewClass;
@@ -16,8 +16,8 @@ use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr as LabelPropProperty;
 use App\Item\Property\Attribute\SearchPropertyAttr;
 use App\Item\Property\Attribute\UniquePropertyAttr;
+use App\Item\Property\PropertyAttributesReader;
 use App\Item\Property\PropertyConfigurationBuilder;
-use App\Services\Version\VersionService;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
@@ -46,21 +46,21 @@ class EntitySchemaBuilder {
     private readonly PropertyConfigurationBuilder $propertyConfigurationBuilder,
     private readonly SqlFilterDefinitionBuilder $filterDefinitionsBuilder,
     private readonly AggregationConfigurationBuilder $aggregationConfigurationBuilder,
-    private readonly TableReferenceConfigurationBuilder $tableReferenceConfigurationBuilder,
     private readonly EntityTypeAttributesReader $attributesReader,
-    private readonly VersionService $versionService,
+    private readonly PropertyAttributesReader $propertyAttributesReader,
   ) {}
 
   public function buildSchema(SplFileInfo $file, string $entityClass): EntitySchemaInterface | null {
     $attributesContainer = $this->attributesReader->buildSchemaAttributesContainer($entityClass);
+    $this->propertyAttributesReader->appendPropertyAttributesContainer($attributesContainer, $entityClass);
     $yaml = Yaml::parseFile($file->getRealPath());
-    $schema = new EntitySchema($this->versionService->getVersionList());
+    $schema = new EntitySchema($entityClass);
     $reflection = $this->reflect($entityClass);
     if(!$this->fillSchemaBasics($schema, $attributesContainer)) {
       return null;
     }
     $this->fillDatabase($schema, $attributesContainer);
-    $this->fillDatabaseDetails($schema, $yaml);
+    $this->fillDatabaseDetails($schema, $attributesContainer);
     $this->fillProperties($schema, $yaml);
 
     if(isset($yaml[self::YAML_PARAM_FILTERS])) {
@@ -201,15 +201,16 @@ class EntitySchemaBuilder {
     return true;
   }
 
-  private function fillDatabaseDetails(EntitySchemaInterface $schema, array $yaml): void {
-    if(!isset($yaml[self::YAML_PARAM_DATABASE_CONFIG])) {
-      return;
-    }
+  private function fillDatabaseDetails(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    foreach ($container->iterateTableReferenceAttributes() as $attribute) {
+      if(!$attribute instanceof TableReferenceAttrInterface) {
+        continue;
+      }
+      $attribute
+        ->setExternalName($schema->getEntityType() . '_' . $attribute->getName())
+        ->setFromEntityClass($schema->getEntityClass());
 
-    $yaml = $yaml[self::YAML_PARAM_DATABASE_CONFIG];
-
-    if(isset($yaml[self::YAML_PARAM_TABLE_REFERENCES])) {
-      $this->tableReferenceConfigurationBuilder->processYaml($yaml[self::YAML_PARAM_TABLE_REFERENCES], $schema);
+      $schema->addTableReference($attribute);
     }
   }
 

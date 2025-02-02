@@ -3,6 +3,7 @@
 namespace App\DaViEntity\Schema;
 
 use App\Database\BaseQuery\BaseQuery;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
 use App\DaViEntity\EntityColumnBuilder\EntityColumnBuilder;
 use App\DaViEntity\EntityCreator\EntityCreator;
@@ -14,6 +15,7 @@ use App\DaViEntity\EntityRepository\EntityRepositoryAttr;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\Item\Property\PropertyAttributesContainer;
+use Generator;
 
 class SchemaAttributesContainer {
 
@@ -64,6 +66,11 @@ class SchemaAttributesContainer {
    * @var AdditionalDataProvider[]
    */
   private array $additionalDataProviderAttributes = [];
+
+  /**
+   * @var TableReferenceAttrInterface[]
+   */
+  private array $tableReferenceAttributes = [];
 
   /**
    * @var PropertyAttributesContainer[]
@@ -130,6 +137,25 @@ class SchemaAttributesContainer {
 
   public function addAdditionalDataProviderAttribute(AdditionalDataProvider $additionalDataProvider): SchemaAttributesContainer {
     $this->additionalDataProviderAttributes[] = $additionalDataProvider;
+    return $this;
+  }
+
+  public function addTableReferenceAttribute(TableReferenceAttrInterface $tableReferenceAttr): SchemaAttributesContainer {
+    $this->tableReferenceAttributes[] = $tableReferenceAttr;
+    return $this;
+  }
+
+  /**
+   * @return Generator<TableReferenceAttrInterface>
+   */
+  public function iterateTableReferenceAttributes(): Generator {
+    foreach ($this->tableReferenceAttributes as $tableReferenceAttr) {
+      yield $tableReferenceAttr;
+    }
+  }
+
+  public function addPropertyContainer(PropertyAttributesContainer $container, string $key): SchemaAttributesContainer {
+    $this->properties[$key] = $container;
     return $this;
   }
 

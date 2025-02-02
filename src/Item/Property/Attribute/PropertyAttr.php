@@ -7,9 +7,7 @@ use App\Item\ItemConfigurationInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class PropertyAttr {
-
-  private readonly string $name;
+class PropertyAttr extends AbstractPropertyAttribute  {
 
   public function __construct(
     public readonly int $dataType,
@@ -17,15 +15,6 @@ class PropertyAttr {
     public readonly string $description = '',
     public readonly int $cardinality = ItemConfigurationInterface::CARDINALITY_SINGLE,
   ) {}
-
-  public function setName(string $name): static {
-    $this->name = $name;
-    return $this;
-  }
-
-  public function getName(): string {
-    return $this->name;
-  }
 
   public function getDataType(): int {
     return $this->dataType;

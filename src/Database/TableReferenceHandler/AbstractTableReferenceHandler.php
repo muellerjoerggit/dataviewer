@@ -3,8 +3,8 @@
 namespace App\Database\TableReferenceHandler;
 
 use App\Database\DaViQueryBuilder;
-use App\Database\TableReference\TableReferenceConfiguration;
 use App\Database\TableReference\TableReferenceHandlerInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\EntityTypes\NullEntity\NullEntity;
@@ -15,9 +15,9 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     protected readonly EntityTypeSchemaRegister $schemaRegister,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, bool $innerJoin = false, string | null $condition = null): void {
+  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration, bool $innerJoin = false, string | null $condition = null): void {
     $toTable = $this->getReferencedTableName($tableReferenceConfiguration);
-    $fromTable = $this->getSourceTableName($tableReferenceConfiguration->getFromEntityType());
+    $fromTable = $this->getSourceTableName($tableReferenceConfiguration->getFromEntityClass());
 
     if(empty($toTable) || empty($fromTable)) {
       return;
@@ -30,36 +30,40 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     }
   }
 
-  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): void {
+  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration): void {
     $condition = $this->getWhereConditionColumn($queryBuilder, $tableReferenceConfiguration);
     $this->joinTable($queryBuilder, $tableReferenceConfiguration, true, $condition);
   }
 
-  public function joinTableConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): void {
+  public function joinTableConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration, EntityInterface $fromEntity): void {
     $hasWhere = $this->addWhereConditionValue($queryBuilder, $tableReferenceConfiguration, $fromEntity);
 
     if(!$hasWhere) {
       return;
     }
 
-    $innerJoin = $tableReferenceConfiguration->getSetting(TableReferenceHandlerInterface::YAML_PARAM_INNER_JOIN, false);
+    $innerJoin = $tableReferenceConfiguration->hasInnerJoin();
     $condition = $this->getWhereConditionColumn($queryBuilder, $tableReferenceConfiguration);
 
     $this->joinTable($queryBuilder, $tableReferenceConfiguration, $innerJoin, $condition);
   }
 
-  public function getReferencedTableName(TableReferenceConfiguration $tableReferenceConfiguration): string {
+  public function getReferencedTableName(TableReferenceAttrInterface $tableReferenceConfiguration): string {
     $referencedEntityType = $this->getReferencedEntityType($tableReferenceConfiguration);
-    $schema = $this->schemaRegister->getEntityTypeSchema($referencedEntityType);
+    $schema = $this->schemaRegister->getSchemaFromEntityClass($referencedEntityType);
     return $schema->getBaseTable();
   }
 
-  public function getReferencedEntityType(TableReferenceConfiguration $tableReferenceConfiguration): string {
-    return $tableReferenceConfiguration->getSetting('entityType', NullEntity::ENTITY_TYPE);
+  public function getReferencedEntityType(TableReferenceAttrInterface $tableReferenceConfiguration): string {
+    if($tableReferenceConfiguration->isValid()) {
+      return $tableReferenceConfiguration->getToEntityClass();
+    }
+
+    return NullEntity::class;
   }
 
-  protected function getSourceTableName(string $entityType): string {
-    $schema = $this->schemaRegister->getEntityTypeSchema($entityType);
+  protected function getSourceTableName(string $entityClass): string {
+    $schema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
     return $schema->getBaseTable();
   }
 

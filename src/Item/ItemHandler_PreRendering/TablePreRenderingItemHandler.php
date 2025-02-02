@@ -14,7 +14,7 @@ class TablePreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
   public function getComponentPreRenderArray(EntityInterface $entity, string $property): array {
     $item = $entity->getPropertyItem($property);
-    $aggregatedData = $item->getRawValues();
+    $aggregatedData = $item->getValues();
 
     $preRender = [
       'component' => 'TableItem',

@@ -3,6 +3,7 @@
 namespace App\DaViEntity;
 
 use App\Database\BaseQuery\BaseQuery;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
 use App\DaViEntity\EntityColumnBuilder\EntityColumnBuilder;
 use App\DaViEntity\EntityCreator\EntityCreator;
@@ -16,11 +17,10 @@ use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\SchemaAttributesContainer;
 use App\EntityTypes\NullEntity\NullEntity;
+use App\Services\AbstractAttributesReader;
 use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionException;
 
-class EntityTypeAttributesReader {
+class EntityTypeAttributesReader extends AbstractAttributesReader {
 
   public function buildSchemaAttributesContainer(string $entityClass): SchemaAttributesContainer {
     $container = new SchemaAttributesContainer();
@@ -38,8 +38,13 @@ class EntityTypeAttributesReader {
     return $container;
   }
 
-  public function addAttributeInstanceToContainer(SchemaAttributesContainer $container, mixed $attribute): void {
+  private function addAttributeInstanceToContainer(SchemaAttributesContainer $container, mixed $attribute): void {
     if(!is_object($attribute)) {
+      return;
+    }
+
+    if($attribute instanceof TableReferenceAttrInterface) {
+      $container->addTableReferenceAttribute($attribute);
       return;
     }
 
@@ -78,15 +83,6 @@ class EntityTypeAttributesReader {
         $container->addAdditionalDataProviderAttribute($attribute);
         break;
     }
-  }
-
-  private function reflectClass(string $classname): ?ReflectionClass {
-    try {
-      $reflection = new ReflectionClass($classname);
-    } catch (ReflectionException $e) {
-      return null;
-    }
-    return $reflection;
   }
 
   private function getAttributeKey(string $classname, string $attributeClass, string $key, mixed $default): mixed {

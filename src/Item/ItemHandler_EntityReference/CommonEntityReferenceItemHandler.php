@@ -2,9 +2,7 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\TableReference\TableReferenceConfiguration;
-use App\Database\TableReference\TableReferenceConfigurationBuilder;
-use App\Database\TableReference\TableReferenceHandlerInterface;
+use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceAttr;
 use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
@@ -16,7 +14,7 @@ use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\DaViEntity\EntityInterface;
-use App\Services\AppNamespaces;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 
 class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface {
 
@@ -24,7 +22,6 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 		protected readonly DaViEntityManager $entityManager,
 		protected readonly ValidatorItemHandlerLocator $validatorHandlerLocator,
 		protected readonly EntityTypeSchemaRegister $schemaRegister,
-    protected readonly TableReferenceConfigurationBuilder $tableReferenceConfigurationBuilder,
 	) {}
 
   protected function validateReferenceValue(EntityInterface $entity, string $property, $value): bool {
@@ -97,19 +94,17 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     return $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
   }
 
-  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceConfiguration {
+  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceAttrInterface {
     $property = $itemConfiguration->getItemName();
-    $handler = AppNamespaces::getShortName(CommonTableReferenceHandler::class);
-    $config[$handler] = [
-      TableReferenceHandlerInterface::YAML_PARAM_ENTITY_TYPE => $this->getTargetEntityType($itemConfiguration),
-      TableReferenceHandlerInterface::YAML_PARAM_CONDITION => [
-        TableReferenceHandlerInterface::YAML_PARAM_CONDITION_PROPERTIES => [
-          $property => $this->getTargetProperty($itemConfiguration)
-        ]
-      ]
-    ];
     $key = 'ref_' . $property;
-    return $this->tableReferenceConfigurationBuilder->buildTableReferenceConfiguration($config, $key, $schema);
+
+    $attr = CommonTableReferenceAttr::create($key, CommonTableReferenceHandler::class, $this->getTargetEntityType($itemConfiguration), [$property => $this->getTargetProperty($itemConfiguration)]);
+
+    $attr
+      ->setExternalName($key)
+      ->setFromEntityClass($schema->getEntityClass());
+
+    return $attr;
   }
 
   public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null {

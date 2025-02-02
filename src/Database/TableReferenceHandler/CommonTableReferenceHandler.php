@@ -5,8 +5,8 @@ namespace App\Database\TableReferenceHandler;
 
 use App\Database\DatabaseLocator;
 use App\Database\DaViQueryBuilder;
-use App\Database\TableReference\TableReferenceConfiguration;
-use App\Database\TableReference\TableReferenceHandlerInterface;
+use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceAttr;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
@@ -19,16 +19,19 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
     parent::__construct($schemaRegister);
   }
 
-  public function addWhereConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration, EntityInterface $fromEntity): bool {
-    $config = $this->getConditionConfig($tableReferenceConfiguration);
-    $toEntityType = $tableReferenceConfiguration->getSetting(TableReferenceHandlerInterface::YAML_PARAM_ENTITY_TYPE, '');
-    $toColumn = $this->getColumn($toEntityType, $config['toProperty']);
-
-    if(empty($config['fromProperty']) || empty($toColumn)) {
+  public function addWhereConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration, EntityInterface $fromEntity): bool {
+    if(!$tableReferenceConfiguration instanceof CommonTableReferenceAttr) {
       return false;
     }
 
-    $item = $fromEntity->getPropertyItem($config['fromProperty']);
+    $toEntityType = $tableReferenceConfiguration->getToEntityClass();
+    $toColumn = $this->getColumn($toEntityType, $tableReferenceConfiguration->getToPropertyCondition());
+
+    if(empty($toColumn)) {
+      return false;
+    }
+
+    $item = $fromEntity->getPropertyItem($tableReferenceConfiguration->getFromPropertyCondition());
     $value = $item->getFirstValue();
 
     $queryBuilder->where($queryBuilder->expr()->eq($toColumn, ':value'));
@@ -37,11 +40,14 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
     return true;
   }
 
-  public function getWhereConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceConfiguration $tableReferenceConfiguration): string | null {
-    $config = $this->getConditionConfig($tableReferenceConfiguration);
-    $toEntityType = $tableReferenceConfiguration->getSetting(TableReferenceHandlerInterface::YAML_PARAM_ENTITY_TYPE, '');
-    $toColumn = $this->getColumn($toEntityType, $config['toProperty']);
-    $fromColumn = $this->getColumn($tableReferenceConfiguration->getFromEntityType(), $config['fromProperty']);
+  public function getWhereConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration): string | null {
+    if(!$tableReferenceConfiguration instanceof CommonTableReferenceAttr) {
+      return null;
+    }
+
+    $toEntityType = $tableReferenceConfiguration->getToEntityClass();
+    $toColumn = $this->getColumn($toEntityType, $tableReferenceConfiguration->getToPropertyCondition());
+    $fromColumn = $this->getColumn($tableReferenceConfiguration->getFromEntityClass(), $tableReferenceConfiguration->getFromPropertyCondition());
 
     if(empty($fromColumn) || empty($toColumn)) {
       return null;
@@ -50,38 +56,9 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
     return $queryBuilder->expr()->eq($toColumn, $fromColumn);
   }
 
-  protected function getColumn(string $entityType, string $property): string {
-    $toSchema = $this->schemaRegister->getEntityTypeSchema($entityType);
+  protected function getColumn(string $entityClass, string $property): string {
+    $toSchema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
     return !empty($property) ? $toSchema->getColumn($property) : '';
-  }
-
-  protected function getConditionConfig(TableReferenceConfiguration $tableReferenceConfiguration): array {
-    $conditionProperties = $tableReferenceConfiguration->getNestedSetting(
-      [],
-      TableReferenceHandlerInterface::YAML_PARAM_CONDITION,
-      TableReferenceHandlerInterface::YAML_PARAM_CONDITION_PROPERTIES
-    );
-
-    $ret = [
-      'fromProperty' => '',
-      'toProperty' => '',
-    ];
-
-    if(is_array($conditionProperties)) {
-      $fromProperty = key($conditionProperties);
-      $toProperty = current($conditionProperties);
-    } else {
-      return $ret;
-    }
-
-    if(!is_string($fromProperty) && !is_string($toProperty)) {
-      return $ret;
-    }
-
-    $ret['fromProperty'] = $fromProperty;
-    $ret['toProperty'] = $toProperty;
-
-    return $ret;
   }
 
 }

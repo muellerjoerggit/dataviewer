@@ -67,7 +67,13 @@ class EntityTypeSchemaRegister {
   }
 
   public function getSchemaFromEntityClass(string | EntityInterface $entityClass): EntitySchema {
-    return $this->getEntityTypeSchema($this->entityTypeClassReader->getEntityType($entityClass));
+    $entityType = $this->entityTypeClassReader->getEntityType($entityClass);
+
+    if($entityType === NullEntity::ENTITY_TYPE && $this->hasEntitySchema($entityClass)) {
+      $entityType = $entityClass;
+    }
+
+    return $this->getEntityTypeSchema($entityType);
   }
 
   public function getEntityTypeSchema(string $entityType): EntitySchema {

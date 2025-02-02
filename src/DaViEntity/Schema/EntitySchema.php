@@ -8,9 +8,11 @@ use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionInterface;
 use App\Database\SqlFilterHandler\NullFilterHandler;
-use App\Database\TableReference\TableReferenceConfiguration;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttr;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
+use Generator;
 
 class EntitySchema implements EntitySchemaInterface {
 
@@ -43,9 +45,15 @@ class EntitySchema implements EntitySchemaInterface {
   private array $entityOverview = [];
   private array $extendedEntityOverview = [];
 
-  public function __construct() {
+  public function __construct(
+    private readonly string $entityClass,
+  ) {
     $filterGroup = new FilterGroup(EntitySchemaInterface::WITHOUT_FILTER_GROUP);
     $this->addFilterGroup($filterGroup);
+  }
+
+  public function getEntityClass(): string {
+    return $this->entityClass;
   }
 
   public function getDatabase(): string {
@@ -292,16 +300,19 @@ class EntitySchema implements EntitySchemaInterface {
     return $this;
   }
 
-  public function addTableReference(TableReferenceConfiguration $tableReferenceConfiguration, string $internalName): EntitySchemaInterface {
-    $this->tableReferences[$internalName] = $tableReferenceConfiguration;
+  public function addTableReference(TableReferenceAttrInterface $tableReferenceConfiguration): EntitySchemaInterface {
+    if($tableReferenceConfiguration->isValid()) {
+      $name = $tableReferenceConfiguration->getName();
+      $this->tableReferences[$name] = $tableReferenceConfiguration;
+    }
     return $this;
   }
 
-  public function getTableReference(string $internalName): TableReferenceConfiguration {
-    return $this->tableReferences[$internalName] ?? TableReferenceConfiguration::createNullConfig($this->entityType . '-' . $internalName, $this->getEntityType());
+  public function getTableReference(string $internalName): TableReferenceAttrInterface {
+    return $this->tableReferences[$internalName] ?? TableReferenceAttr::createNullTableReference($internalName, $this->entityType . '_' . $internalName);
   }
 
-  public function iterateTableReferences(): \Generator {
+  public function iterateTableReferences(): Generator {
     foreach($this->tableReferences as $internalName => $tableReferenceConfiguration) {
       yield $internalName => $tableReferenceConfiguration;
     }

@@ -3,6 +3,7 @@
 namespace App\Item\ItemHandler_EntityReference;
 
 use App\Database\TableReference\TableReferenceConfiguration;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
@@ -21,7 +22,7 @@ interface EntityReferenceItemHandlerInterface {
 
   public function buildEntityKey($value, ItemConfigurationInterface $itemConfiguration, string $client): ?EntityKey;
 
-  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceConfiguration;
+  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceAttrInterface;
 
   public function getTargetEntityType(ItemConfigurationInterface $itemConfiguration): string;
 
