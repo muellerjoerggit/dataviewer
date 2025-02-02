@@ -4,6 +4,7 @@ namespace App\Item;
 
 use App\Item\ItemHandler\ItemHandlerInterface;
 use App\Services\AppNamespaces;
+use App\Services\Export\ExportFormatter\ExportFormatterAttributeInterface;
 use App\Services\Version\VersionInformation;
 use Generator;
 
@@ -22,6 +23,11 @@ class ItemConfiguration implements ItemConfigurationInterface {
   protected array $handlerSettings = [];
 
   protected array $settings = [];
+
+  /**
+   * @var ExportFormatterAttributeInterface[]
+   */
+  protected array $exportFormatter = [];
 
   protected VersionInformation $version;
 
@@ -243,6 +249,20 @@ class ItemConfiguration implements ItemConfigurationInterface {
 
   public function hasVersion(): bool {
     return isset($this->version);
+  }
+
+  public function addExportFormatter(ExportFormatterAttributeInterface $exportFormatter): ItemConfiguration {
+    $this->exportFormatter[] = $exportFormatter;
+    return $this;
+  }
+
+  /**
+   * @return Generator<ExportFormatterAttributeInterface>
+   */
+  public function iterateExportFormatters(): Generator {
+    foreach ($this->exportFormatter as $exportFormatter) {
+      yield $exportFormatter;
+    }
   }
 
 
