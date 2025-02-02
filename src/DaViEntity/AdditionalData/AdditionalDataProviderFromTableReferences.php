@@ -6,7 +6,7 @@ use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DaViEntity\DaViEntityManager;
-use App\DaViEntity\EntityCreator\EntityCreatorLocator;
+use App\DaViEntity\Creator\EntityCreatorLocator;
 use App\DaViEntity\EntityDataMapperInterface;
 use App\DaViEntity\EntityInterface;
 

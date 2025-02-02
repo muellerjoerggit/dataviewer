@@ -3,11 +3,11 @@
 namespace App\EntityTypes\Role;
 
 use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
-use App\DaViEntity\EntityCreator\EntityCreatorLocator;
-use App\DaViEntity\EntityDataProvider\EntityDataProviderLocator;
-use App\DaViEntity\EntityListProvider\EntityListProviderLocator;
-use App\DaViEntity\EntityRefiner\EntityRefinerLocator;
-use App\DaViEntity\EntityRepository\AbstractEntityRepository;
+use App\DaViEntity\Creator\EntityCreatorLocator;
+use App\DaViEntity\DataProvider\EntityDataProviderLocator;
+use App\DaViEntity\ListProvider\EntityListProviderLocator;
+use App\DaViEntity\Refiner\EntityRefinerLocator;
+use App\DaViEntity\Repository\AbstractEntityRepository;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
 

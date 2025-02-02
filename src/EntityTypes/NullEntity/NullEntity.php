@@ -4,7 +4,7 @@ namespace App\EntityTypes\NullEntity;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\EntityRepository\EntityRepositoryAttr;
+use App\DaViEntity\Repository\EntityRepositoryAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueIdentifier;
