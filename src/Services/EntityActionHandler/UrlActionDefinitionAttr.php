@@ -3,11 +3,11 @@
 namespace App\Services\EntityActionHandler;
 
 use App\Services\EntityAction\AbstractEntityActionConfigAttr;
-use App\Services\Placeholder\PlaceholderConfigInterface;
+use App\Services\Placeholder\PlaceholderDefinitionInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class UrlActionConfigAttr extends AbstractEntityActionConfigAttr implements PlaceholderConfigInterface {
+class UrlActionDefinitionAttr extends AbstractEntityActionConfigAttr implements PlaceholderDefinitionInterface {
 
   public function __construct(
     string $handler,
@@ -20,7 +20,7 @@ class UrlActionConfigAttr extends AbstractEntityActionConfigAttr implements Plac
     parent::__construct($handler, $title, $description);
   }
 
-  public function getPlaceholderConfig(): array {
+  public function getPlaceholderDefinition(): array {
     return $this->placeholders;
   }
 

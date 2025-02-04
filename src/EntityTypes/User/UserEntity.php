@@ -34,7 +34,7 @@ use App\Item\Property\Attribute\LabelPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;
 use App\Item\Property\Attribute\SearchPropertyAttr;
 use App\Item\Property\Attribute\UniquePropertyAttr;
-use App\Services\EntityActionHandler\UrlActionConfigAttr;
+use App\Services\EntityActionHandler\UrlActionDefinitionAttr;
 use App\Services\EntityActionHandler\UrlActionHandler;
 
 #[EntityRepositoryAttr(entityRepositoryClass: UserRepository::class)]
@@ -58,7 +58,7 @@ use App\Services\EntityActionHandler\UrlActionHandler;
   toEntityClass: RoleUserMapEntity::class,
   propertyConditions: ['usr_id' => 'usr_id'])
 ]
-#[UrlActionConfigAttr(
+#[UrlActionDefinitionAttr(
   handler: UrlActionHandler::class,
   urlTemplate: 'www.example.com/user/{user}',
   placeholders: ['user' => 'usr_id'],

@@ -17,7 +17,7 @@ class UrlActionHandler implements EntityActionHandlerInterface, UrlEntityActionH
   ) {}
 
   public function generateUrl(EntityActionConfigAttrInterface $config, EntityInterface $entity): array {
-    if(!$config instanceof UrlActionConfigAttr || !$config->isValid()) {
+    if(!$config instanceof UrlActionDefinitionAttr || !$config->isValid()) {
       return [];
     }
 
