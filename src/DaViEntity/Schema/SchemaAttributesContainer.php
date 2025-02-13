@@ -6,7 +6,7 @@ use App\Database\BaseQuery\BaseQuery;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
-use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
@@ -60,7 +60,7 @@ class SchemaAttributesContainer {
   private array $entityRefinerAttributes = [];
 
   /**
-   * @var ColumnBuilder[]
+   * @var ColumnBuilderDefinition[]
    */
   private array $entityColumnBuilderAttributes = [];
 
@@ -167,7 +167,7 @@ class SchemaAttributesContainer {
     return $this;
   }
 
-  public function addColumnBuilderAttribute(ColumnBuilder $columnBuilder): SchemaAttributesContainer {
+  public function addColumnBuilderAttribute(ColumnBuilderDefinition $columnBuilder): SchemaAttributesContainer {
     $this->entityColumnBuilderAttributes[] = $columnBuilder;
     return $this;
   }

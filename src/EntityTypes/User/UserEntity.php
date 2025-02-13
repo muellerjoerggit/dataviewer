@@ -11,7 +11,7 @@ use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
 use App\DaViEntity\AdditionalData\AdditionalDataProviderFromTableReferences;
 use App\DaViEntity\ColumnBuilder\CommonColumnBuilder;
-use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CommonCreator;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\CommonSqlDataProvider;
@@ -46,7 +46,7 @@ use App\Services\EntityActionHandler\UrlActionHandler;
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   CreatorDefinition(entityCreator: CommonCreator::class),
   RefinerDefinition(entityRefinerClass: CommonRefiner::class),
-  ColumnBuilder(entityColumnBuilderClass: CommonColumnBuilder::class),
+  ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
   ListProviderDefinition(entityListClass: CommonListProvider::class)
 ]
 #[AdditionalDataProvider(additionalDataProviders: [AdditionalDataProviderFromTableReferences::class])]

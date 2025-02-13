@@ -9,7 +9,7 @@ use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
 use App\Database\SqlFilterHandler\EntityReferenceFilterHandler;
 use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\ColumnBuilder\CommonColumnBuilder;
-use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CommonCreator;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\CommonSqlDataProvider;
@@ -37,7 +37,7 @@ use App\Item\Property\PreDefinedAttributes\PreDefined;
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   CreatorDefinition(entityCreator: CommonCreator::class),
   RefinerDefinition(entityRefinerClass: CommonRefiner::class),
-  ColumnBuilder(entityColumnBuilderClass: CommonColumnBuilder::class),
+  ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
   ListProviderDefinition(entityListClass: CommonListProvider::class)
 ]
 #[DatabaseAttr(

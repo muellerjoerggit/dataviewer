@@ -427,7 +427,7 @@ class EntitySchema implements EntitySchemaInterface {
     return $this;
   }
 
-  public function getColumnsBuilderDefinition(string $version): ColumnBuilderDefinitionInterface | string {
+  public function getColumnsBuilderClass(string $version): string {
     foreach ($this->columnBuildersDefinition as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -436,7 +436,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getEntityColumnBuilderClass();
     }
 
     return '';

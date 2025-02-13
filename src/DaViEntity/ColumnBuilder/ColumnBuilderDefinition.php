@@ -5,11 +5,13 @@ namespace App\DaViEntity\ColumnBuilder;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class ColumnBuilder {
-
-  public const string CLASS_PROPERTY = 'entityColumnBuilderClass';
+class ColumnBuilderDefinition implements ColumnBuilderDefinitionInterface {
 
   public function __construct(
     public readonly string $entityColumnBuilderClass,
   ) {}
+
+  public function getEntityColumnBuilderClass(): string {
+    return $this->entityColumnBuilderClass;
+  }
 }

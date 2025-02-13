@@ -7,7 +7,7 @@ use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
 use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\ColumnBuilder\CommonColumnBuilder;
-use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CommonCreator;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\CommonSqlDataProvider;
@@ -37,7 +37,7 @@ use App\Item\Property\PropertyItemInterface;
 #[EntityTypeAttr(name: 'Role', label: 'Role'),
 ]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
-  ColumnBuilder(entityColumnBuilderClass: CommonColumnBuilder::class),
+  ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
   RefinerDefinition(entityRefinerClass: CommonRefiner::class),
   CreatorDefinition(entityCreator: CommonCreator::class),
   SearchDefinition(entityListSearch: CommonSearch::class),

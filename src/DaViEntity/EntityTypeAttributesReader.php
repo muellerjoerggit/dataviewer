@@ -7,7 +7,7 @@ use App\Database\SqlFilter\SqlFilterInterface;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
-use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\EntityLabel\LabelCrafter;
@@ -81,7 +81,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       case RefinerDefinition::class:
         $container->addRefinerAttribute($attribute);
         break;
-      case ColumnBuilder::class:
+      case ColumnBuilderDefinition::class:
         $container->addColumnBuilderAttribute($attribute);
         break;
       case ListProviderDefinition::class:
@@ -136,11 +136,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
   public function getEntityListProviderClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
     return $this->getAttributeKey($classname, ListProviderDefinition::class, ListProviderDefinition::CLASS_PROPERTY, '');
-  }
-
-  public function getEntityColumnBuilderClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, ColumnBuilder::class, ColumnBuilder::CLASS_PROPERTY, '');
   }
 
   public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {
