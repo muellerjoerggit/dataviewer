@@ -5,7 +5,7 @@ namespace App\DaViEntity\DataProvider;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityDataProvider {
+final class DataProviderDefinition implements DataProviderDefinitionInterface {
 
   public const string CLASS_PROPERTY = 'dataProviderClass';
 

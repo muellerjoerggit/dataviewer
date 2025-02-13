@@ -9,7 +9,7 @@ use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonSqlEntityDataProvider implements EntityDataProviderInterface {
+class CommonSqlDataProvider implements DataProviderInterface {
 
   use ExecuteQueryBuilderTrait;
 
