@@ -8,7 +8,7 @@ use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class EntityLabelCrafterLocator extends AbstractLocator {
+class LabelCrafterLocator extends AbstractLocator {
 
   public function __construct(
     private readonly EntityTypeAttributesReader $entityTypeAttributesReader,
@@ -18,13 +18,13 @@ class EntityLabelCrafterLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityLabelCrafter(string | EntityInterface $entityClass): EntityLabelCrafterInterface {
+  public function getEntityLabelCrafter(string | EntityInterface $entityClass): LabelCrafterInterface {
     $class = $this->entityTypeAttributesReader->getEntityLabelCrafterClass($entityClass);
 
     if($this->has($class)) {
       return $this->get($class);
     } else {
-      return $this->get(NullEntityLabelCrafter::class);
+      return $this->get(NullLabelCrafter::class);
     }
   }
 

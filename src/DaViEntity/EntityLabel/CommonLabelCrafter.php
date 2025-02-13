@@ -5,7 +5,7 @@ namespace App\DaViEntity\EntityLabel;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonEntityLabelCrafter implements EntityLabelCrafterInterface {
+class CommonLabelCrafter implements LabelCrafterInterface {
 
   public function __construct(
     private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,

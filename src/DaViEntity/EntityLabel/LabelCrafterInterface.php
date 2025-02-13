@@ -4,7 +4,7 @@ namespace App\DaViEntity\EntityLabel;
 
 use App\DaViEntity\EntityInterface;
 
-interface EntityLabelCrafterInterface {
+interface LabelCrafterInterface {
 
   public function appendEntityLabelToRows(string | EntityInterface $entityClass, array $rows): array;
 
