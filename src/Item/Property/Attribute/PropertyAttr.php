@@ -24,6 +24,10 @@ class PropertyAttr extends AbstractPropertyAttribute  {
     return $this->label;
   }
 
+  public function hasDescription(): bool {
+    return !empty($this->description);
+  }
+
   public function getDescription(): string {
     return $this->description;
   }
