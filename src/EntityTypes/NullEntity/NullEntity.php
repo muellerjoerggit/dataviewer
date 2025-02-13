@@ -14,7 +14,7 @@ use App\Logger\LogItems\LogItemInterface;
 use Generator;
 
 #[EntityTypeAttr(name: 'NullEntity')]
-#[RepositoryDefinition(entityRepositoryClass: NullRepository::class)]
+#[RepositoryDefinition(repositoryClass: NullRepository::class)]
 class NullEntity implements EntityInterface {
 
   public const string ENTITY_TYPE = 'NullEntity';

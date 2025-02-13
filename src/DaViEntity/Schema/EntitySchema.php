@@ -531,11 +531,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addRepositoryDefinition(RepositoryDefinitionInterface $definition): EntitySchemaInterface {
-    $this->repositoryDefinitions[] = $definition;
+    if($definition->isValid()) {
+      $this->repositoryDefinitions[] = $definition;
+    }
     return $this;
   }
 
-  public function getRepositoryDefinition(string $version): RepositoryDefinitionInterface | string {
+  public function getRepositoryClass(string $version): string {
     foreach ($this->repositoryDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -544,7 +546,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getRepositoryClass();
     }
 
     return '';

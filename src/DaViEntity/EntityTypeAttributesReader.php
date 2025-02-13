@@ -133,11 +133,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
     return $this->getAttributeKey($classname, LabelCrafter::class, LabelCrafter::CLASS_PROPERTY, '');
   }
 
-  public function getRepositoryClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, RepositoryDefinition::class, RepositoryDefinition::CLASS_PROPERTY, '');
-  }
-
   private function resolveEntityClass(string | EntityInterface $classname): string {
     if($classname instanceof EntityInterface) {
       return get_class($classname);

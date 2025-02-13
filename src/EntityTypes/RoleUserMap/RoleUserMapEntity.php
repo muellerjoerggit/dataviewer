@@ -30,7 +30,7 @@ use App\Item\Property\Attribute\PropertyPreDefinedAttr;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 
-#[RepositoryDefinition(entityRepositoryClass: RoleUserMapRepository::class)]
+#[RepositoryDefinition(repositoryClass: RoleUserMapRepository::class)]
 #[EntityTypeAttr(name: 'RoleUserMap', label: 'Rolle/User Map')]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
   SearchDefinition(entityListSearch: CommonSearch::class),

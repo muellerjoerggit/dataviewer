@@ -33,7 +33,7 @@ use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Item\Property\PropertyItemInterface;
 
-#[RepositoryDefinition(entityRepositoryClass: RoleRepository::class)]
+#[RepositoryDefinition(repositoryClass: RoleRepository::class)]
 #[EntityTypeAttr(name: 'Role', label: 'Role'),
 ]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),

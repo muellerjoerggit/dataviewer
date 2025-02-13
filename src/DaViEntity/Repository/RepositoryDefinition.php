@@ -7,10 +7,16 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class RepositoryDefinition implements RepositoryDefinitionInterface {
 
-  public const string CLASS_PROPERTY = 'entityRepositoryClass';
-
   public function __construct(
-    public readonly string $entityRepositoryClass,
+    public readonly string $repositoryClass,
   ) {}
+
+  public function getRepositoryClass(): string {
+    return $this->repositoryClass;
+  }
+
+  public function isValid(): bool {
+    return !empty($this->repositoryClass);
+  }
 
 }

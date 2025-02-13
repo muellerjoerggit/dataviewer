@@ -39,7 +39,7 @@ use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Services\EntityActionHandler\UrlActionDefinitionAttr;
 use App\Services\EntityActionHandler\UrlActionHandler;
 
-#[RepositoryDefinition(entityRepositoryClass: UserRepository::class)]
+#[RepositoryDefinition(repositoryClass: UserRepository::class)]
 #[EntityTypeAttr(name: 'User', label: 'Benutzer')]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
   SearchDefinition(entityListSearch: CommonSearch::class),
