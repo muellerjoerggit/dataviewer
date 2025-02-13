@@ -3,19 +3,18 @@
 namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfigurationBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
-use App\DaViEntity\Schema\Attribute\EntityOverviewSchemaAttr as EntityOverviewClass;
+use App\DaViEntity\Schema\Attribute\EntityOverviewDefinitionSchemaAttr as EntityOverviewClass;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
-use App\DaViEntity\Schema\Attribute\ExtendedEntityOverviewSchemaAttr as ExtendedEntityOverviewClass;
-use App\DaViEntity\Schema\Attribute\LabelPropertySchemaAttr as LabelPropClass;
+use App\DaViEntity\Schema\Attribute\ExtendedEntityOverviewDefinitionSchemaAttr as ExtendedEntityOverviewClass;
+use App\DaViEntity\Schema\Attribute\LabelDefinitionSchemaAttr as LabelPropClass;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr as LabelPropProperty;
-use App\Item\Property\Attribute\SearchPropertyAttr;
-use App\Item\Property\Attribute\UniquePropertyAttr;
+use App\Item\Property\Attribute\SearchPropertyDefinition;
+use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyAttributesReader;
 use App\Item\Property\PropertyConfigurationBuilder;
 use ReflectionAttribute;
@@ -26,25 +25,11 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class EntitySchemaBuilder {
 
-  private const string YAML_PARAM_FILTERS = 'filters';
   private const string YAML_PARAM_AGGREGATIONS = 'aggregations';
   private const string YAML_PARAM_PROPERTIES = 'properties';
-  private const string YAML_PARAM_TYPE = 'entityType';
-  private const string YAML_PARAM_LABEL = 'entityLabel';
-  private const string YAML_PARAM_LABEL_PROPERTIES = 'labelProperties';
-  private const string YAML_PARAM_SEARCH_PROPERTIES = 'searchProperties';
-  private const string YAML_PARAM_UNIQUE_PROPERTIES = 'uniqueProperties';
-  private const string YAML_PARAM_OVERVIEW = 'entityOverview';
-  private const string YAML_PARAM_EXT_OVERVIEW = 'extendedEntityOverview';
-
-  private const string YAML_PARAM_DATABASE_CONFIG = 'databaseConfig';
-  private const string YAML_PARAM_DATABASE = 'database';
-  private const string YAML_PARAM_BASE_TABLE = 'baseTable';
-  private const string YAML_PARAM_TABLE_REFERENCES = 'tableReferences';
 
   public function __construct(
     private readonly PropertyConfigurationBuilder $propertyConfigurationBuilder,
-    private readonly SqlFilterDefinitionBuilder $filterDefinitionsBuilder,
     private readonly AggregationConfigurationBuilder $aggregationConfigurationBuilder,
     private readonly EntityTypeAttributesReader $attributesReader,
     private readonly PropertyAttributesReader $propertyAttributesReader,
@@ -55,23 +40,31 @@ class EntitySchemaBuilder {
     $this->propertyAttributesReader->appendPropertyAttributesContainer($attributesContainer, $entityClass);
     $yaml = Yaml::parseFile($file->getRealPath());
     $schema = new EntitySchema($entityClass);
-    $reflection = $this->reflect($entityClass);
+
+    if(!$attributesContainer->isValid()) {
+      return null;
+    }
+
     if(!$this->fillSchemaBasics($schema, $attributesContainer)) {
       return null;
     }
     $this->fillDatabase($schema, $attributesContainer);
     $this->fillDatabaseDetails($schema, $attributesContainer);
-    $this->fillProperties($schema, $yaml);
+    $this->fillProperties($schema, $attributesContainer);
 
-    if(isset($yaml[self::YAML_PARAM_FILTERS])) {
-      $this->buildFilters($schema,  $yaml);
+    if($attributesContainer->hasSqlFilterDefinitions()) {
+      $this->buildFilters($schema, $attributesContainer);
     }
 
     if(isset($yaml[self::YAML_PARAM_AGGREGATIONS])) {
       $this->buildAggregations($schema,  $yaml);
     }
 
-    $this->fillSpecialProperties($reflection, $schema);
+    $this->fillUniqueProperties($schema, $attributesContainer);
+    $this->fillLabelProperties($schema, $attributesContainer);
+    $this->fillSearchProperties($schema, $attributesContainer);
+    $this->fillEntityOverview($schema, $attributesContainer);
+    $this->fillExtendedEntityOverview($schema, $attributesContainer);
 
     if($attributesContainer->hasEntityActions()){
       $this->fillEntityActions($schema, $attributesContainer);
@@ -98,6 +91,69 @@ class EntitySchemaBuilder {
     }
   }
 
+  private function fillUniqueProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    $uniqueProperties = [];
+    foreach ($container->iterateUniquePropertyDefinitions() as $definition) {
+      $uniqueProperties[$definition->getName()] = $definition->getProperty();
+    }
+
+    $schema->setUniqueProperties($uniqueProperties);
+  }
+
+  private function fillLabelProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    $labels = [];
+    foreach ($container->iterateLabelDefinitions() as $labelAttribute) {
+      $labels[] = [
+        'name' => $labelAttribute->getPath(),
+        'label' => $labelAttribute->getLabel(),
+        'rank' => $labelAttribute->getRank(),
+      ];
+    }
+
+    $labelProp = array_keys($this->sortProperties($labels));
+
+    $schema->setEntityLabelProperties($labelProp);
+  }
+
+  private function fillEntityOverview(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    $entityOverview = [];
+    foreach ($container->iterateEntityOverviewDefinitions() as $definition) {
+      $entityOverview[] = [
+        'name' => $definition->getPath(),
+        'label' => $definition->getLabel(),
+        'rank' => $definition->getRank(),
+      ];
+    }
+
+    $entityOverview = $this->sortProperties($entityOverview);
+
+    $schema->setEntityOverviewProperties($entityOverview);
+  }
+
+  private function fillExtendedEntityOverview(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    $extendedEntityOverview = [];
+    foreach ($container->iterateExtendedEntityOverviewDefinitions() as $definition) {
+      $extendedEntityOverview[] = [
+        'name' => $definition->getPath(),
+        'label' => $definition->getLabel(),
+        'rank' => $definition->getRank(),
+      ];
+    }
+
+    $extendedEntityOverview = $this->sortProperties($extendedEntityOverview);
+
+    $schema->setExtendedEntityOverviewProperties($extendedEntityOverview);
+  }
+
+  private function fillSearchProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    $searchProperties = [];
+    foreach ($container->iterateSearchPropertyDefinitions() as $definition) {
+      $searchProperties[] = $definition->getProperty();
+    }
+
+    $schema->setSearchProperties($searchProperties);
+  }
+
   private function fillSpecialProperties(ReflectionClass $reflection, EntitySchemaInterface $schema): bool {
     $uniqueProp = [];
     $labelTemp = [];
@@ -106,7 +162,7 @@ class EntitySchemaBuilder {
     $extendedEntityOverview = [];
     foreach($reflection->getProperties() as $property) {
       $propertyName = $property->getName();
-      $uniquePropertyAttr = $property->getAttributes(UniquePropertyAttr::class);
+      $uniquePropertyAttr = $property->getAttributes(UniquePropertyDefinition::class);
       $uniquePropertyAttr = reset($uniquePropertyAttr);
       if($uniquePropertyAttr instanceof ReflectionAttribute) {
         $name = $uniquePropertyAttr->newInstance()->getName();
@@ -117,7 +173,7 @@ class EntitySchemaBuilder {
       $this->processPropertyAttribute($property, EntityOverviewPropertyAttr::class, $entityOverview);
       $this->processPropertyAttribute($property, ExtendedEntityOverviewPropertyAttr::class, $extendedEntityOverview);
 
-      $searchPropertyAttr = $property->getAttributes(SearchPropertyAttr::class);
+      $searchPropertyAttr = $property->getAttributes(SearchPropertyDefinition::class);
       $searchPropertyAttr = reset($searchPropertyAttr);
       if($searchPropertyAttr instanceof ReflectionAttribute) {
         $searchProps[] = $propertyName;
@@ -228,21 +284,23 @@ class EntitySchemaBuilder {
     }
   }
 
-  private function fillProperties(EntitySchemaInterface $schema, array $yaml): void {
-    if(!isset($yaml[self::YAML_PARAM_PROPERTIES])) {
-      return;
-    }
-
-    foreach ($yaml[self::YAML_PARAM_PROPERTIES] as $name => $config) {
-      $propertyConfiguration = $this->propertyConfigurationBuilder->buildPropertyConfiguration($config, $name, $schema);
+  private function fillProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    foreach ($container->iteratePropertyContainer() as $container) {
+      if(!$container->isValid()) {
+        continue;
+      }
+      $propertyConfiguration = $this->propertyConfigurationBuilder->buildPropertyConfiguration($container, $schema);
       $schema->addProperty($propertyConfiguration);
     }
   }
 
-  private function buildFilters(EntitySchema $schema, $yaml): void {
-    foreach ($yaml[self::YAML_PARAM_FILTERS] as $key => $filterArray) {
-      $filterArray['name'] = $key;
-      $this->filterDefinitionsBuilder->buildFilterDefinition($schema, $filterArray);
+  private function buildFilters(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+    foreach ($container->iterateSqlFilterDefinitionAttributes() as $attribute) {
+      if(!$attribute->isValid()) {
+        continue;
+      }
+
+      $schema->addFilter($attribute);
     }
   }
 

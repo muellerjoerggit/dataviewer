@@ -4,8 +4,9 @@ namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\SqlFilter\FilterContainer;
+use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReference\TableReferenceConfiguration;
 use App\Item\Property\PropertyConfiguration;
 use Generator;
@@ -44,16 +45,21 @@ interface EntitySchemaInterface {
 
   public function hasMandatoryFilters(): bool;
 
-  public function getFilterDefinition(string $filterKey): SqlFilterDefinitionInterface;
+  public function getFilterDefinition(string $filterKey): SqlFilterDefinitionInterface | null;
 
   public function hasFilter(string $filterKey): bool;
 
-  public function addFilter(SqlFilterDefinition $filterDefinition): EntitySchemaInterface;
+  public function addFilter(SqlFilterDefinitionInterface $filterDefinition): EntitySchemaInterface;
 
   /**
    * @return \Generator<SqlFilterDefinitionInterface>
    */
   public function iterateFilterDefinitions(): Generator;
+
+  /**
+   * @return \Generator<FilterGroup>
+   */
+  public function iterateFilterGroups(): Generator;
 
   public function getUniqueProperties(): array;
 

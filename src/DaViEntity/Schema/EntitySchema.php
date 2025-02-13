@@ -6,14 +6,25 @@ use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilterHandler\NullFilterHandler;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttr;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinitionInterface;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinitionInterface;
+use App\DaViEntity\Creator\CreatorDefinitionInterface;
+use App\DaViEntity\DataProvider\DataProviderDefinitionInterface;
+use App\DaViEntity\ListProvider\ListProviderDefinitionInterface;
+use App\DaViEntity\Refiner\RefinerDefinitionInterface;
+use App\DaViEntity\Repository\RepositoryDefinitionInterface;
+use App\DaViEntity\Search\SearchDefinitionInterface;
+use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
 use App\Services\EntityAction\EntityActionConfigAttrInterface;
+use App\Services\Version\VersionListInterface;
 use Generator;
+use Iterator;
 
 class EntitySchema implements EntitySchemaInterface {
 
@@ -30,7 +41,6 @@ class EntitySchema implements EntitySchemaInterface {
   private array $filters = [];
   private array $defaultFilters = [];
   private array $mandatoryFilters = [];
-  private array $generatedFilters = [];
   private array $filterGroups = [];
   private array $groupFilterMapping = [];
 
@@ -47,6 +57,51 @@ class EntitySchema implements EntitySchemaInterface {
   private array $extendedEntityOverview = [];
 
   private array $entityActions = [];
+
+  /**
+   * @var AdditionalDataProviderDefinitionInterface[]
+   */
+  private array $additionalDataProviderDefinitions = [];
+
+  /**
+   * @var ColumnBuilderDefinitionInterface[]
+   */
+  private array $columnBuildersDefinition = [];
+
+  /**
+   * @var CreatorDefinitionInterface[]
+   */
+  private array $creatorDefinitions = [];
+
+  /**
+   * @var DataProviderDefinitionInterface[]
+   */
+  private array $dataProviderDefinitions = [];
+
+  /**
+   * @var ListProviderDefinitionInterface[]
+   */
+  private array $listProviderDefinitions = [];
+
+  /**
+   * @var RefinerDefinitionInterface[]
+   */
+  private array $refinerDefinitions = [];
+
+  /**
+   * @var RepositoryDefinitionInterface[]
+   */
+  private array $repositoryDefinitions = [];
+
+  /**
+   * @var SearchDefinitionInterface[]
+   */
+  private array $searchDefinitions = [];
+
+  /**
+   * @var ValidatorDefinitionInterface[]
+   */
+  private array $validatorDefinition = [];
 
   public function __construct(
     private readonly string $entityClass,
@@ -155,15 +210,19 @@ class EntitySchema implements EntitySchemaInterface {
     return isset($this->filters[$filterKey]);
   }
 
-  public function addFilter(SqlFilterDefinitionInterface $filterDefinition, string $property = '', ?FilterGroup $filterGroup = null): EntitySchemaInterface {
-    $groupKey = EntitySchemaInterface::WITHOUT_FILTER_GROUP;
-
+  public function addFilter(SqlFilterDefinitionInterface $filterDefinition): EntitySchemaInterface {
     $filterKey = $filterDefinition->getKey();
     $this->filters[$filterKey] = $filterDefinition;
 
-    if($filterGroup && !empty($filterKey)) {
-      $groupKey = $filterGroup->getGroupKey();
-      $this->addFilterGroup($filterGroup);
+    if($filterDefinition->hasGroupKey()) {
+      $groupKey = $filterDefinition->getGroupKey();
+    } elseif(!$filterDefinition->isGroup()) {
+      $groupKey = EntitySchemaInterface::WITHOUT_FILTER_GROUP;
+    } else {
+      $groupKey = $filterDefinition->getProperty();
+      if(!$this->hasFilterGroup($groupKey)) {
+        $this->createFilterGroup($groupKey);
+      }
     }
 
     $this->groupFilterMapping[$groupKey][] = $filterKey;
@@ -171,27 +230,22 @@ class EntitySchema implements EntitySchemaInterface {
     return $this;
   }
 
-  public function getFilterDefinition(string $filterKey): SqlFilterDefinitionInterface {
-    return $this->filters[$filterKey] ?? NullFilterHandler::getNullFilterDefinition();
+  private function createFilterGroup(string $groupKey): void {
+    $group = new FilterGroup($groupKey);
+    $this->addFilterGroup($group);
   }
 
-  /**
-   * @return \Generator<SqlFilterDefinition>
-   */
-  public function iterateFilterDefinitions(): \Generator {
-    foreach ($this->filters as $key => $config) {
-      yield $key => $config;
+  public function getFilterDefinition(string $filterKey): SqlFilterDefinitionInterface | null {
+    return $this->filters[$filterKey] ?? null;
+  }
+
+  public function iterateFilterDefinitions(): Generator {
+    foreach ($this->filters as $key => $definition) {
+      yield $key => $definition;
     }
   }
 
-  public function getGeneratedFilterProperty(string $filterKey): string {
-    return $this->generatedFilters[$filterKey] ?? '';
-  }
-
-  /**
-   * @return \Generator<FilterGroup>
-   */
-  public function iterateFilterGroups(): \Generator {
+  public function iterateFilterGroups(): Generator {
     foreach ($this->filterGroups as $key => $group) {
       yield $key => $group;
     }
@@ -321,8 +375,8 @@ class EntitySchema implements EntitySchemaInterface {
     }
   }
 
-  public function addTableReferenceColumn(string $tableReferenceInternalName, string $column, string $property): EntitySchemaInterface {
-    $this->tableReferenceColumns[$tableReferenceInternalName][$property] = $column;
+  public function addTableReferenceColumn(TableReferenceAttrInterface $tableReference, string $column, string $property): EntitySchemaInterface {
+    $this->tableReferenceColumns[$tableReference->getName()][$property] = $column;
     return $this;
   }
 
@@ -345,6 +399,151 @@ class EntitySchema implements EntitySchemaInterface {
     foreach($this->entityActions as $actionConfiguration) {
       yield $actionConfiguration;
     }
+  }
+
+  public function addAdditionalDataProviderDefinition(AdditionalDataProviderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->additionalDataProviderDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Iterator<AdditionalDataProviderDefinitionInterface[]>
+   */
+  public function iterateAdditionalDataProviderDefinitions(string $version): Iterator {
+    foreach ($this->additionalDataProviderDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      yield $definition;
+    }
+  }
+
+  public function addColumnsBuilderDefinition(ColumnBuilderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->columnBuildersDefinition[] = $definition;
+    return $this;
+  }
+
+  public function getColumnsBuilderDefinition(string $version): ColumnBuilderDefinitionInterface | string {
+    foreach ($this->columnBuildersDefinition as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addCreatorDefinition(CreatorDefinitionInterface $definition): EntitySchemaInterface {
+    $this->creatorDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getCreatorDefinition(string $version): CreatorDefinitionInterface | string {
+    foreach ($this->creatorDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addDataProviderDefinition(DataProviderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->dataProviderDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getDataProviderDefinition(string $version): DataProviderDefinitionInterface | string {
+    foreach ($this->dataProviderDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addListProviderDefinition(ListProviderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->listProviderDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getListProviderDefinition(string $version): ListProviderDefinitionInterface | string {
+    foreach ($this->listProviderDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addRefinerDefinition(RefinerDefinitionInterface $definition): EntitySchemaInterface {
+    $this->refinerDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getRefinerDefinition(string $version): RefinerDefinitionInterface | string {
+    foreach ($this->refinerDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addRepositoryDefinition(RepositoryDefinitionInterface $definition): EntitySchemaInterface {
+    $this->repositoryDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getRepositoryDefinition(string $version): RepositoryDefinitionInterface | string {
+    foreach ($this->repositoryDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addSearchDefinition(SearchDefinitionInterface $definition): EntitySchemaInterface {
+    $this->searchDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getSearchDefinition(string $version): SearchDefinitionInterface | string {
+    foreach ($this->searchDefinitions as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
+  }
+
+  public function addValidatorDefinition(ValidatorDefinitionInterface $definition): EntitySchemaInterface {
+    $this->validatorDefinition[] = $definition;
+    return $this;
+  }
+
+  public function getValidatorDefinition(string $version): ValidatorDefinitionInterface | string {
+    foreach ($this->validatorDefinition as $definition) {
+      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition;
+    }
+
+    return '';
   }
 
 }

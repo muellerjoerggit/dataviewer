@@ -3,17 +3,23 @@
 namespace App\DaViEntity\Schema;
 
 use App\Database\BaseQuery\BaseQuery;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
-use App\DaViEntity\ColumnBuilder\EntityColumnBuilder;
-use App\DaViEntity\Creator\EntityCreator;
-use App\DaViEntity\DataProvider\EntityDataProvider;
-use App\DaViEntity\ListProvider\EntityListProvider;
-use App\DaViEntity\ListSearch\EntityListSearch;
-use App\DaViEntity\Refiner\EntityRefiner;
-use App\DaViEntity\Repository\EntityRepositoryAttr;
+use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\Creator\CreatorDefinition;
+use App\DaViEntity\DataProvider\DataProviderDefinition;
+use App\DaViEntity\ListProvider\ListProviderDefinition;
+use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\Refiner\RefinerDefinition;
+use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
+use App\DaViEntity\Schema\Attribute\EntityOverviewDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\ExtEntityOverviewDefinitionInterface;
+use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
+use App\Item\Property\Attribute\SearchPropertyDefinition;
+use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyAttributesContainer;
 use App\Services\EntityAction\EntityActionConfigAttrInterface;
 use Generator;
@@ -24,7 +30,7 @@ class SchemaAttributesContainer {
   private DatabaseAttr $databaseAttr;
 
   /**
-   * @var EntityRepositoryAttr[]
+   * @var RepositoryDefinition[]
    */
   private array $repositoryAttributes = [];
 
@@ -34,32 +40,32 @@ class SchemaAttributesContainer {
   private array $baseQueryAttributes = [];
 
   /**
-   * @var EntityListSearch[]
+   * @var SearchDefinition[]
    */
   private array $entityListSearchAttributes = [];
 
   /**
-   * @var EntityDataProvider[]
+   * @var DataProviderDefinition[]
    */
   private array $entityDataProviderAttributes = [];
 
   /**
-   * @var EntityCreator[]
+   * @var CreatorDefinition[]
    */
   private array $entityCreatorAttributes = [];
 
   /**
-   * @var EntityRefiner[]
+   * @var RefinerDefinition[]
    */
   private array $entityRefinerAttributes = [];
 
   /**
-   * @var EntityColumnBuilder[]
+   * @var ColumnBuilder[]
    */
   private array $entityColumnBuilderAttributes = [];
 
   /**
-   * @var EntityListProvider[]
+   * @var ListProviderDefinition[]
    */
   private array $entityListProviderAttributes = [];
 
@@ -79,9 +85,39 @@ class SchemaAttributesContainer {
   private array $entityActionAttributes = [];
 
   /**
+   * @var SqlFilterDefinitionInterface[]
+   */
+  private array $sqlFilterAttributes = [];
+
+  /**
    * @var PropertyAttributesContainer[]
    */
   private array $properties = [];
+
+  /**
+   * @var LabelDefinitionInterface[]
+   */
+  private array $labelDefinitionAttributes = [];
+
+  /**
+   * @var EntityOverviewDefinitionInterface[]
+   */
+  private array $entityOverviewDefinitionDefinitions = [];
+
+  /**
+   * @var SearchPropertyDefinition[]
+   */
+  private array $searchPropertyDefinitions = [];
+
+  /**
+   * @var UniquePropertyDefinition[]
+   */
+  private array $uniquePropertyDefinitions = [];
+
+  /**
+   * @var ExtEntityOverviewDefinitionInterface[]
+   */
+  private array $extendedEntityOverviewDefinitions = [];
 
   public function getEntityTypeAttr(): EntityTypeAttr | null {
     return $this->entityTypeAttr ?? null;
@@ -101,7 +137,7 @@ class SchemaAttributesContainer {
     return $this;
   }
 
-  public function addRepositoryAttribute(EntityRepositoryAttr $repositoryAttr): SchemaAttributesContainer {
+  public function addRepositoryAttribute(RepositoryDefinition $repositoryAttr): SchemaAttributesContainer {
     $this->repositoryAttributes[] = $repositoryAttr;
     return $this;
   }
@@ -111,32 +147,32 @@ class SchemaAttributesContainer {
     return $this;
   }
 
-  public function addEntityListSearchAttribute(EntityListSearch $listSearch): SchemaAttributesContainer {
+  public function addEntityListSearchAttribute(SearchDefinition $listSearch): SchemaAttributesContainer {
     $this->entityListSearchAttributes[] = $listSearch;
     return $this;
   }
 
-  public function addDataProviderAttribute(EntityDataProvider $dataProvider): SchemaAttributesContainer {
+  public function addDataProviderAttribute(DataProviderDefinition $dataProvider): SchemaAttributesContainer {
     $this->entityDataProviderAttributes[] = $dataProvider;
     return $this;
   }
 
-  public function addCreatorAttribute(EntityCreator $creator): SchemaAttributesContainer {
+  public function addCreatorAttribute(CreatorDefinition $creator): SchemaAttributesContainer {
     $this->entityCreatorAttributes[] = $creator;
     return $this;
   }
 
-  public function addRefinerAttribute(EntityRefiner $refiner): SchemaAttributesContainer {
+  public function addRefinerAttribute(RefinerDefinition $refiner): SchemaAttributesContainer {
     $this->entityRefinerAttributes[] = $refiner;
     return $this;
   }
 
-  public function addColumnBuilderAttribute(EntityColumnBuilder $columnBuilder): SchemaAttributesContainer {
+  public function addColumnBuilderAttribute(ColumnBuilder $columnBuilder): SchemaAttributesContainer {
     $this->entityColumnBuilderAttributes[] = $columnBuilder;
     return $this;
   }
 
-  public function addListProviderAttribute(EntityListProvider $listProvider): SchemaAttributesContainer {
+  public function addListProviderAttribute(ListProviderDefinition $listProvider): SchemaAttributesContainer {
     $this->entityListProviderAttributes[] = $listProvider;
     return $this;
   }
@@ -181,6 +217,111 @@ class SchemaAttributesContainer {
   public function addPropertyContainer(PropertyAttributesContainer $container, string $key): SchemaAttributesContainer {
     $this->properties[$key] = $container;
     return $this;
+  }
+
+  /**
+   * @return Generator<PropertyAttributesContainer>
+   */
+  public function iteratePropertyContainer(): Generator {
+    foreach ($this->properties as $key => $container) {
+      yield $key => $container;
+    }
+  }
+
+  public function addSqlFilterDefinitionsAttribute(SqlFilterDefinitionInterface $filterDefinition): SchemaAttributesContainer {
+    $this->sqlFilterAttributes[] = $filterDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<SqlFilterDefinitionInterface>
+   */
+  public function iterateSqlFilterDefinitionAttributes(): Generator {
+    foreach ($this->sqlFilterAttributes as $filterConfig) {
+      yield $filterConfig;
+    }
+  }
+
+  public function hasSqlFilterDefinitions(): bool {
+    return !empty($this->sqlFilterAttributes);
+  }
+
+  public function addLabelDefinition(LabelDefinitionInterface $labelDefinition): SchemaAttributesContainer {
+    $this->labelDefinitionAttributes[] = $labelDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<LabelDefinitionInterface>
+   */
+  public function iterateLabelDefinitions(): Generator {
+    foreach ($this->labelDefinitionAttributes as $labelDefinition) {
+      yield $labelDefinition;
+    }
+  }
+
+  public function addEntityOverviewDefinition(EntityOverviewDefinitionInterface $entityOverviewDefinition): SchemaAttributesContainer {
+    $this->entityOverviewDefinitionDefinitions[] = $entityOverviewDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<EntityOverviewDefinitionInterface>
+   */
+  public function iterateEntityOverviewDefinitions(): Generator {
+    foreach ($this->entityOverviewDefinitionDefinitions as $entityOverviewDefinition) {
+      yield $entityOverviewDefinition;
+    }
+  }
+
+  public function addSearchPropertyDefinition(SearchPropertyDefinition $searchPropertyDefinition): SchemaAttributesContainer {
+    $this->searchPropertyDefinitions[] = $searchPropertyDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<SearchPropertyDefinition>
+   */
+  public function iterateSearchPropertyDefinitions(): Generator {
+    foreach ($this->searchPropertyDefinitions as $searchPropertyDefinition) {
+      yield $searchPropertyDefinition;
+    }
+  }
+
+  public function hasUniquePropertyDefinitions(): bool {
+    return !empty($this->uniquePropertyDefinitions);
+  }
+
+  public function addUniquePropertyDefinition(UniquePropertyDefinition $uniquePropertyDefinition): SchemaAttributesContainer {
+    $this->uniquePropertyDefinitions[] = $uniquePropertyDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<EntityOverviewDefinitionInterface>
+   */
+  public function iterateUniquePropertyDefinitions(): Generator {
+    foreach ($this->uniquePropertyDefinitions as $uniquePropertyDefinition) {
+      yield $uniquePropertyDefinition;
+    }
+  }
+
+  public function addExtendedEntityOverviewDefinition(ExtEntityOverviewDefinitionInterface $extendedEntityOverviewDefinition): SchemaAttributesContainer {
+    $this->extendedEntityOverviewDefinitions[] = $extendedEntityOverviewDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<ExtEntityOverviewDefinitionInterface>
+   */
+  public function iterateExtendedEntityOverviewDefinitions(): Generator {
+    foreach ($this->extendedEntityOverviewDefinitions as $extendedEntityOverviewDefinition) {
+      yield $extendedEntityOverviewDefinition;
+    }
+  }
+
+  public function isValid(): bool {
+    return !empty($this->uniquePropertyDefinitions);
   }
 
 }
