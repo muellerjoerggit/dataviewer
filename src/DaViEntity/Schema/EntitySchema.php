@@ -465,11 +465,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addDataProviderDefinition(DataProviderDefinitionInterface $definition): EntitySchemaInterface {
-    $this->dataProviderDefinitions[] = $definition;
+    if($definition->isValid()) {
+      $this->dataProviderDefinitions[] = $definition;
+    }
     return $this;
   }
 
-  public function getDataProviderDefinition(string $version): DataProviderDefinitionInterface | string {
+  public function getDataProviderClass(string $version): DataProviderDefinitionInterface | string {
     foreach ($this->dataProviderDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -478,7 +480,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getDataProviderClass();
     }
 
     return '';
