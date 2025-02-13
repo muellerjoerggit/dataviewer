@@ -8,7 +8,7 @@ use App\DaViEntity\Schema\EntitySchema;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('entity_management.entity_creator')]
-interface EntityCreatorInterface {
+interface CreatorInterface {
 
   public function createEntity(string $entityClass, string $client, array $row): EntityInterface;
 

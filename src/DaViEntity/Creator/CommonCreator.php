@@ -9,7 +9,7 @@ use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\Item\Property\PropertyBuilder;
 
-class CommonEntityCreator implements EntityCreatorInterface {
+class CommonCreator implements CreatorInterface {
 
   public function __construct(
     private readonly EntityTypesRegister $entityTypesRegister,
