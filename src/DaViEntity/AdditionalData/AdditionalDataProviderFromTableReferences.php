@@ -6,7 +6,7 @@ use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DaViEntity\DaViEntityManager;
-use App\DaViEntity\Creator\EntityCreatorLocator;
+use App\DaViEntity\Creator\CreatorLocator;
 use App\DaViEntity\EntityDataMapperInterface;
 use App\DaViEntity\EntityInterface;
 
@@ -17,7 +17,7 @@ class AdditionalDataProviderFromTableReferences implements AdditionalDataProvide
   public function __construct(
     private readonly TableReferenceHandlerLocator $tableReferenceHandlerLocator,
     private readonly DaViEntityManager $entityManager,
-    private readonly EntityCreatorLocator $entityCreatorLocator,
+    private readonly CreatorLocator $entityCreatorLocator,
     private readonly BaseQueryLocator $queryLocator,
   ) {}
 
