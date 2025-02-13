@@ -5,12 +5,18 @@ namespace App\DaViEntity\Creator;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class CreatorDefinition implements CreatorDefinitionInterface {
-
-  public const string CLASS_PROPERTY = 'entityCreator';
+class CreatorDefinition implements CreatorDefinitionInterface {
 
   public function __construct(
-    public readonly string $entityCreator
+    public readonly string $creatorClass
   ) {}
+
+  public function getCreatorClass(): string {
+    return $this->creatorClass;
+  }
+
+  public function isValid(): bool {
+    return !empty($this->creatorClass);
+  }
 
 }

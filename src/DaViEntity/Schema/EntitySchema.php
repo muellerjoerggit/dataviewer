@@ -443,11 +443,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addCreatorDefinition(CreatorDefinitionInterface $definition): EntitySchemaInterface {
-    $this->creatorDefinitions[] = $definition;
+    if($definition->isValid()) {
+      $this->creatorDefinitions[] = $definition;
+    }
     return $this;
   }
 
-  public function getCreatorDefinition(string $version): CreatorDefinitionInterface | string {
+  public function getCreatorClass(string $version): string {
     foreach ($this->creatorDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -456,7 +458,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getCreatorClass();
     }
 
     return '';
