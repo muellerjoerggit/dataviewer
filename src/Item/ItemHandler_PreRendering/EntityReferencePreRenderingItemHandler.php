@@ -8,7 +8,7 @@ use App\DaViEntity\EntityKey;
 use App\DaViEntity\EntityViewBuilderInterface;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 use App\Item\ReferenceItemInterface;
 
@@ -17,7 +17,7 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
   public function __construct(
     protected readonly EntityReferenceItemHandlerLocator $referenceHandlerLocator,
     protected readonly DaViEntityManager $entityManager,
-    ValueFormatterItemHandlerLocator $formatterLocator,
+    FormatterItemHandlerLocator $formatterLocator,
   ) {
     parent::__construct($formatterLocator);
   }

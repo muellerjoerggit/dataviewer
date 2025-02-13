@@ -2,11 +2,11 @@
 
 namespace App\Item\ItemHandler_PreRendering;
 
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 class CommonPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
-  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+  public function __construct(FormatterItemHandlerLocator $formatterLocator) {
     parent::__construct($formatterLocator);
   }
 

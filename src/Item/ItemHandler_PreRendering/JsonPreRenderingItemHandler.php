@@ -4,12 +4,12 @@ namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityViewBuilderInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 
 class JsonPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
-  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+  public function __construct(FormatterItemHandlerLocator $formatterLocator) {
     parent::__construct($formatterLocator);
   }
 
@@ -18,7 +18,7 @@ class JsonPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
     return [
       'component' => 'JsonItem',
-      'name' => $item->getConfiguration()->getName(),
+      'name' => $item->getConfiguration()->getItemName(),
       'documentation' => [
         'label' => $item->getConfiguration()->getLabel(),
         'description' => $item->getConfiguration()->getDescription(),

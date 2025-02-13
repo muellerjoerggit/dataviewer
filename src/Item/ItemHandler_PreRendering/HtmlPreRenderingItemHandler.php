@@ -4,7 +4,7 @@ namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityViewBuilderInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 use App\Services\HtmlService;
 
@@ -12,7 +12,7 @@ class HtmlPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
   public function __construct(
     private readonly HtmlService $htmlSanitizer,
-    ValueFormatterItemHandlerLocator $formatterLocator
+    FormatterItemHandlerLocator $formatterLocator
   ) {
     parent::__construct($formatterLocator);
   }
@@ -29,7 +29,7 @@ class HtmlPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
     return [
       'component' => 'HtmlItem',
-      'name' => $item->getConfiguration()->getName(),
+      'name' => $item->getConfiguration()->getItemName(),
       'documentation' => [
         'label' => $item->getConfiguration()->getLabel(),
         'description' => $item->getConfiguration()->getDescription(),

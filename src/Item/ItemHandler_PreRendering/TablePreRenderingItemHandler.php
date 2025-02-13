@@ -4,11 +4,11 @@ namespace App\Item\ItemHandler_PreRendering;
 
 use App\DataCollections\TableData;
 use App\DaViEntity\EntityInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 class TablePreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
-  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+  public function __construct(FormatterItemHandlerLocator $formatterLocator) {
     parent::__construct($formatterLocator);
   }
 

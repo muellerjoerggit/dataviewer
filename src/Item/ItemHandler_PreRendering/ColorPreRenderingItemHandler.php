@@ -3,11 +3,11 @@
 namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 class ColorPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
-  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+  public function __construct(FormatterItemHandlerLocator $formatterLocator) {
     parent::__construct($formatterLocator);
   }
 
@@ -16,7 +16,7 @@ class ColorPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
     return [
       'component' => 'ColorItem',
-      'name' => $item->getConfiguration()->getName(),
+      'name' => $item->getConfiguration()->getItemName(),
       'documentation' => [
         'label' => $item->getConfiguration()->getLabel(),
         'description' => $item->getConfiguration()->getDescription(),

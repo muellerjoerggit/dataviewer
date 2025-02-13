@@ -5,14 +5,14 @@ namespace App\Item\ItemHandler_PreRendering;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 class EntityReferenceOptionsPreRenderingItemHandler extends EntityReferencePreRenderingItemHandler {
 
   public function __construct(
     EntityReferenceItemHandlerLocator $referenceHandlerLocator,
     DaViEntityManager $entityManager,
-    ValueFormatterItemHandlerLocator $formatterLocator,
+    FormatterItemHandlerLocator $formatterLocator,
   ) {
     parent::__construct($referenceHandlerLocator, $entityManager, $formatterLocator);
   }

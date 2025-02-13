@@ -4,15 +4,15 @@ namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityViewBuilderInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerInterface;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 
 abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandlerInterface {
 
-  protected ValueFormatterItemHandlerLocator $formatterLocator;
+  protected FormatterItemHandlerLocator $formatterLocator;
 
-  public function __construct(ValueFormatterItemHandlerLocator $formatterLocator) {
+  public function __construct(FormatterItemHandlerLocator $formatterLocator) {
     $this->formatterLocator = $formatterLocator;
   }
 
@@ -48,11 +48,11 @@ abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandle
 
       if (!isset($handlerSettings['default_formatter_output'])) {
         return $values;
-      } elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_FORMATTED) {
+      } elseif ($handlerSettings['default_formatter_output'] === FormatterItemHandlerInterface::OUTPUT_FORMATTED) {
         $values = $handler->getArrayFormatted($item);
-      } elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_RAW) {
+      } elseif ($handlerSettings['default_formatter_output'] === FormatterItemHandlerInterface::OUTPUT_RAW) {
         $values = $item->getValuesAsOneDimensionalArray();
-      } elseif ($handlerSettings['default_formatter_output'] === ValueFormatterItemHandlerInterface::OUTPUT_RAW_FORMATTED) {
+      } elseif ($handlerSettings['default_formatter_output'] === FormatterItemHandlerInterface::OUTPUT_RAW_FORMATTED) {
         $values = $handler->getArrayRawFormatted($item);
       }
     }
