@@ -5,7 +5,7 @@ namespace App\DaViEntity\Repository;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityRepositoryAttr {
+final class RepositoryDefinition implements RepositoryDefinitionInterface {
 
   public const string CLASS_PROPERTY = 'entityRepositoryClass';
 

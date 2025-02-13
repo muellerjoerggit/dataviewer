@@ -9,7 +9,7 @@ use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class EntityRepositoryLocator extends AbstractLocator {
+class RepositoryLocator extends AbstractLocator {
 
   public function __construct(
     private readonly EntityTypeAttributesReader $entityTypeAttributesReader,
@@ -19,7 +19,7 @@ class EntityRepositoryLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityRepository(string | EntityInterface $entityClass): EntityRepositoryInterface {
+  public function getEntityRepository(string | EntityInterface $entityClass): RepositoryInterface {
     $class = $this->entityTypeAttributesReader->getRepositoryClass($entityClass);
 
     if($this->has($class)) {

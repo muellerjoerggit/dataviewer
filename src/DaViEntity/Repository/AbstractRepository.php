@@ -7,25 +7,25 @@ use App\Database\SqlFilter\SqlFilter;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\DataCollections\EntityList;
 use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
-use App\DaViEntity\Creator\EntityCreatorLocator;
-use App\DaViEntity\DataProvider\EntityDataProviderLocator;
+use App\DaViEntity\Creator\CreatorLocator;
+use App\DaViEntity\DataProvider\DataProviderLocator;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\ListProvider\EntityListProviderLocator;
-use App\DaViEntity\Refiner\EntityRefinerLocator;
+use App\DaViEntity\ListProvider\ListProviderLocator;
+use App\DaViEntity\Refiner\RefinerLocator;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
 
-abstract class AbstractEntityRepository implements EntityRepositoryInterface {
+abstract class AbstractRepository implements RepositoryInterface {
 
   public function __construct(
     protected readonly EntityTypesRegister $entityTypesRegister,
     protected readonly MainRepository $mainRepository,
-    protected readonly EntityDataProviderLocator $entityDataProviderLocator,
-    protected readonly EntityCreatorLocator $entityCreatorLocator,
+    protected readonly DataProviderLocator $entityDataProviderLocator,
+    protected readonly CreatorLocator $entityCreatorLocator,
     protected readonly AdditionalDataProviderLocator $additionalDataProviderLocator,
-    protected readonly EntityRefinerLocator $entityRefinerLocator,
-    protected readonly EntityListProviderLocator $entityListProviderLocator,
+    protected readonly RefinerLocator $entityRefinerLocator,
+    protected readonly ListProviderLocator $entityListProviderLocator,
     protected readonly string $entityClass
   ) {}
 

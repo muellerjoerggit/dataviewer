@@ -9,7 +9,7 @@ use App\DaViEntity\EntityKey;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('entity_management.entity_repository')]
-interface EntityRepositoryInterface {
+interface RepositoryInterface {
 
   public function loadEntityData(FilterContainer $filterContainer, array $options = []): array;
 
