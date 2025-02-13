@@ -7,14 +7,12 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class AdditionalDataProvider implements AdditionalDataProviderDefinitionInterface {
 
-  public const string CLASS_PROPERTY = 'additionalDataProviders';
-
   public function __construct(
-    public readonly array $additionalDataProviders,
+    public readonly string $additionalDataProviderClass,
   ) {}
 
-  public function getAdditionalDataProviderClass(): array {
-    return $this->additionalDataProviders;
+  public function getAdditionalDataProviderClass(): string {
+    return $this->additionalDataProviderClass;
   }
 
 }

@@ -407,11 +407,15 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   /**
-   * @return Iterator<AdditionalDataProviderDefinitionInterface[]>
+   * @return Iterator<AdditionalDataProviderDefinitionInterface>
    */
   public function iterateAdditionalDataProviderDefinitions(string $version): Iterator {
     foreach ($this->additionalDataProviderDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof AdditionalDataProviderDefinitionInterface
+      ) {
         continue;
       }
       yield $definition;
@@ -425,7 +429,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getColumnsBuilderDefinition(string $version): ColumnBuilderDefinitionInterface | string {
     foreach ($this->columnBuildersDefinition as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof ColumnBuilderDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -441,7 +449,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getCreatorDefinition(string $version): CreatorDefinitionInterface | string {
     foreach ($this->creatorDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof CreatorDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -457,7 +469,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getDataProviderDefinition(string $version): DataProviderDefinitionInterface | string {
     foreach ($this->dataProviderDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof DataProviderDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -473,7 +489,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getListProviderDefinition(string $version): ListProviderDefinitionInterface | string {
     foreach ($this->listProviderDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof ListProviderDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -489,7 +509,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getRefinerDefinition(string $version): RefinerDefinitionInterface | string {
     foreach ($this->refinerDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof RefinerDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -505,7 +529,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getRepositoryDefinition(string $version): RepositoryDefinitionInterface | string {
     foreach ($this->repositoryDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof RepositoryDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -521,7 +549,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getSearchDefinition(string $version): SearchDefinitionInterface | string {
     foreach ($this->searchDefinitions as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof SearchDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
@@ -537,7 +569,11 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getValidatorDefinition(string $version): ValidatorDefinitionInterface | string {
     foreach ($this->validatorDefinition as $definition) {
-      if(!$definition instanceof VersionListInterface || !$definition->hasVersion($version)) {
+      if(
+        !$definition instanceof VersionListInterface
+        || !$definition->hasVersion($version)
+        || !$definition instanceof ValidatorDefinitionInterface
+      ) {
         continue;
       }
       return $definition;
