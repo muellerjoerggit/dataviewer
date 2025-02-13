@@ -2,6 +2,9 @@
 
 namespace App\Database\SqlFilter;
 
+/**
+ * @deprecated
+ */
 interface SqlFilterDefinitionInterface {
 
   public const int FILTER_TYPE_UNKNOWN = 0;

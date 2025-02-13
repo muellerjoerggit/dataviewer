@@ -2,6 +2,8 @@
 
 namespace App\Database\SqlFilter;
 
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+
 class SqlFilter implements SqlFilterInterface {
 
   private array $options = [];

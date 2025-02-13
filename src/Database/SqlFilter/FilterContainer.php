@@ -3,6 +3,7 @@
 namespace App\Database\SqlFilter;
 
 use Generator;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 
 class FilterContainer {
 
@@ -36,7 +37,7 @@ class FilterContainer {
     return !empty($this->filters);
   }
 
-  public function addFiltersIfNotExists(FilterContainer|array|SqlFilterDefinitionInterface|SqlFilter $filters): FilterContainer {
+  public function addFiltersIfNotExists(FilterContainer | array | SqlFilterDefinitionInterface | SqlFilter $filters): FilterContainer {
     if (($filters instanceof SqlFilterInterface || $filters instanceof SqlFilterDefinitionInterface) && !$this->hasFilter($filters->getFilterKey())) {
       $this->addFilters($filters);
       return $this;

@@ -3,6 +3,7 @@
 namespace App\Database\SqlFilter;
 
 use App\DaViEntity\Schema\EntitySchema;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('sql_filter_handler')]

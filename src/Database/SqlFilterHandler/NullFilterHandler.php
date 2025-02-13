@@ -5,7 +5,7 @@ namespace App\Database\SqlFilterHandler;
 use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\SqlFilter;
 use App\Database\SqlFilter\SqlFilterDefinition;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;

@@ -3,7 +3,9 @@
 namespace App\Database\SqlFilter;
 
 use App\Database\DaViQueryBuilder;
+use App\Database\SqlFilterHandler\Attribute\FilterDefaultValueInterface;
 use App\DaViEntity\Schema\EntitySchema;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 
 class SqlFilterBuilder {
 
@@ -31,7 +33,10 @@ class SqlFilterBuilder {
 
   public function buildFilteredQueryMultipleFilters(DaViQueryBuilder $queryBuilder, FilterContainer $filters, EntitySchema $schema): void {
     foreach ($filters->iterateFilters() as $filter) {
-      if ($filter instanceof SqlFilterDefinitionInterface && $filter->hasDefaultValue()) {
+      if($filter instanceof SqlFilterDefinitionInterface
+        && $filter instanceof FilterDefaultValueInterface
+        && $filter->hasDefaultValue()
+      ) {
         $filter = new SqlFilter($filter, $filter->getDefaultValue(), 'defaultValue_filter');
       }
 

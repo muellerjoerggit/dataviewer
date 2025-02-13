@@ -3,7 +3,7 @@
 namespace App\Database\SqlFilterHandler;
 
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\Database\SqlFilter\TextFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;

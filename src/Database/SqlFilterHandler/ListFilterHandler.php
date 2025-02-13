@@ -3,7 +3,7 @@
 namespace App\Database\SqlFilterHandler;
 
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 /**
@@ -11,6 +11,8 @@ use App\DaViEntity\Schema\EntitySchema;
  * possible separators: semicolon, comma, space, new line
  */
 class ListFilterHandler extends InFilterHandler {
+
+  protected const string COMPONENT_NAME = 'ListFilter';
 
 	public function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
 		$values = $this->processValues($values);
@@ -69,13 +71,7 @@ class ListFilterHandler extends InFilterHandler {
 	}
 
   public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
-		return [
-			'component' => 'ListFilter',
-			'name' => $filterDefinition->getKey(),
-			'title' => $filterDefinition->getTitle(),
-			'description' => $filterDefinition->getDescription(),
-			'defaultValue' => $filterDefinition->getDefaultValue(),
-		];
+		return $this->getFilterComponentInternal($filterDefinition);
 	}
 
 }

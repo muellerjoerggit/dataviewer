@@ -3,7 +3,8 @@
 namespace App\Database\SqlFilterHandler;
 
 use App\Database\SqlFilter\SqlFilter;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\FilterDefaultValueInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;
@@ -35,14 +36,20 @@ abstract class AbstractFilterHandler implements SqlFilterHandlerInterface  {
     $filterKey = $filterDefinition->getKey();
     $title = $filterDefinition->getTitle();
 
-    return [
+    $component = [
       'filterKey' => $filterKey,
       'title' => $title,
       'description' => $filterDefinition->getDescription(),
-      'defaultValue' => $filterDefinition->getDefaultValue(),
+      'defaultValue' => null,
       'mandatory' => false,
       'additional' => []
     ];
+
+    if($filterDefinition instanceof FilterDefaultValueInterface && $filterDefinition->hasDefaultValue()) {
+      $component['defaultValue'] = $filterDefinition->getDefaultValue();
+    }
+
+    return $component;
   }
 
   protected function getColumn(SqlFilterInterface $filter, EntitySchema $schema): string {

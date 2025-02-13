@@ -4,7 +4,7 @@ namespace App\Database\SqlFilterHandler;
 
 use App\Database\DatabaseInterface;
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;
@@ -124,13 +124,7 @@ class DateTimeFilterHandler extends AbstractFilterHandler implements SqlFilterHa
 	}
 
   public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
-		return [
-			'component' => 'DateTimeFilter',
-			'name' => $filterDefinition->getKey(),
-			'title' => $filterDefinition->getTitle(),
-			'description' => $filterDefinition->getDescription(),
-			'defaultValue' => $filterDefinition->getDefaultValue(),
-		];
+		return $this->getFilterComponentInternal($filterDefinition);
 	}
 
 }

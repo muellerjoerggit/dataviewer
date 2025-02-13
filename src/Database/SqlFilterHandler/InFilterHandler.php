@@ -3,12 +3,14 @@
 namespace App\Database\SqlFilterHandler;
 
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 class InFilterHandler extends AbstractFilterHandler implements InFilterInterface, SqlFilterHandlerInterface {
+
+  protected const string COMPONENT_NAME = 'InFilter';
 
   public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $value = $filter->getValue();
@@ -38,12 +40,6 @@ class InFilterHandler extends AbstractFilterHandler implements InFilterInterface
 	}
 
 	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
-		return [
-			'component' => 'InFilter',
-			'name' => $filterDefinition->getKey(),
-			'title' => $filterDefinition->getTitle(),
-			'description' => $filterDefinition->getDescription(),
-			'defaultValue' => $filterDefinition->getDefaultValue(),
-		];
+    return $this->getFilterComponentInternal($filterDefinition);
 	}
 }

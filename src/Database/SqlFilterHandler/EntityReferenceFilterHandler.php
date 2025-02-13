@@ -3,11 +3,11 @@
 namespace App\Database\SqlFilterHandler;
 
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinitionAttr;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 
 class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFilterInterface {
@@ -40,23 +40,32 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
 	}
 
 	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
+    if(!$filterDefinition instanceof SqlFilterEntityReferenceDefinitionAttr) {
+      return [];
+    }
+
 		$property = $filterDefinition->getProperty();
 		$config = $schema->getProperty($property);
 
-		$targetEntityType = $filterDefinition->getSetting(EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE, '');
-		if(empty($targetEntityType)) {
-			$handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($config);
-      $targetEntityType = $handler->getTargetEntityType($config);
-		}
+		if($filterDefinition->hasTargetEntity()) {
+      $targetEntityClass = $filterDefinition->getTargetEntityClass();
+		} else {
+      $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($config);
+      $targetEntityClass = $handler->getTargetEntityType($config);
+    }
 
-		$targetSchema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);
+		$targetSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);
 
-		$entityTypeLabel = $targetSchema->getEntityLabel();
     $uniqueProperty = $targetSchema->getUniqueProperties();
     $uniqueProperty = reset($uniqueProperty);
     $uniqueProperty = reset($uniqueProperty);
 
-		return $this->buildComponent($filterDefinition, $entityTypeLabel, $targetEntityType, $uniqueProperty);
+		return $this->buildComponent(
+      $filterDefinition,
+      $targetSchema->getEntityLabel(),
+      $targetSchema->getEntityType(),
+      $uniqueProperty
+    );
 	}
 
 	protected function buildComponent(SqlFilterDefinitionInterface $filterDefinition, string $entityTypeLabel, string $targetEntityType, string $uniqueProperty): array {

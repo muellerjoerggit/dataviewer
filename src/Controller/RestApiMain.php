@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerLocator;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -71,11 +71,7 @@ class RestApiMain extends AbstractController {
 
     $component = $handler->getFilterComponent($filterDefinition, $schema);
 
-    if(!empty($component)) {
-      return $component;
-    }
-
-    return [];
+    return !empty($component) ? $component : [];
   }
 
 }

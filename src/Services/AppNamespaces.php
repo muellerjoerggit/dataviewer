@@ -31,8 +31,7 @@ class AppNamespaces {
   }
 
   public static function getShortName(string $namespace): string {
-    $pos = mb_strrpos($namespace, '\\' , -1);
-    return mb_substr($namespace, $pos + 1);
+    return mb_substr($namespace, mb_strrpos($namespace, '\\' , -1) + 1);
   }
 
 }

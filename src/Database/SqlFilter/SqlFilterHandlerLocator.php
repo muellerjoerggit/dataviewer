@@ -4,9 +4,9 @@ namespace App\Database\SqlFilter;
 
 use App\Database\SqlFilterHandler\NullFilterHandler;
 use App\Services\AbstractLocator;
-use App\Services\AppNamespaces;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 
 class SqlFilterHandlerLocator extends AbstractLocator {
 
@@ -18,10 +18,10 @@ class SqlFilterHandlerLocator extends AbstractLocator {
   }
 
   public function getFilterHandlerFromFilterDefinition(SqlFilterDefinitionInterface $filterDefinition): SqlFilterHandlerInterface {
-    $handlerName = AppNamespaces::buildNamespace(AppNamespaces::SQL_FILTER_HANDLER, $filterDefinition->getHandler());
+    $handler = $filterDefinition->getFilterHandler();
 
-    if ($handlerName && $this->has($handlerName)) {
-      return $this->get($handlerName);
+    if ($handler && $this->has($handler)) {
+      return $this->get($handler);
     } else {
       return $this->get(NullFilterHandler::class);
     }
