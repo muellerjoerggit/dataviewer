@@ -5,7 +5,7 @@ namespace App\DaViEntity\ListProvider;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityListProvider {
+final class ListProviderDefinition implements ListProviderDefinitionInterface {
 
   public const string CLASS_PROPERTY = 'entityListClass';
 

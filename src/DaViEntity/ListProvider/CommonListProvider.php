@@ -8,13 +8,13 @@ use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilterBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DataCollections\EntityList;
-use App\DaViEntity\ColumnBuilder\EntityColumnBuilderLocator;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderLocator;
 use App\DaViEntity\EntityDataMapperInterface;
 use App\DaViEntity\EntityInterface;
-use App\DaViEntity\EntityLabel\EntityLabelCrafterLocator;
+use App\DaViEntity\EntityLabel\LabelCrafterLocator;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonEntityListProvider implements EntityListProviderInterface {
+class CommonListProvider implements ListProviderInterface {
 
   use ExecuteQueryBuilderTrait;
 
@@ -23,9 +23,9 @@ class CommonEntityListProvider implements EntityListProviderInterface {
     private readonly SqlFilterBuilder $sqlFilterBuilder,
     private readonly DatabaseLocator $databaseLocator,
     private readonly BaseQueryLocator $queryLocator,
-    private readonly EntityColumnBuilderLocator $sqlEntityLabelCrafterLocator,
-    private readonly EntityLabelCrafterLocator $entityLabelCrafterLocator,
-    private readonly EntityColumnBuilderLocator $entityColumnBuilderLocator,
+    private readonly ColumnBuilderLocator $sqlEntityLabelCrafterLocator,
+    private readonly LabelCrafterLocator $entityLabelCrafterLocator,
+    private readonly ColumnBuilderLocator $entityColumnBuilderLocator,
   ) {}
 
   public function getEntityList(string | EntityInterface $entityClass, FilterContainer $filterContainer): EntityList {

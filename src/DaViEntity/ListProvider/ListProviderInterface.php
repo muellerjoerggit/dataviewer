@@ -8,7 +8,7 @@ use App\DaViEntity\EntityInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('entity_management.entity_list_provider')]
-interface EntityListProviderInterface {
+interface ListProviderInterface {
 
   public function getEntityList(string | EntityInterface $entityClass, FilterContainer $filterContainer): EntityList;
 
