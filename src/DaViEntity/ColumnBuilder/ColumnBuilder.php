@@ -5,7 +5,7 @@ namespace App\DaViEntity\ColumnBuilder;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityColumnBuilder {
+final class ColumnBuilder {
 
   public const string CLASS_PROPERTY = 'entityColumnBuilderClass';
 

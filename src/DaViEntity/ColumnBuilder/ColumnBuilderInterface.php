@@ -7,7 +7,7 @@ use App\DaViEntity\EntityInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('entity_management.entity_column_builder')]
-interface EntityColumnBuilderInterface {
+interface ColumnBuilderInterface {
 
   public function buildLabelColumn(DaViQueryBuilder $queryBuilder, string | EntityInterface $entityClass, bool $withEntityLabel = false): void;
 

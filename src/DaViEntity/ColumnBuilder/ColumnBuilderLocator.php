@@ -8,7 +8,7 @@ use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class EntityColumnBuilderLocator extends AbstractLocator {
+class ColumnBuilderLocator extends AbstractLocator {
 
   public function __construct(
     private readonly EntityTypeAttributesReader $entityTypeAttributesReader,
@@ -18,13 +18,13 @@ class EntityColumnBuilderLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityColumnBuilder(string | EntityInterface $entityClass): EntityColumnBuilderInterface {
+  public function getEntityColumnBuilder(string | EntityInterface $entityClass): ColumnBuilderInterface {
     $class = $this->entityTypeAttributesReader->getEntityColumnBuilderClass($entityClass);
 
     if($this->has($class)) {
       return $this->get($class);
     } else {
-      return $this->get(NullEntityColumnBuilder::class);
+      return $this->get(NullColumnBuilder::class);
     }
   }
 

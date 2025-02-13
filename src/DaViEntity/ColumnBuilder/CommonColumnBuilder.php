@@ -7,7 +7,7 @@ use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonEntityColumnBuilder implements EntityColumnBuilderInterface {
+class CommonColumnBuilder implements ColumnBuilderInterface {
 
   public function __construct(
     private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
