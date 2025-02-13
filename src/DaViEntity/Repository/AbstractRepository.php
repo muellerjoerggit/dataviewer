@@ -30,7 +30,7 @@ abstract class AbstractRepository implements RepositoryInterface {
   ) {}
 
   public function loadEntityData(FilterContainer $filterContainer, array $options = []): array {
-    $entityDataProvider = $this->entityDataProviderLocator->getEntityDataProvider($this->entityClass);
+    $entityDataProvider = $this->entityDataProviderLocator->getEntityDataProvider($this->entityClass, $filterContainer->getClient());
     return $entityDataProvider->fetchEntityData($this->entityClass, $filterContainer, $options);
   }
 
@@ -38,7 +38,7 @@ abstract class AbstractRepository implements RepositoryInterface {
     $data = $this->loadEntityData($filterContainer, $options);
     $ret = [];
 
-    $creator = $this->entityCreatorLocator->getEntityCreator($this->entityClass);
+    $creator = $this->entityCreatorLocator->getEntityCreator($this->entityClass, $filterContainer->getClient());
 
     foreach ($data as $row) {
       $ret[] = $creator->createEntity($this->entityClass, $filterContainer->getClient(), $row);
@@ -54,7 +54,7 @@ abstract class AbstractRepository implements RepositoryInterface {
 
     $data = $this->loadEntityData($filterContainer);
 
-    $creator = $this->entityCreatorLocator->getEntityCreator($this->entityClass);
+    $creator = $this->entityCreatorLocator->getEntityCreator($this->entityClass, $entityKey->getClient());
 
     if(empty($data)){
       $entity = $creator->createMissingEntity($entityKey);
@@ -69,16 +69,16 @@ abstract class AbstractRepository implements RepositoryInterface {
   }
 
   public function getEntityList(FilterContainer $filterContainer): EntityList {
-    return $this->entityListProviderLocator->getEntityListProvider($this->entityClass)->getEntityList($this->entityClass, $filterContainer);
+    return $this->entityListProviderLocator->getEntityListProvider($this->entityClass, $filterContainer->getClient())->getEntityList($this->entityClass, $filterContainer);
   }
 
   protected function refineEntity(EntityInterface $entity): void {
     $this->processAdditionalData($entity);
-    $this->entityRefinerLocator->getEntityRefiner($entity)->refineEntity($entity);
+    $this->entityRefinerLocator->getEntityRefiner($entity::class, $entity->getClient())->refineEntity($entity);
   }
 
   protected function processAdditionalData(EntityInterface $entity): void {
-    $dataProviders = $this->additionalDataProviderLocator->getAdditionalDataProviders($entity::class);
+    $dataProviders = $this->additionalDataProviderLocator->getAdditionalDataProviders($entity::class, $entity->getClient());
     foreach ($dataProviders as $dataProvider) {
       $dataProvider->loadData($entity);
     }

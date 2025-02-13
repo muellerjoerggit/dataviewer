@@ -40,7 +40,7 @@ class CommonListProvider implements ListProviderInterface {
 
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityClass);
 
-    $entityColumnBuilder = $this->entityColumnBuilderLocator->getEntityColumnBuilder($entityClass);
+    $entityColumnBuilder = $this->entityColumnBuilderLocator->getEntityColumnBuilder($entityClass, $filterContainer->getClient());
 
     $entityColumnBuilder->buildLabelColumn($queryBuilder, $entityClass);
     $entityColumnBuilder->buildEntityKeyColumn($queryBuilder, $entityClass);

@@ -31,7 +31,7 @@ class AdditionalDataProviderFromTableReferences implements AdditionalDataProvide
       $handler->joinTableConditionValue($queryBuilder, $tableReference, $entity);
       $result = $this->executeQueryBuilderInternal($queryBuilder, [], []);
       $result = array_reduce($result, 'array_merge_recursive', []);
-      $entityCreator = $this->entityCreatorLocator->getEntityCreator($entity::class);
+      $entityCreator = $this->entityCreatorLocator->getEntityCreator($entity::class, $entity->getClient());
       $entityCreator->processRow($entity, $result);
     }
   }

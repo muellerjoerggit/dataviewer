@@ -14,6 +14,7 @@ use App\DaViEntity\Schema\EntityTypesRegister;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemInterface;
+use App\Services\ClientService;
 
 class DaViEntityManager {
 
@@ -27,7 +28,7 @@ class DaViEntityManager {
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
-    return $this->getEntityRepositoryFromEntityType($entityType)->loadEntityData($filterContainer, $options);
+    return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->loadEntityData($filterContainer, $options);
   }
 
   public function getEntityController($input): EntityControllerInterface {
@@ -35,7 +36,7 @@ class DaViEntityManager {
   }
 
   public function loadMultipleEntities(string $entityType, FilterContainer $filterContainer, array $options = []): array {
-    return $this->getEntityRepositoryFromEntityType($entityType)->loadMultipleEntities($filterContainer, $options);
+    return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->loadMultipleEntities($filterContainer, $options);
   }
 
   public function loadAggregatedEntityData($input, string $client, string|AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $options = []): array|TableData {
@@ -75,12 +76,12 @@ class DaViEntityManager {
 
   public function getEntityListFromSearchString(string $client, string $entityType, string $searchString): array {
     $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
-    $entityListSearch = $this->entityListSearchLocator->getFastSearch($entityClass);
+    $entityListSearch = $this->entityListSearchLocator->getSimpleSearch($entityClass, $client);
     return $entityListSearch->getEntityListFromSearchString($entityClass, $client, $searchString);
   }
 
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
-    return $this->getEntityRepositoryFromEntityType($entityKey->getEntityType())->loadEntityByEntityKey($entityKey);
+    return $this->getEntityRepositoryFromEntityType($entityKey->getEntityType(), $entityKey->getClient())->loadEntityByEntityKey($entityKey);
   }
 
   public function createNullEntity(): EntityInterface {
@@ -131,11 +132,11 @@ class DaViEntityManager {
   }
 
   public function getEntityList(string $entityClass, FilterContainer $filterContainer): EntityList {
-    return $this->getEntityRepository($entityClass)->getEntityList($filterContainer);
+    return $this->getEntityRepository($entityClass, $filterContainer->getClient())->getEntityList($filterContainer);
   }
 
   public function getEntityListFromEntityType(string $entityType, FilterContainer $filterContainer): EntityList {
-    return $this->getEntityRepositoryFromEntityType($entityType)->getEntityList($filterContainer);
+    return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->getEntityList($filterContainer);
   }
 
   /**
@@ -167,13 +168,13 @@ class DaViEntityManager {
     return $currentEntities;
   }
 
-  protected function getEntityRepository(string | EntityInterface $entityClass): RepositoryInterface {
-    return $this->entityRepositoryLocator->getEntityRepository($entityClass);
+  protected function getEntityRepository(string | EntityInterface $entityClass, string $client): RepositoryInterface {
+    return $this->entityRepositoryLocator->getEntityRepository($entityClass, $client);
   }
 
-  protected function getEntityRepositoryFromEntityType(string $entityType): RepositoryInterface {
+  protected function getEntityRepositoryFromEntityType(string $entityType, string $client): RepositoryInterface {
     $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
-    return $this->getEntityRepository($entityClass);
+    return $this->getEntityRepository($entityClass, $client);
   }
 
 }

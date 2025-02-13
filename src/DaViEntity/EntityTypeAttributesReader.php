@@ -123,11 +123,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
     return $this->getAttributeKey($classname, BaseQuery::class, BaseQuery::CLASS_PROPERTY, '');
   }
 
-  public function getEntityListSearchClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, SimpleSearchDefinition::class, SimpleSearchDefinition::CLASS_PROPERTY, '');
-  }
-
   public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
     return $this->getAttributeKey($classname, LabelCrafter::class, LabelCrafter::CLASS_PROPERTY, '');

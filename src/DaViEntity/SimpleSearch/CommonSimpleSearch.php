@@ -42,7 +42,7 @@ class CommonSimpleSearch implements SimpleSearchInterface {
     $queryBuilder = $this->queryLocator->getBaseQuery($entityClass)->buildQueryFromSchema($entityClass, $client, $options);
     $queryBuilder->select($uniqueColumn . ' AS uniqueKey');
 
-    $entityColumnBuilder = $this->entityColumnBuilderLocator->getEntityColumnBuilder($entityClass);
+    $entityColumnBuilder = $this->entityColumnBuilderLocator->getEntityColumnBuilder($entityClass, $client);
 
     $entityColumnBuilder->buildLabelColumn($queryBuilder, $entityClass);
     $entityColumnBuilder->buildEntityKeyColumn($queryBuilder, $entityClass);
