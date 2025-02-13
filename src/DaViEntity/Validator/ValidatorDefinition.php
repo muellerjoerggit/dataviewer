@@ -11,4 +11,12 @@ class ValidatorDefinition implements ValidatorDefinitionInterface {
     public readonly string $validatorClass,
   ) {}
 
+  public function getValidatorClass(): string {
+    return $this->validatorClass;
+  }
+
+  public function isValid(): bool {
+    return !empty($this->validatorClass);
+  }
+
 }

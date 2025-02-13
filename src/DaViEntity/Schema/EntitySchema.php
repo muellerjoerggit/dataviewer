@@ -579,7 +579,7 @@ class EntitySchema implements EntitySchemaInterface {
     return $this;
   }
 
-  public function getValidatorDefinition(string $version): ValidatorDefinitionInterface | string {
+  public function getValidatorClass(string $version): string {
     foreach ($this->validatorDefinition as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -588,7 +588,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getValidatorClass();
     }
 
     return '';
