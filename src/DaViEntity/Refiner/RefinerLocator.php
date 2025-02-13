@@ -8,7 +8,7 @@ use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class EntityRefinerLocator extends AbstractLocator {
+class RefinerLocator extends AbstractLocator {
 
   public function __construct(
     private readonly EntityTypeAttributesReader $entityTypeAttributesReader,
@@ -18,13 +18,13 @@ class EntityRefinerLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityRefiner(string | EntityInterface $entityClass): EntityRefinerInterface {
+  public function getEntityRefiner(string | EntityInterface $entityClass): RefinerInterface {
     $class = $this->entityTypeAttributesReader->getEntityRefinerClass($entityClass);
 
     if($this->has($class)) {
       return $this->get($class);
     } else {
-      return $this->get(NullEntityRefiner::class);
+      return $this->get(NullRefiner::class);
     }
   }
 

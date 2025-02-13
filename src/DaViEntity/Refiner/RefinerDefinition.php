@@ -5,7 +5,7 @@ namespace App\DaViEntity\Refiner;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityRefiner {
+class RefinerDefinition implements RefinerDefinitionInterface {
 
   public const string CLASS_PROPERTY = 'entityRefinerClass';
 

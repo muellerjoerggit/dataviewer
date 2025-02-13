@@ -8,7 +8,7 @@ use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\Property\PropertyBuilder;
 use App\Item\ReferenceItemInterface;
 
-class CommonEntityRefiner implements EntityRefinerInterface {
+class CommonRefiner implements RefinerInterface {
 
   public function __construct(
     private readonly PropertyBuilder $propertyBuilder,
