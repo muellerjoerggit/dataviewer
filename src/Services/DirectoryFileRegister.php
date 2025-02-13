@@ -55,6 +55,10 @@ class DirectoryFileRegister {
     return $this->getSrcDir() . '/Services/BackgroundTaskCommands';
   }
 
+  public function getFeatureDir(): string {
+    return $this->getSrcDir() . '/Feature/Features';
+  }
+
   public function getConsoleDir(): string {
     return $this->getRootDir() . '/bin/console';
   }

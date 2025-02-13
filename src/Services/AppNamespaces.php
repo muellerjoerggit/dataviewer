@@ -23,6 +23,8 @@ class AppNamespaces {
 
   public const string NAMESPACE_EXPORT_FORMATTER = 'App\\Services\\Export\\ExportFormatterHandler';
 
+  public const string NAMESPACE_FEATURES = 'App\\Feature\\Features';
+
   public static function buildNamespace(string $namespace, string ...$parts): string {
     $namespace = str_ends_with($namespace, '\\') ? substr($namespace, 0, -1) : $namespace;
     return array_reduce($parts, function($result, $part) {
