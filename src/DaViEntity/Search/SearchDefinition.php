@@ -1,11 +1,11 @@
 <?php
 
-namespace App\DaViEntity\ListSearch;
+namespace App\DaViEntity\Search;
 
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityListSearch {
+class SearchDefinition implements SearchDefinitionInterface {
 
   public const string CLASS_PROPERTY = 'entityListSearch';
 

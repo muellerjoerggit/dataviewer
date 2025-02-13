@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\ListSearch;
+namespace App\DaViEntity\Search;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
@@ -8,7 +8,7 @@ use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class EntityListSearchLocator extends AbstractLocator {
+class SearchLocator extends AbstractLocator {
 
   public function __construct(
     private readonly EntityTypeAttributesReader $entityTypeAttributesReader,
@@ -18,13 +18,13 @@ class EntityListSearchLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityListSearchClass(string | EntityInterface $entityClass): EntityListSearchInterface {
+  public function getEntityListSearchClass(string | EntityInterface $entityClass): SearchInterface {
     $class = $this->entityTypeAttributesReader->getEntityListSearchClass($entityClass);
 
     if($this->has($class)) {
       return $this->get($class);
     } else {
-      return $this->get(NullEntityListSearch::class);
+      return $this->get(NullSearch::class);
     }
   }
 

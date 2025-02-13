@@ -1,17 +1,17 @@
 <?php
 
-namespace App\DaViEntity\ListSearch;
+namespace App\DaViEntity\Search;
 
 use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\DaViQueryBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
-use App\DaViEntity\ColumnBuilder\EntityColumnBuilderLocator;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderLocator;
 use App\DaViEntity\EntityDataMapperInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonEntitySearch implements EntityListSearchInterface {
+class CommonSearch implements SearchInterface {
 
   use ExecuteQueryBuilderTrait;
 
@@ -19,7 +19,7 @@ class CommonEntitySearch implements EntityListSearchInterface {
     protected readonly EntityDataMapperInterface $dataMapper,
     protected readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
     protected readonly BaseQueryLocator $queryLocator,
-    protected readonly EntityColumnBuilderLocator $entityColumnBuilderLocator,
+    protected readonly ColumnBuilderLocator $entityColumnBuilderLocator,
   ) {}
 
   public function getEntityListFromSearchString(string | EntityInterface $entityClass, string $client, string $searchString): array {
