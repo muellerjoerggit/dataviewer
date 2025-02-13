@@ -7,10 +7,16 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 class RefinerDefinition implements RefinerDefinitionInterface {
 
-  public const string CLASS_PROPERTY = 'entityRefinerClass';
-
   public function __construct(
-    public readonly string $entityRefinerClass,
+    public readonly string $refinerClass,
   ) {}
+
+  public function getRefinerClass(): string {
+    return $this->refinerClass;
+  }
+
+  public function isValid(): bool {
+    return !empty($this->refinerClass);
+  }
 
 }

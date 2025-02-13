@@ -509,11 +509,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addRefinerDefinition(RefinerDefinitionInterface $definition): EntitySchemaInterface {
-    $this->refinerDefinitions[] = $definition;
+    if($definition->isValid()) {
+      $this->refinerDefinitions[] = $definition;
+    }
     return $this;
   }
 
-  public function getRefinerDefinition(string $version): RefinerDefinitionInterface | string {
+  public function getRefinerClass(string $version): string {
     foreach ($this->refinerDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -522,7 +524,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getRefinerClass();
     }
 
     return '';

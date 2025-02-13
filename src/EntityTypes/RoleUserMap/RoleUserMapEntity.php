@@ -36,7 +36,7 @@ use App\Item\Property\PreDefinedAttributes\PreDefined;
   SearchDefinition(entityListSearch: CommonSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
-  RefinerDefinition(entityRefinerClass: CommonRefiner::class),
+  RefinerDefinition(refinerClass: CommonRefiner::class),
   ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
   ListProviderDefinition(listProviderClass: CommonListProvider::class)
 ]

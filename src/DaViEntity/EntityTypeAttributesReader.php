@@ -128,11 +128,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
     return $this->getAttributeKey($classname, SearchDefinition::class, SearchDefinition::CLASS_PROPERTY, '');
   }
 
-  public function getEntityListProviderClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, ListProviderDefinition::class, ListProviderDefinition::CLASS_PROPERTY, '');
-  }
-
   public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
     return $this->getAttributeKey($classname, LabelCrafter::class, LabelCrafter::CLASS_PROPERTY, '');
@@ -141,16 +136,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
   public function getRepositoryClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
     return $this->getAttributeKey($classname, RepositoryDefinition::class, RepositoryDefinition::CLASS_PROPERTY, '');
-  }
-
-  public function getEntityDataProviderClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, DataProviderDefinition::class, DataProviderDefinition::CLASS_PROPERTY, '');
-  }
-
-  public function getEntityRefinerClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, RefinerDefinition::class, RefinerDefinition::CLASS_PROPERTY, '');
   }
 
   private function resolveEntityClass(string | EntityInterface $classname): string {

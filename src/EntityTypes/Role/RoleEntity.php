@@ -38,7 +38,7 @@ use App\Item\Property\PropertyItemInterface;
 ]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
   ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
-  RefinerDefinition(entityRefinerClass: CommonRefiner::class),
+  RefinerDefinition(refinerClass: CommonRefiner::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
   SearchDefinition(entityListSearch: CommonSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
