@@ -17,7 +17,7 @@ class VersionProperties {
 
   public function filterPropertyKeysByVersion(string | EntityInterface $entityClass, array $input, string $client): array {
     $clientVersion = $this->clientService->getClientVersion($client);
-    $availableVersions = $this->versionService->getVersionListSince($clientVersion);
+    $availableVersions = $this->versionService->getVersionSince($clientVersion);
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityClass);
 
     $ret = [];

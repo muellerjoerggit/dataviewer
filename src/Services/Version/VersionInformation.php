@@ -13,7 +13,7 @@ class VersionInformation {
    */
   public function __construct(
     private readonly string $version,
-    private readonly int $type
+    private readonly int $type,
   ) {}
 
   public function getVersion(): string {

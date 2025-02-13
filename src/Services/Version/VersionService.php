@@ -9,20 +9,13 @@ class VersionService {
   public const string YAML_PARAM_VERSION = 'version';
   public const string YAML_PARAM_SINCE_VERSION = 'sinceVersion';
 
-  private VersionList $versionList;
+  private array $versionKeys = [];
+  private array $versions = [];
 
   public function __construct(
     private readonly VersionRepository $versionRepository,
   ) {
     $this->init();
-  }
-
-  public function getVersionList(): VersionList {
-    return $this->versionList;
-  }
-
-  public function getVersionListSince(string $sinceVersionId): array {
-    return $this->versionList->getAllVersionsSince($sinceVersionId);
   }
 
   private function init(): void {
@@ -49,6 +42,28 @@ class VersionService {
       }
     } while (true);
 
-    $this->versionList = new VersionList($list);
+    $this->versions = $list;
+    $this->versionKeys = array_keys($list);
+  }
+
+  public function getAllVersionsUntil(string $version): array {
+    $index = array_search($version, $this->versionKeys);
+    $index = $index ? $index + 1 : null;
+
+    return array_slice($this->versions, 0, $index, true);
+  }
+
+  public function getAllVersionsBetween(string $versionBegin, string $versionEnd): array {
+    $begin = array_search($versionBegin, $this->versionKeys) ?? 0;
+    $end = array_search($versionEnd, $this->versionKeys) ?? null;
+
+    return array_slice($this->versions, $begin, $end + 1, true);
+  }
+
+  public function getVersionSince(string $version): array {
+    $index = array_search($version, $this->versionKeys);
+    $index = $index ? $index : 0;
+
+    return array_slice($this->versions, $index, null, true);
   }
 }
