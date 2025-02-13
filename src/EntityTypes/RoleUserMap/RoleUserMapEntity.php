@@ -35,10 +35,10 @@ use App\Item\Property\PreDefinedAttributes\PreDefined;
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
   SearchDefinition(entityListSearch: CommonSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
-  CreatorDefinition(entityCreator: CommonCreator::class),
+  CreatorDefinition(creatorClass: CommonCreator::class),
   RefinerDefinition(entityRefinerClass: CommonRefiner::class),
   ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
-  ListProviderDefinition(entityListClass: CommonListProvider::class)
+  ListProviderDefinition(listProviderClass: CommonListProvider::class)
 ]
 #[DatabaseAttr(
   databaseClass: DaViDatabaseOne::class,

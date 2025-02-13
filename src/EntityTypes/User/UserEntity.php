@@ -44,12 +44,12 @@ use App\Services\EntityActionHandler\UrlActionHandler;
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
   SearchDefinition(entityListSearch: CommonSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
-  CreatorDefinition(entityCreator: CommonCreator::class),
+  CreatorDefinition(creatorClass: CommonCreator::class),
   RefinerDefinition(entityRefinerClass: CommonRefiner::class),
   ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
-  ListProviderDefinition(entityListClass: CommonListProvider::class)
+  ListProviderDefinition(listProviderClass: CommonListProvider::class)
 ]
-#[AdditionalDataProvider(additionalDataProviders: [AdditionalDataProviderFromTableReferences::class])]
+#[AdditionalDataProvider(additionalDataProviderClass: AdditionalDataProviderFromTableReferences::class)]
 #[DatabaseAttr(
   databaseClass: DaViDatabaseOne::class,
   baseTable: 'usr_data'),

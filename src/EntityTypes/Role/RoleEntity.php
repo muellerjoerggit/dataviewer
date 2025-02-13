@@ -39,10 +39,10 @@ use App\Item\Property\PropertyItemInterface;
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
   ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
   RefinerDefinition(entityRefinerClass: CommonRefiner::class),
-  CreatorDefinition(entityCreator: CommonCreator::class),
+  CreatorDefinition(creatorClass: CommonCreator::class),
   SearchDefinition(entityListSearch: CommonSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
-  ListProviderDefinition(entityListClass: CommonListProvider::class),
+  ListProviderDefinition(listProviderClass: CommonListProvider::class),
 ]
 #[DatabaseAttr(
   databaseClass: DaViDatabaseOne::class,

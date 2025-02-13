@@ -487,11 +487,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addListProviderDefinition(ListProviderDefinitionInterface $definition): EntitySchemaInterface {
-    $this->listProviderDefinitions[] = $definition;
+    if($definition->isValid()) {
+      $this->listProviderDefinitions[] = $definition;
+    }
     return $this;
   }
 
-  public function getListProviderDefinition(string $version): ListProviderDefinitionInterface | string {
+  public function getListProviderClass(string $version): string {
     foreach ($this->listProviderDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -500,7 +502,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getListProviderClass();
     }
 
     return '';
