@@ -5,6 +5,7 @@ namespace App\Database\SqlFilterHandler;
 use App\Database\DaViQueryBuilder;
 use App\Database\SqlFilter\SqlFilter;
 use App\Database\SqlFilter\SqlFilterDefinition;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
@@ -13,14 +14,11 @@ use App\DaViEntity\Schema\EntitySchema;
 class NullFilterHandler implements SqlFilterHandlerInterface{
 
 	public static function getNullFilterDefinition(): SqlFilterDefinitionInterface {
-		$filterArray = [
-			'name' => 'NullFilter',
-			'title' => 'Null filter',
-			'description' => 'Null filter',
-			'handler' => 'NullFilterHandler',
-		];
-
-		return SqlFilterDefinition::createFromArray($filterArray);
+		return new SqlFilterDefinitionAttr(
+      NullFilterHandler::class,
+      'Null filter',
+      'Null Filter Fallback, wenn es irgendwelche Probleme mit den Filtern gibt'
+    );
 	}
 
 	public static function getNullFilter(): SqlFilterInterface {
