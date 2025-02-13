@@ -7,9 +7,9 @@ use App\DataCollections\EntityList;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\Repository\EntityRepositoryInterface;
+use App\DaViEntity\Repository\RepositoryInterface;
 
-class NullRepository implements EntityRepositoryInterface {
+class NullRepository implements RepositoryInterface {
 
   public function __construct(
     private readonly DaViEntityManager $entityManager,

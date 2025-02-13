@@ -5,36 +5,40 @@ namespace App\EntityTypes\RoleUserMap;
 use App\Database\BaseQuery\BaseQuery;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
+use App\Database\SqlFilterHandler\EntityReferenceFilterHandler;
 use App\DaViEntity\AbstractEntity;
-use App\DaViEntity\ColumnBuilder\CommonEntityColumnBuilder;
-use App\DaViEntity\ColumnBuilder\EntityColumnBuilder;
-use App\DaViEntity\Creator\CommonEntityCreator;
-use App\DaViEntity\Creator\EntityCreator;
-use App\DaViEntity\DataProvider\CommonSqlEntityDataProvider;
-use App\DaViEntity\DataProvider\EntityDataProvider;
-use App\DaViEntity\ListProvider\CommonEntityListProvider;
-use App\DaViEntity\ListProvider\EntityListProvider;
-use App\DaViEntity\ListSearch\CommonEntitySearch;
-use App\DaViEntity\ListSearch\EntityListSearch;
-use App\DaViEntity\Refiner\CommonEntityRefiner;
-use App\DaViEntity\Refiner\EntityRefiner;
-use App\DaViEntity\Repository\EntityRepositoryAttr;
+use App\DaViEntity\ColumnBuilder\CommonColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\Creator\CommonCreator;
+use App\DaViEntity\Creator\CreatorDefinition;
+use App\DaViEntity\DataProvider\CommonSqlDataProvider;
+use App\DaViEntity\DataProvider\DataProviderDefinition;
+use App\DaViEntity\ListProvider\CommonListProvider;
+use App\DaViEntity\ListProvider\ListProviderDefinition;
+use App\DaViEntity\Search\CommonSearch;
+use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\Refiner\CommonRefiner;
+use App\DaViEntity\Refiner\RefinerDefinition;
+use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
-use App\Item\Property\Attribute\UniquePropertyAttr;
+use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\UniquePropertyDefinition;
+use App\Item\Property\PreDefinedAttributes\PreDefined;
 
-#[EntityRepositoryAttr(entityRepositoryClass: RoleUserMapRepository::class)]
+#[RepositoryDefinition(entityRepositoryClass: RoleUserMapRepository::class)]
 #[EntityTypeAttr(name: 'RoleUserMap', label: 'Rolle/User Map')]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
-  EntityListSearch(entityListSearch: CommonEntitySearch::class),
-  EntityDataProvider(dataProviderClass: CommonSqlEntityDataProvider::class),
-  EntityCreator(entityCreator: CommonEntityCreator::class),
-  EntityRefiner(entityRefinerClass: CommonEntityRefiner::class),
-  EntityColumnBuilder(entityColumnBuilderClass: CommonEntityColumnBuilder::class),
-  EntityListProvider(entityListClass: CommonEntityListProvider::class)
+  SearchDefinition(entityListSearch: CommonSearch::class),
+  DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
+  CreatorDefinition(entityCreator: CommonCreator::class),
+  RefinerDefinition(entityRefinerClass: CommonRefiner::class),
+  ColumnBuilder(entityColumnBuilderClass: CommonColumnBuilder::class),
+  ListProviderDefinition(entityListClass: CommonListProvider::class)
 ]
 #[DatabaseAttr(
   databaseClass: DaViDatabaseOne::class,
@@ -44,16 +48,34 @@ class RoleUserMapEntity extends AbstractEntity {
 
   use EntityPropertyTrait;
 
-  #[UniquePropertyAttr,
+  #[UniquePropertyDefinition,
     LabelPropertyAttr,
     EntityOverviewPropertyAttr
   ]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'integer'],
+  ])]
+  #[SqlFilterDefinitionAttr(
+    filterHandler: EntityReferenceFilterHandler::class,
+    title: 'Benutzer suchen',
+    description: 'Alle Rollen des Nutzers anzeigen',
+    group: false
+  )]
   private $usr_id;
 
-  #[UniquePropertyAttr,
+  #[UniquePropertyDefinition,
     LabelPropertyAttr,
     EntityOverviewPropertyAttr
   ]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'integer'],
+  ])]
+  #[SqlFilterDefinitionAttr(
+    filterHandler: EntityReferenceFilterHandler::class,
+    title: 'Rollen suchen',
+    description: 'Alle Benutzer der Rolle anzeigen',
+    group: false
+  )]
   private $rol_id;
 
 }

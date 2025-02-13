@@ -6,19 +6,19 @@ use App\Database\BaseQuery\BaseQuery;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
 use App\DaViEntity\AbstractEntity;
-use App\DaViEntity\ColumnBuilder\CommonEntityColumnBuilder;
-use App\DaViEntity\ColumnBuilder\EntityColumnBuilder;
-use App\DaViEntity\Creator\CommonEntityCreator;
-use App\DaViEntity\Creator\EntityCreator;
-use App\DaViEntity\DataProvider\CommonSqlEntityDataProvider;
-use App\DaViEntity\DataProvider\EntityDataProvider;
-use App\DaViEntity\ListProvider\CommonEntityListProvider;
-use App\DaViEntity\ListProvider\EntityListProvider;
-use App\DaViEntity\ListSearch\CommonEntitySearch;
-use App\DaViEntity\ListSearch\EntityListSearch;
-use App\DaViEntity\Refiner\CommonEntityRefiner;
-use App\DaViEntity\Refiner\EntityRefiner;
-use App\DaViEntity\Repository\EntityRepositoryAttr;
+use App\DaViEntity\ColumnBuilder\CommonColumnBuilder;
+use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\Creator\CommonCreator;
+use App\DaViEntity\Creator\CreatorDefinition;
+use App\DaViEntity\DataProvider\CommonSqlDataProvider;
+use App\DaViEntity\DataProvider\DataProviderDefinition;
+use App\DaViEntity\ListProvider\CommonListProvider;
+use App\DaViEntity\ListProvider\ListProviderDefinition;
+use App\DaViEntity\Search\CommonSearch;
+use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\Refiner\CommonRefiner;
+use App\DaViEntity\Refiner\RefinerDefinition;
+use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
@@ -27,20 +27,22 @@ use App\Item\Property\Attribute\DatabaseColumnAttr;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\SearchPropertyAttr;
-use App\Item\Property\Attribute\UniquePropertyAttr;
+use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\SearchPropertyDefinition;
+use App\Item\Property\Attribute\UniquePropertyDefinition;
+use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Item\Property\PropertyItemInterface;
 
-#[EntityRepositoryAttr(entityRepositoryClass: RoleRepository::class)]
+#[RepositoryDefinition(entityRepositoryClass: RoleRepository::class)]
 #[EntityTypeAttr(name: 'Role', label: 'Role'),
 ]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
-  EntityColumnBuilder(entityColumnBuilderClass: CommonEntityColumnBuilder::class),
-  EntityRefiner(entityRefinerClass: CommonEntityRefiner::class),
-  EntityCreator(entityCreator: CommonEntityCreator::class),
-  EntityListSearch(entityListSearch: CommonEntitySearch::class),
-  EntityDataProvider(dataProviderClass: CommonSqlEntityDataProvider::class),
-  EntityListProvider(entityListClass: CommonEntityListProvider::class),
+  ColumnBuilder(entityColumnBuilderClass: CommonColumnBuilder::class),
+  RefinerDefinition(entityRefinerClass: CommonRefiner::class),
+  CreatorDefinition(entityCreator: CommonCreator::class),
+  SearchDefinition(entityListSearch: CommonSearch::class),
+  DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
+  ListProviderDefinition(entityListClass: CommonListProvider::class),
 ]
 #[DatabaseAttr(
   databaseClass: DaViDatabaseOne::class,
@@ -53,39 +55,54 @@ class RoleEntity extends AbstractEntity {
   #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
     EntityOverviewPropertyAttr,
     DatabaseColumnAttr,
-    UniquePropertyAttr
+    UniquePropertyDefinition
   ]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'integer'],
+  ])]
   private PropertyItemInterface $rol_id;
 
   #[PropertyAttr(
     dataType: ItemInterface::DATA_TYPE_STRING
   ),
     LabelPropertyAttr,
-    SearchPropertyAttr,
+    SearchPropertyDefinition,
     EntityOverviewPropertyAttr,
     DatabaseColumnAttr,
   ]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'string'],
+  ])]
   private PropertyItemInterface $title;
 
   #[PropertyAttr(
     dataType: ItemInterface::DATA_TYPE_STRING
   ),
-    SearchPropertyAttr,
+    SearchPropertyDefinition,
     EntityOverviewPropertyAttr,
     DatabaseColumnAttr,
   ]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'string'],
+  ])]
   private PropertyItemInterface $description;
 
   #[PropertyAttr(
     dataType: ItemInterface::DATA_TYPE_TABLE,
     label: 'Anzahl Benutzer'
   )]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'table'],
+  ])]
   private PropertyItemInterface $count_user;
 
   #[PropertyAttr(
     dataType: ItemInterface::DATA_TYPE_TABLE,
     label: 'Anzahl Benutzer nach Status'
   )]
+  #[PropertyPreDefinedAttr([
+    [PreDefined::class, 'table'],
+  ])]
   private PropertyItemInterface $count_user_status;
 
 }

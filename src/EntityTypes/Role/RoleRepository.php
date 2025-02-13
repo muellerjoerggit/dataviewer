@@ -3,24 +3,24 @@
 namespace App\EntityTypes\Role;
 
 use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
-use App\DaViEntity\Creator\EntityCreatorLocator;
-use App\DaViEntity\DataProvider\EntityDataProviderLocator;
-use App\DaViEntity\ListProvider\EntityListProviderLocator;
-use App\DaViEntity\Refiner\EntityRefinerLocator;
-use App\DaViEntity\Repository\AbstractEntityRepository;
+use App\DaViEntity\Creator\CreatorLocator;
+use App\DaViEntity\DataProvider\DataProviderLocator;
+use App\DaViEntity\ListProvider\ListProviderLocator;
+use App\DaViEntity\Refiner\RefinerLocator;
+use App\DaViEntity\Repository\AbstractRepository;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
 
-class RoleRepository extends AbstractEntityRepository {
+class RoleRepository extends AbstractRepository {
 
   public function __construct(
     EntityTypesRegister $entityTypesRegister,
     MainRepository $mainRepository,
-    EntityDataProviderLocator $entityDataProviderLocator,
-    EntityCreatorLocator $entityCreatorLocator,
+    DataProviderLocator $entityDataProviderLocator,
+    CreatorLocator $entityCreatorLocator,
     AdditionalDataProviderLocator $additionalDataProviderLocator,
-    EntityRefinerLocator $entityRefinerLocator,
-    EntityListProviderLocator $entityListProviderLocator,
+    RefinerLocator $entityRefinerLocator,
+    ListProviderLocator $entityListProviderLocator,
   ) {
     parent::__construct(
       $entityTypesRegister,

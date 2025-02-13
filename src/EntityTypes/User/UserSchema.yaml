@@ -56,13 +56,13 @@ properties:
         1:
           label: 'active'
     handler:
-      valueFormatterItemHandler: "OptionsValueFormatterItemHandler"
+      valueFormatterItemHandler: "OptionsFormatterItemHandler"
   inactivation_date:
     preDefined: "Date"
     column: "inactivation_date"
     label: "Inactivation date"
     handler:
-      valueFormatterItemHandler: "DateTimeValueFormatterItemHandler"
+      valueFormatterItemHandler: "DateTimeFormatterItemHandler"
   roles:
     preDefined: "Integer"
     label: "Rollen"
