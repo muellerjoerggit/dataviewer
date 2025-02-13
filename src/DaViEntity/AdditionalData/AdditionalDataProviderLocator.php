@@ -28,9 +28,9 @@ class AdditionalDataProviderLocator extends AbstractLocator {
     }
 
     $ret = [];
-    foreach ($entitySchema->iterateAdditionalDataProviderDefinitions($version) as $additionalDataProviderDefinition) {
-      if ($this->has($additionalDataProviderDefinition->getAdditionalDataProviderClass())) {
-        $ret[] = $this->get($additionalDataProviderDefinition);
+    foreach ($entitySchema->iterateAdditionalDataProviderClasses($version) as $class) {
+      if ($this->has($class)) {
+        $ret[] = $this->get($class);
       }
     }
     return $ret;

@@ -407,9 +407,9 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   /**
-   * @return Iterator<AdditionalDataProviderDefinitionInterface>
+   * @return Iterator<string>
    */
-  public function iterateAdditionalDataProviderDefinitions(string $version): Iterator {
+  public function iterateAdditionalDataProviderClasses(string $version): Iterator {
     foreach ($this->additionalDataProviderDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
@@ -418,7 +418,7 @@ class EntitySchema implements EntitySchemaInterface {
       ) {
         continue;
       }
-      yield $definition;
+      yield $definition->getAdditionalDataProviderClass();
     }
   }
 
