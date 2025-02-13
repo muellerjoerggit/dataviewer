@@ -6,9 +6,9 @@ use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
-use App\DaViEntity\ListSearch\EntityListSearchLocator;
-use App\DaViEntity\Repository\EntityRepositoryInterface;
-use App\DaViEntity\Repository\EntityRepositoryLocator;
+use App\DaViEntity\Search\SearchLocator;
+use App\DaViEntity\Repository\RepositoryInterface;
+use App\DaViEntity\Repository\RepositoryLocator;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\EntityTypes\NullEntity\NullEntity;
@@ -22,8 +22,8 @@ class DaViEntityManager {
     private readonly EntityTypeSchemaRegister $schemaRegister,
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
     private readonly MainRepository $mainRepository,
-    private readonly EntityListSearchLocator $entityListSearchLocator,
-    private readonly EntityRepositoryLocator $entityRepositoryLocator,
+    private readonly SearchLocator $entityListSearchLocator,
+    private readonly RepositoryLocator $entityRepositoryLocator,
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
@@ -167,11 +167,11 @@ class DaViEntityManager {
     return $currentEntities;
   }
 
-  protected function getEntityRepository(string | EntityInterface $entityClass): EntityRepositoryInterface {
+  protected function getEntityRepository(string | EntityInterface $entityClass): RepositoryInterface {
     return $this->entityRepositoryLocator->getEntityRepository($entityClass);
   }
 
-  protected function getEntityRepositoryFromEntityType(string $entityType): EntityRepositoryInterface {
+  protected function getEntityRepositoryFromEntityType(string $entityType): RepositoryInterface {
     $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
     return $this->getEntityRepository($entityClass);
   }

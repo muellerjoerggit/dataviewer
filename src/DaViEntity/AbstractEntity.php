@@ -19,7 +19,7 @@ abstract class AbstractEntity implements EntityInterface {
 
   public function __construct(
     protected readonly EntitySchema $schema,
-    protected readonly string $client
+    protected readonly string $client,
   ) {}
 
   public function getEntityTypeLabel(): string {

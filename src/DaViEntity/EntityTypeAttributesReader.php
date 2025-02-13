@@ -3,16 +3,18 @@
 namespace App\DaViEntity;
 
 use App\Database\BaseQuery\BaseQuery;
+use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProvider;
-use App\DaViEntity\ColumnBuilder\EntityColumnBuilder;
-use App\DaViEntity\Creator\EntityCreator;
-use App\DaViEntity\DataProvider\EntityDataProvider;
-use App\DaViEntity\EntityLabel\EntityLabelCrafter;
-use App\DaViEntity\ListProvider\EntityListProvider;
-use App\DaViEntity\ListSearch\EntityListSearch;
-use App\DaViEntity\Refiner\EntityRefiner;
-use App\DaViEntity\Repository\EntityRepositoryAttr;
+use App\DaViEntity\ColumnBuilder\ColumnBuilder;
+use App\DaViEntity\Creator\CreatorDefinition;
+use App\DaViEntity\DataProvider\DataProviderDefinition;
+use App\DaViEntity\EntityLabel\LabelCrafter;
+use App\DaViEntity\ListProvider\ListProviderDefinition;
+use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\Refiner\RefinerDefinition;
+use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\SchemaAttributesContainer;
@@ -50,6 +52,8 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
     } elseif ($attribute instanceof EntityActionConfigAttrInterface) {
       $container->addEntityActionConfigAttribute($attribute);
       return;
+    } elseif ($attribute instanceof SqlFilterDefinitionInterface && $attribute->isValid()) {
+      $container->addSqlFilterDefinitionsAttribute($attribute);
     }
 
     switch(get_class($attribute)) {
@@ -59,28 +63,28 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       case DatabaseAttr::class:
         $container->setDatabaseAttr($attribute);
         break;
-      case EntityRepositoryAttr::class:
+      case RepositoryDefinition::class:
         $container->addRepositoryAttribute($attribute);
         break;
       case BaseQuery::class:
         $container->addBaseQueryAttribute($attribute);
         break;
-      case EntityListSearch::class:
+      case SearchDefinition::class:
         $container->addEntityListSearchAttribute($attribute);
         break;
-      case EntityDataProvider::class:
+      case DataProviderDefinition::class:
         $container->addDataProviderAttribute($attribute);
         break;
-      case EntityCreator::class:
+      case CreatorDefinition::class:
         $container->addCreatorAttribute($attribute);
         break;
-      case EntityRefiner::class:
+      case RefinerDefinition::class:
         $container->addRefinerAttribute($attribute);
         break;
-      case EntityColumnBuilder::class:
+      case ColumnBuilder::class:
         $container->addColumnBuilderAttribute($attribute);
         break;
-      case EntityListProvider::class:
+      case ListProviderDefinition::class:
         $container->addListProviderAttribute($attribute);
         break;
       case AdditionalDataProvider::class:
@@ -121,7 +125,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
 
   public function getEntityCreatorClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityCreator::class, EntityCreator::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, CreatorDefinition::class, CreatorDefinition::CLASS_PROPERTY, '');
   }
 
   public function getAdditionalDataProviderClassList(string | EntityInterface $classname): array {
@@ -131,37 +135,37 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
 
   public function getEntityListSearchClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityListSearch::class, EntityListSearch::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, SearchDefinition::class, SearchDefinition::CLASS_PROPERTY, '');
   }
 
   public function getEntityListProviderClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityListProvider::class, EntityListProvider::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, ListProviderDefinition::class, ListProviderDefinition::CLASS_PROPERTY, '');
   }
 
   public function getEntityColumnBuilderClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityColumnBuilder::class, EntityColumnBuilder::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, ColumnBuilder::class, ColumnBuilder::CLASS_PROPERTY, '');
   }
 
   public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityLabelCrafter::class, EntityLabelCrafter::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, LabelCrafter::class, LabelCrafter::CLASS_PROPERTY, '');
   }
 
   public function getRepositoryClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityRepositoryAttr::class, EntityRepositoryAttr::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, RepositoryDefinition::class, RepositoryDefinition::CLASS_PROPERTY, '');
   }
 
   public function getEntityDataProviderClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityDataProvider::class, EntityDataProvider::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, DataProviderDefinition::class, DataProviderDefinition::CLASS_PROPERTY, '');
   }
 
   public function getEntityRefinerClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityRefiner::class, EntityRefiner::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, RefinerDefinition::class, RefinerDefinition::CLASS_PROPERTY, '');
   }
 
   private function resolveEntityClass(string | EntityInterface $classname): string {

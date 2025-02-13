@@ -3,7 +3,7 @@
 namespace App\DaViEntity;
 
 use App\Item\ItemHandler_PreRendering\PreRenderingItemHandlerLocator;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 use App\Logger\LogItemPreRendering\LogItemPreRenderingHandlerLocator;
 use App\Logger\LogItems\LogItemInterface;
@@ -14,7 +14,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
   public function __construct(
     private readonly PreRenderingItemHandlerLocator $preRenderingItemHandlerLocator,
     private readonly DaViEntityManager $entityManager,
-    private readonly ValueFormatterItemHandlerLocator $valueFormatterItemHandlerLocator,
+    private readonly FormatterItemHandlerLocator $valueFormatterItemHandlerLocator,
     private readonly LogItemPreRenderingHandlerLocator $logItemPreRenderingLocator,
     private readonly EntityActionPreRenderingBuilder $actionPreRenderingBuilder,
   ) {}
