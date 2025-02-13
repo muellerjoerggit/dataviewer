@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler\ItemHandlerInterface;
@@ -8,7 +8,7 @@ use App\Item\ItemInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('formatter_item_handler')]
-interface ValueFormatterItemHandlerInterface extends ItemHandlerInterface {
+interface FormatterItemHandlerInterface extends ItemHandlerInterface {
 
   public const OUTPUT_RAW_FORMATTED = 'rawFormatted';
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 
-class JsonFormatterItemHandler extends AbstractValueFormatterItemHandler {
+class JsonFormatterItemHandler extends AbstractFormatterItemHandler {
 
   public function getArrayRawFormatted(ItemInterface $item): array {
     return $this->getArrayFormatted($item);

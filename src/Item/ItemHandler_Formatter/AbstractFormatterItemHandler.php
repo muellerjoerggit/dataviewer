@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 
-abstract class AbstractValueFormatterItemHandler implements ValueFormatterItemHandlerInterface {
+abstract class AbstractFormatterItemHandler implements FormatterItemHandlerInterface {
 
   public function getCutOffStringFormatted(ItemInterface $item, int $length = 50): string {
     return mb_substr($this->getStringFormatted($item), 0, $length);

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use DateTime;
 use Exception;
 
-class UnixTimestampValueFormatterItemHandler extends DateTimeValueFormatterItemHandler {
+class UnixTimestampFormatterItemHandler extends DateTimeFormatterItemHandler {
 
   protected function getDateTime(mixed $dateTimeRaw): string|DateTime {
     if ($dateTimeRaw === NULL) {

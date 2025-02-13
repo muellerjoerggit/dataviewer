@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 use DateTime;
 use Exception;
 
-class DateTimeValueFormatterItemHandler extends AbstractValueFormatterItemHandler {
+class DateTimeFormatterItemHandler extends AbstractFormatterItemHandler {
 
   public function getArrayFormatted(ItemInterface $item): array {
     $ret = array_map(function($dateTimeRaw) use ($item) {

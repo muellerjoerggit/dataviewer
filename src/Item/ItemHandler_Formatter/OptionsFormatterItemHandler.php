@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 
-class OptionsValueFormatterItemHandler extends AbstractValueFormatterItemHandler {
+class OptionsFormatterItemHandler extends AbstractFormatterItemHandler {
 
   public function getArrayRawFormatted(ItemInterface $item): array {
     $ret = [];

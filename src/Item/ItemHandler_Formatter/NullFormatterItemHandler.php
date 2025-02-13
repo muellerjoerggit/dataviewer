@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 
-class NullValueFormatterItemHandler extends AbstractValueFormatterItemHandler {
+class NullFormatterItemHandler extends AbstractFormatterItemHandler {
 
   public function getStringRawFormatted(ItemInterface $item): string {
     return 'unknown ValueFormatterItemHandler';

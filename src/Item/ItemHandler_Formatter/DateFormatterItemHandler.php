@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use DateTime;
 use Exception;
 
-class DateValueFormatterItemHandler extends DateTimeValueFormatterItemHandler {
+class DateFormatterItemHandler extends DateTimeFormatterItemHandler {
 
   public function getPossibleFormats(): array {
     return [

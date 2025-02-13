@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Item\ItemHandler_ValueFormatter;
+namespace App\Item\ItemHandler_Formatter;
 
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler\ItemHandlerInterface;
@@ -8,7 +8,7 @@ use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class ValueFormatterItemHandlerLocator extends AbstractLocator {
+class FormatterItemHandlerLocator extends AbstractLocator {
 
   public function __construct(
     #[AutowireLocator('formatter_item_handler')]
@@ -17,12 +17,12 @@ class ValueFormatterItemHandlerLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getFormatterHandlerFromItem(ItemConfigurationInterface $itemConfiguration): ValueFormatterItemHandlerInterface {
+  public function getFormatterHandlerFromItem(ItemConfigurationInterface $itemConfiguration): FormatterItemHandlerInterface {
     $handlerName = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_VALUE_FORMATTER);
     if ($handlerName && $this->has($handlerName)) {
       return $this->get($handlerName);
     } else {
-      return $this->get(NullValueFormatterItemHandler::class);
+      return $this->get(NullFormatterItemHandler::class);
     }
   }
 
