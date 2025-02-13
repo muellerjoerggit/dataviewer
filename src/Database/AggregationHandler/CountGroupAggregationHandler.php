@@ -11,8 +11,8 @@ use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerInterface;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 /**
  * Configuration example:
@@ -29,7 +29,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
 
   public function __construct(
     private readonly EntityTypeSchemaRegister $schemaRegister,
-    private readonly ValueFormatterItemHandlerLocator $formatterHandlerLocator,
+    private readonly FormatterItemHandlerLocator $formatterHandlerLocator,
     private readonly EntityReferenceItemHandlerLocator $entityReferenceItemHandlerLocator,
     private readonly TableJoinBuilder $tableJoinBuilder,
   ) {}
@@ -101,7 +101,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
           }
         }
 
-        if ($handler instanceof ValueFormatterItemHandlerInterface) {
+        if ($handler instanceof FormatterItemHandlerInterface) {
           $tableRows[$index][$propertyKey] = $handler->getValueRawFormatted($itemConfiguration, $value);
         } elseif ($handler instanceof EntityReferenceItemHandlerInterface) {
           $tableRows[$index][$propertyKey] = $handler->getLabelFromValue($itemConfiguration, $value, $queryBuilder->getClient());

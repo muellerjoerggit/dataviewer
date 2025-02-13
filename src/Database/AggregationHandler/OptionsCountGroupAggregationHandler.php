@@ -8,14 +8,14 @@ use App\Database\DaViQueryBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerInterface;
-use App\Item\ItemHandler_ValueFormatter\ValueFormatterItemHandlerLocator;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerInterface;
+use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 class OptionsCountGroupAggregationHandler extends AbstractAggregationHandler {
 
-  private ValueFormatterItemHandlerLocator $formatterHandlerLocator;
+  private FormatterItemHandlerLocator $formatterHandlerLocator;
 
-  public function __construct(ValueFormatterItemHandlerLocator $formatterHandlerLocator) {
+  public function __construct(FormatterItemHandlerLocator $formatterHandlerLocator) {
     $this->formatterHandlerLocator = $formatterHandlerLocator;
   }
 
@@ -62,7 +62,7 @@ class OptionsCountGroupAggregationHandler extends AbstractAggregationHandler {
           $handler = $this->formatterHandlerLocator->getFormatterHandlerFromItem($item);
         }
 
-        if ($handler instanceof ValueFormatterItemHandlerInterface) {
+        if ($handler instanceof FormatterItemHandlerInterface) {
           $tableRows[$index][$columnName] = $handler->getValueRawFormatted($item, $value);
         } else {
           $tableRows[$index][$columnName] = $value;
