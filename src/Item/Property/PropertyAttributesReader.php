@@ -2,13 +2,22 @@
 
 namespace App\Item\Property;
 
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\SchemaAttributesContainer;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
+use App\Item\Property\Attribute\DatabaseColumnAttr;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\SearchPropertyAttr;
-use App\Item\Property\Attribute\UniquePropertyAttr;
+use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\PropertySettingInterface;
+use App\Item\Property\Attribute\SearchPropertyDefinition;
+use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Services\AbstractAttributesReader;
 use ReflectionAttribute;
 use ReflectionProperty;
@@ -23,42 +32,84 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     }
 
     foreach ($reflection->getProperties() as $property) {
+      if(in_array($property->getName(), ['missingEntity', 'logIndex', 'logItems', 'schema', 'client'])) {
+        continue;
+      }
       $this->processProperty($property, $container);
     }
 
     return true;
   }
 
-  private function processProperty(ReflectionProperty $property, SchemaAttributesContainer $container): void {
-    $propertyContainer = new PropertyAttributesContainer();
+  private function processProperty(ReflectionProperty $property, SchemaAttributesContainer $schemaContainer): void {
+    $propertyContainer = new PropertyAttributesContainer($property);
 
     foreach ($property->getAttributes() as $attribute) {
-      $this->processAttribute($propertyContainer, $property, $attribute);
-      $container->addPropertyContainer($propertyContainer, $property->getName());
+      $this->processReflectionAttribute($propertyContainer, $property, $attribute, $schemaContainer);
+      $schemaContainer->addPropertyContainer($propertyContainer, $property->getName());
     }
   }
 
-  private function processAttribute(PropertyAttributesContainer $container, ReflectionProperty $property, ReflectionAttribute $attribute): void {
+  private function processReflectionAttribute(
+    PropertyAttributesContainer $propertyContainer,
+    ReflectionProperty $property,
+    ReflectionAttribute $attribute,
+    SchemaAttributesContainer $schemaContainer
+  ): void {
     $instance = $attribute->newInstance();
+    $name = $property->getName();
 
-    if($instance instanceof PropertyAttr) {
-      $instance->setProperty($property->getName());
-      $container->setPropertyAttr($instance);
+    $this->processAttribute($propertyContainer, $schemaContainer, $name, $instance);
+  }
+
+  private function processAttribute(
+    PropertyAttributesContainer $propertyContainer,
+    SchemaAttributesContainer $schemaContainer,
+    string $name,
+    $instance
+  ): void {
+    if($instance instanceof PropertyPreDefinedAttr) {
+      foreach ($instance->iteratePreDefinedAttributes() as $attribute) {
+        $this->processAttribute($propertyContainer, $schemaContainer, $name, $attribute);
+      }
+    } elseif($instance instanceof PropertyAttr) {
+      $instance->setProperty($name);
+      $propertyContainer->setPropertyAttr($instance);
     } elseif ($instance instanceof LabelPropertyAttr) {
-      $instance->setProperty($property->getName());
-      $container->setLabelPropertyAttr($instance);
-    } elseif ($instance instanceof SearchPropertyAttr) {
-      $instance->setProperty($property->getName());
-      $container->setSearchPropertyAttr($instance);
-    } elseif ($instance instanceof UniquePropertyAttr) {
-      $instance->setProperty($property->getName());
-      $container->setUniquePropertyAttr($instance);
+      $instance->setProperty($name);
+      $schemaContainer->addLabelDefinition($instance);
+    } elseif ($instance instanceof SearchPropertyDefinition) {
+      $instance->setProperty($name);
+      $schemaContainer->addSearchPropertyDefinition($instance);
+    } elseif ($instance instanceof UniquePropertyDefinition) {
+      $instance->setProperty($name);
+      $schemaContainer->addUniquePropertyDefinition($instance);
     } elseif ($instance instanceof EntityOverviewPropertyAttr) {
-      $instance->setProperty($property->getName());
-      $container->setEntityOverviewPropertyAttr($instance);
+      $instance->setProperty($name);
+      $schemaContainer->addEntityOverviewDefinition($instance);
     } elseif ($instance instanceof ExtendedEntityOverviewPropertyAttr) {
-      $instance->setProperty($property->getName());
-      $container->setExtendedEntityOverviewPropertyAttr($instance);
+      $instance->setProperty($name);
+      $schemaContainer->addExtendedEntityOverviewDefinition($instance);
+    } elseif ($instance instanceof ValidatorItemHandlerDefinitionInterface) {
+      $propertyContainer->addValidatorItemHandler($instance);
+    } elseif ($instance instanceof PreRenderingItemHandlerDefinitionInterface) {
+      $propertyContainer->setPreRenderingItemHandlerDefinition($instance);
+    } elseif ($instance instanceof FormatterItemHandlerDefinitionInterface) {
+      $propertyContainer->setFormatterItemHandlerDefinition($instance);
+    } elseif ($instance instanceof EntityReferenceItemHandlerDefinitionInterface) {
+      $propertyContainer->setReferenceItemHandlerDefinition($instance);
+    } elseif ($instance instanceof AdditionalDataItemHandlerDefinitionInterface) {
+      $propertyContainer->setAdditionalDataItemHandlerDefinition($instance);
+    } elseif ($instance instanceof SqlFilterDefinitionInterface) {
+      $instance->setProperty($name);
+      $schemaContainer->addSqlFilterDefinitionsAttribute($instance);
+    } elseif ($instance instanceof DatabaseColumnAttr) {
+      if(!$instance->hasColumn()) {
+        $instance->setColumn($name);
+      }
+      $propertyContainer->setDatabaseAttr($instance);
+    } elseif ($instance instanceof PropertySettingInterface) {
+      $propertyContainer->addPropertySetting($instance);
     }
   }
 

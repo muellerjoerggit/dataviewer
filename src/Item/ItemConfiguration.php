@@ -3,6 +3,13 @@
 namespace App\Item;
 
 use App\Item\ItemHandler\ItemHandlerInterface;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
+use App\Item\Property\Attribute\PropertySettingInterface;
 use App\Services\AppNamespaces;
 use App\Services\Export\ExportFormatter\ExportFormatterAttributeInterface;
 use App\Services\Version\VersionInformation;
@@ -28,6 +35,19 @@ class ItemConfiguration implements ItemConfigurationInterface {
    * @var ExportFormatterAttributeInterface[]
    */
   protected array $exportFormatter = [];
+
+  /**
+   * @var ValidatorItemHandlerDefinitionInterface[]
+   */
+  private array $validatorItemHandlers = [];
+
+  private PreRenderingItemHandlerDefinitionInterface $preRenderingItemHandlerDefinition;
+
+  private FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition;
+
+  private EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition;
+
+  private AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition;
 
   protected VersionInformation $version;
 
@@ -83,88 +103,51 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this;
   }
 
-  public function setHandler(string $handlerType, string $handler): ItemConfigurationInterface {
-    $this->setHandlerInternal($handlerType, $handler);
+  public function addValidatorItemHandler(ValidatorItemHandlerDefinitionInterface $handler): ItemConfigurationInterface {
+    $this->validatorItemHandlers[] = $handler;
     return $this;
   }
 
-  protected function setHandlerInternal(string $handlerType, string $handlerShortName): string {
-    $handlerName = $this->getHandlerClass($handlerType, $handlerShortName);
-
-    if ($handlerType === ItemHandlerInterface::HANDLER_VALIDATOR) {
-      if (isset($this->handler[$handlerType])) {
-        $handlers = array_merge($this->handler[$handlerType], [$handlerName]);
-      } else {
-        $handlers = [$handlerName];
-      }
-
-      $this->handler[$handlerType] = $handlers;
-    } else {
-      $this->handler[$handlerType] = $handlerName;
-    }
-
-    return $handlerName;
-  }
-
-  protected function getHandlerClass(string $handlerType, string $handlerShortName): string {
-    $namespace = match ($handlerType) {
-      ItemHandlerInterface::HANDLER_ENTITY_REFERENCE => AppNamespaces::NAMESPACE_ENTITY_REFERENCE_ITEM_HANDLER,
-      ItemHandlerInterface::HANDLER_PRE_RENDERING => AppNamespaces::NAMESPACE_PRE_RENDERING_ITEM_HANDLER,
-      ItemHandlerInterface::HANDLER_VALUE_FORMATTER => AppNamespaces::NAMESPACE_VALUE_FORMATTER_ITEM_HANDLER,
-      ItemHandlerInterface::HANDLER_ADDITIONAL_DATA => AppNamespaces::NAMESPACE_ADDITIONAL_DATA_ITEM_HANDLER,
-      ItemHandlerInterface::HANDLER_VALIDATOR => AppNamespaces::NAMESPACE_VALIDATOR_ITEM_HANDLER,
-      default => ''
-    };
-
-    return AppNamespaces::buildNamespace($namespace, $handlerShortName);
-  }
-
-  public function fillHandler(array $handlerArray): ItemConfigurationInterface {
-    $validHandlers = [
-      ItemHandlerInterface::HANDLER_PRE_RENDERING,
-      ItemHandlerInterface::HANDLER_ADDITIONAL_DATA,
-      ItemHandlerInterface::HANDLER_VALUE_FORMATTER,
-      ItemHandlerInterface::HANDLER_VALIDATOR,
-      ItemHandlerInterface::HANDLER_ENTITY_REFERENCE,
-    ];
-
-    foreach ($handlerArray as $handlerType => $handler) {
-      if (!in_array($handlerType, $validHandlers)) {
-        continue;
-      }
-
-      if (is_string($handler)) {
-        $this->setHandlerInternal($handlerType, $handler);
-      } elseif (is_array($handler)) {
-        $this->fillHandlerWithSettings($handlerType, $handler);
-      }
-    }
+  public function setPreRenderingItemHandlerDefinition(PreRenderingItemHandlerDefinitionInterface $preRenderingItemHandlerDefinition): ItemConfigurationInterface {
+    $this->preRenderingItemHandlerDefinition = $preRenderingItemHandlerDefinition;
     return $this;
   }
 
-  protected function fillHandlerWithSettings(string $handlerType, array $handlerArray): void {
-    foreach ($handlerArray as $handler => $handlerSetting) {
-      $handlerName = $this->setHandlerInternal($handlerType, $handler);
-      $this->setHandlerSettings($handlerType, $handlerName, $handlerSetting);
-    }
+  public function setFormatterItemHandlerDefinition(FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition): ItemConfigurationInterface {
+    $this->formatterItemHandlerDefinition = $formatterItemHandlerDefinition;
+    return $this;
   }
 
-  public function setHandlerSettings(string $handlerType, string $handlerName, array $handlerSettings): ItemConfigurationInterface {
-    if ($handlerType === ItemHandlerInterface::HANDLER_VALIDATOR) {
-      $this->handlerSettings[$handlerType][$handlerName] = $handlerSettings;
-    } elseif ($handlerType === ItemHandlerInterface::HANDLER_ENTITY_REFERENCE && isset($handlerSettings['validation'])) {
-      $newValidatorSettings = [];
-      foreach ($handlerSettings['validation'] as $validatorHandler => $validator) {
-        $validatorHandlerClass = $this->getHandlerClass(ItemHandlerInterface::HANDLER_VALIDATOR, $validatorHandler);
-        $newValidatorSettings[$validatorHandlerClass] = $validator;
-      }
-      $handlerSettings['validation'] = $newValidatorSettings;
-      $this->handlerSettings[$handlerType] = $handlerSettings;
-    } else {
-      $this->handlerSettings[$handlerType] = $handlerSettings;
-    }
-
+  public function setReferenceItemHandlerDefinition(EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition): ItemConfigurationInterface {
+    $this->referenceItemHandlerDefinition = $referenceItemHandlerDefinition;
     return $this;
+  }
+
+  public function setAdditionalDataItemHandlerDefinition(AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition): ItemConfigurationInterface {
+    $this->additionalDataItemHandlerDefinition = $additionalDataItemHandlerDefinition;
+    return $this;
+  }
+
+  public function getPreRenderingItemHandlerDefinition(): PreRenderingItemHandlerDefinitionInterface {
+    return $this->preRenderingItemHandlerDefinition;
+  }
+
+  public function getFormatterItemHandlerDefinition(): FormatterItemHandlerDefinitionInterface {
+    return $this->formatterItemHandlerDefinition;
+  }
+
+  public function getReferenceItemHandlerDefinition(): EntityReferenceItemHandlerDefinitionInterface {
+    return $this->referenceItemHandlerDefinition;
+  }
+
+  public function getAdditionalDataItemHandlerDefinition(): AdditionalDataItemHandlerDefinitionInterface {
+    return $this->additionalDataItemHandlerDefinition;
+  }
+
+  public function iterateValidatorItemHandlerDefinition(): Generator {
+    foreach ($this->validatorItemHandlers as $validatorItemHandlerDefinition) {
+      yield $validatorItemHandlerDefinition;
+    }
   }
 
   public function getHandlerByType(string $handlerType): string|array|bool {
@@ -218,23 +201,12 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->handlerSettings[ItemHandlerInterface::HANDLER_PRE_RENDERING] ?? [];
   }
 
-  public function getSetting($setting, $default = NULL): mixed {
-    return $this->settings[$setting] ?? $default;
+  public function getSetting($setting): mixed {
+    return $this->settings[$setting];
   }
 
-  public function mergeSettings(array $settings): ItemConfigurationInterface {
-    $currentSettings = $this->settings ?? [];
-    $this->settings = array_merge($currentSettings, $settings);
-    return $this;
-  }
-
-  public function setSetting(string $setting, $value): ItemConfigurationInterface {
-    $this->settings[$setting] = $value;
-    return $this;
-  }
-
-  public function setSettings(array $settings): ItemConfigurationInterface {
-    $this->settings = $settings;
+  public function addSetting(PropertySettingInterface $setting): ItemConfigurationInterface {
+    $this->settings[$setting->getClass()] = $setting;
     return $this;
   }
 

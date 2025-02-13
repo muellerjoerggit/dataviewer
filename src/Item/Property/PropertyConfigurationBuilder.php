@@ -5,130 +5,83 @@ namespace App\Item\Property;
 use App\Database\SqlFilter\FilterGroup;
 use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
-use App\Database\SqlFilter\SqlFilterDefinitionInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
-use App\Item\ItemInterface;
-use App\Services\DirectoryFileRegister;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Services\Version\VersionInformation;
 use App\Services\Version\VersionService;
 
 class PropertyConfigurationBuilder {
 
   public function __construct(
-    private readonly DirectoryFileRegister $directoryFileRegister,
-    private readonly SqlFilterDefinitionBuilder $sqlFilterDefinitionsBuilder,
     private readonly TableReferenceHandlerLocator $tableReferenceHandlersLocator,
   ) {}
 
-  public function buildPropertyConfiguration(array $config, string $propertyName, EntitySchema $schema): PropertyConfiguration {
+  public function buildPropertyConfiguration(PropertyAttributesContainer $container, EntitySchema $schema): PropertyConfiguration {
+    $propertyName = $container->getPropertyName();
     $propertyConfiguration = $this->createPropertyConfiguration($propertyName);
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED])) {
-      $config = array_replace_recursive($this->buildPreDefinedConfiguration($config), $config);
-    }
 
-    return $this->fillPropertyConfiguration($config, $propertyConfiguration, $schema);
-  }
-
-  private function buildPreDefinedConfiguration(array $config): array {
-    $preDefined = $config[ItemConfigurationInterface::YAML_PARAM_PRE_DEFINED];
-    if(!is_array($preDefined)) {
-      $preDefined = [$preDefined];
-    }
-
-    $preDefinedConfigurations = $this->directoryFileRegister->getPreDefinedPropertyConfiguration();
-
-    $preDefined = array_map(function($preDefinedName) use ($preDefinedConfigurations) {
-      return $preDefinedConfigurations[$preDefinedName] ?? [];
-    }, $preDefined);
-
-    $ret = [];
-
-    foreach($preDefined as $preDefinedConfig) {
-      if(empty($preDefinedConfig)) {
-        continue;
-      }
-
-      $ret = array_replace_recursive($ret, $preDefinedConfig);
-    }
-
-    return $ret;
+    return $this->fillPropertyConfiguration($container, $propertyConfiguration, $schema);
   }
 
   private function createPropertyConfiguration(string $propertyName): ?PropertyConfiguration {
     return new PropertyConfiguration($propertyName);
   }
 
-  private function fillPropertyConfiguration(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): PropertyConfiguration {
-    $this->fillBasic($config, $propertyConfiguration);
-    $this->fillDatabase($config, $propertyConfiguration, $schema);
+  private function fillPropertyConfiguration(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): PropertyConfiguration {
+    $this->fillBasic($container, $propertyConfiguration);
+    $this->fillDatabase($container, $propertyConfiguration, $schema);
+    $this->fillHandler($container, $propertyConfiguration);
 
-    if(isset($config[PropertyConfiguration::YAML_PARAM_HANDLER])) {
-      $this->fillHandler($config, $propertyConfiguration);
-    }
 
-    if(isset($config[PropertyConfiguration::YAML_PARAM_FILTER])) {
-      $this->fillFilter($config, $propertyConfiguration, $schema);
-    }
-
-    if(isset($config[VersionService::YAML_PARAM_VERSION])) {
-      $this->fillVersion($config[VersionService::YAML_PARAM_VERSION], $propertyConfiguration);
-    }
+//    if(isset($config[VersionService::YAML_PARAM_VERSION])) {
+//      $this->fillVersion($container[VersionService::YAML_PARAM_VERSION], $propertyConfiguration);
+//    }
 
     return $propertyConfiguration;
   }
 
-  private function fillBasic(array $config, PropertyConfiguration $propertyConfiguration): void {
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_CARDINALITY])) {
-      $cardinality = $config[ItemConfigurationInterface::YAML_PARAM_CARDINALITY] === ItemConfigurationInterface::YAML_PARAM_VALUE_MULTIPLE ? ItemConfigurationInterface::CARDINALITY_MULTIPLE : ItemConfigurationInterface::CARDINALITY_SINGLE;
-      $propertyConfiguration->setCardinality($cardinality);
+  private function fillBasic(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration): void {
+    $propertyAttr = $container->getPropertyAttr();
+
+    $propertyConfiguration
+      ->setCardinality($propertyAttr->getCardinality())
+      ->setDataType($propertyAttr->getDataType())
+      ->setLabel($propertyAttr->getLabel());
+
+    if($propertyAttr->hasDescription()) {
+      $propertyConfiguration->setDescription($propertyAttr->getDescription());
     }
 
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_DATA_TYPE])) {
-      $dataType = match ($config[ItemConfigurationInterface::YAML_PARAM_DATA_TYPE]) {
-        'Integer' => ItemInterface::DATA_TYPE_INTEGER,
-        'String' => ItemInterface::DATA_TYPE_STRING,
-        'Enum' => ItemInterface::DATA_TYPE_ENUM,
-        'Boolean' => ItemInterface::DATA_TYPE_BOOL,
-        'Datetime' => ItemInterface::DATA_TYPE_DATE_TIME,
-        'Time' => ItemInterface::DATA_TYPE_TIME,
-        'Table' => ItemInterface::DATA_TYPE_TABLE,
-        'Float' => ItemInterface::DATA_TYPE_FLOAT,
-        default => ItemInterface::DATA_TYPE_UNKNOWN
-      };
-      $propertyConfiguration->setDataType($dataType);
-    }
-
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_LABEL])) {
-      $propertyConfiguration->setLabel($config[ItemConfigurationInterface::YAML_PARAM_LABEL]);
-    }
-
-    if(isset($config[ItemConfigurationInterface::YAML_PARAM_DESCRIPTION])) {
-      $propertyConfiguration->setDescription($config[ItemConfigurationInterface::YAML_PARAM_DESCRIPTION]);
-    }
-
-    $settings = $config[ItemConfigurationInterface::YAML_PARAM_SETTINGS] ?? null;
-    if(is_array($settings)) {
-      $propertyConfiguration->mergeSettings($settings);
+    if($container->hasPropertySetting()) {
+      foreach($container->iteratePropertySetting() as $propertySetting) {
+        $propertyConfiguration->addSetting($propertySetting);
+      }
     }
   }
 
-  private function fillDatabase(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
+  private function fillDatabase(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
+    if(!$container->hasDatabaseAttr()) {
+      return;
+    }
 
-    if(
-      isset($config[PropertyConfiguration::YAML_PARAM_TABLE_REFERENCE])
-      && isset($config[PropertyConfiguration::YAML_PARAM_REFERENCED_COLUMN])
-    ) {
-      $tableReference = $config[PropertyConfiguration::YAML_PARAM_TABLE_REFERENCE];
-      $tableReferenceConfiguration = $schema->getTableReference($tableReference);
+    $databaseAttr = $container->getDatabaseAttr();
+
+    if($databaseAttr->hasTableReferenceName() && $databaseAttr->hasColumn()) {
+      $tableReferenceConfiguration = $schema->getTableReference($databaseAttr->getTableReferenceName());
       $handler = $this->tableReferenceHandlersLocator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
       $baseTable = $handler->getReferencedTableName($tableReferenceConfiguration);
       $propertyConfiguration->setTableReference($tableReferenceConfiguration);
-      $column = $baseTable . '.' . $config[PropertyConfiguration::YAML_PARAM_REFERENCED_COLUMN];
-      $schema->addTableReferenceColumn($tableReference, $column, $propertyConfiguration->getItemName());
-    } elseif (isset($config[PropertyConfiguration::YAML_PARAM_COLUMN])) {
-      $column = $schema->getBaseTable() . '.' . $config[PropertyConfiguration::YAML_PARAM_COLUMN];
+      $column = $baseTable . '.' . $databaseAttr->getColumn();
+      $schema->addTableReferenceColumn($tableReferenceConfiguration, $column, $propertyConfiguration->getItemName());
+    } elseif ($databaseAttr->hasColumn()) {
+      $column = $databaseAttr->getColumn();
     } else {
       return;
     }
@@ -136,34 +89,24 @@ class PropertyConfigurationBuilder {
     $propertyConfiguration->setColumn($column);
   }
 
-  private function fillFilter(array $config, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
-    $property = $propertyConfiguration->getItemName();
-    $filterGroup = new FilterGroup(
-      SqlFilterDefinitionInterface::FILTER_PREFIX_GENERATED . '_' . $property,
-      $property
-    );
-
-    foreach ($config[PropertyConfiguration::YAML_PARAM_FILTER] as $key => $filter) {
-      if($propertyConfiguration->hasTableReference() || !$propertyConfiguration->hasColumn()) {
-        return;
-      }
-
-      if(!is_array($filter)) {
-        $filter[SqlFilterDefinitionInterface::YAML_KEY_HANDLER] = $filter;
-      }
-
-      $filter[SqlFilterDefinitionInterface::YAML_KEY_PROPERTY] = $property;
-      $filter[SqlFilterDefinitionInterface::YAML_KEY_NAME] = SqlFilterDefinitionInterface::FILTER_PREFIX_GENERATED . '::' . $key . '::' . $property;
-
-      $filterDefinition = SqlFilterDefinition::createFromArray($filter);
-      $this->sqlFilterDefinitionsBuilder->fillEntityFilterDefinition($filterDefinition, $filter);
-
-      $schema->addFilter($filterDefinition, $property, $filterGroup);
+  private function fillHandler(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration): void {
+    foreach ($container->iterateItemHandlerDefinitions() as $handlerDefinition) {
+      $this->processHandler($handlerDefinition, $propertyConfiguration);
     }
   }
 
-  private function fillHandler(array $config, PropertyConfiguration $propertyConfiguration): void {
-    $propertyConfiguration->fillHandler($config[PropertyConfiguration::YAML_PARAM_HANDLER]);
+  private function processHandler($handlerDefinition, PropertyConfiguration $propertyConfiguration): void {
+    if($handlerDefinition instanceof PreRenderingItemHandlerDefinitionInterface) {
+      $propertyConfiguration->setPreRenderingItemHandlerDefinition($handlerDefinition);
+    } elseif($handlerDefinition instanceof FormatterItemHandlerDefinitionInterface) {
+      $propertyConfiguration->setFormatterItemHandlerDefinition($handlerDefinition);
+    } elseif($handlerDefinition instanceof EntityReferenceItemHandlerDefinitionInterface) {
+      $propertyConfiguration->setReferenceItemHandlerDefinition($handlerDefinition);
+    } elseif($handlerDefinition instanceof AdditionalDataItemHandlerDefinitionInterface) {
+      $propertyConfiguration->setAdditionalDataItemHandlerDefinition($handlerDefinition);
+    } elseif($handlerDefinition instanceof ValidatorItemHandlerDefinitionInterface) {
+      $propertyConfiguration->addValidatorItemHandler($handlerDefinition);
+    }
   }
 
   private function fillVersion(array $yaml, PropertyConfiguration $propertyConfiguration): void {

@@ -27,7 +27,7 @@ Date:
       handler: "NullCheckFilterHandler"
   handler:
     preRenderingItemHandler: "CommonPreRenderingItemHandler"
-    valueFormatterItemHandler: "DateValueFormatterItemHandler"
+    valueFormatterItemHandler: "DateFormatterItemHandler"
 Table:
   dataType: "Table"
   handler:
