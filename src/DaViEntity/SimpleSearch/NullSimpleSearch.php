@@ -1,10 +1,10 @@
 <?php
 
-namespace App\DaViEntity\Search;
+namespace App\DaViEntity\SimpleSearch;
 
 use App\DaViEntity\EntityInterface;
 
-class NullSearch implements SearchInterface {
+class NullSimpleSearch implements SimpleSearchInterface {
 
   public function getEntityListFromSearchString(string | EntityInterface $entityClass, string $client, string $searchString): array {
     return [];

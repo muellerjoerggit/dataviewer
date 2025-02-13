@@ -6,7 +6,7 @@ use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
-use App\DaViEntity\Search\SearchLocator;
+use App\DaViEntity\SimpleSearch\SimpleSearchLocator;
 use App\DaViEntity\Repository\RepositoryInterface;
 use App\DaViEntity\Repository\RepositoryLocator;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -22,7 +22,7 @@ class DaViEntityManager {
     private readonly EntityTypeSchemaRegister $schemaRegister,
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
     private readonly MainRepository $mainRepository,
-    private readonly SearchLocator $entityListSearchLocator,
+    private readonly SimpleSearchLocator $entityListSearchLocator,
     private readonly RepositoryLocator $entityRepositoryLocator,
   ) {}
 
@@ -75,7 +75,7 @@ class DaViEntityManager {
 
   public function getEntityListFromSearchString(string $client, string $entityType, string $searchString): array {
     $entityClass = $this->entityTypesRegister->getEntityClassByEntityType($entityType);
-    $entityListSearch = $this->entityListSearchLocator->getEntityListSearchClass($entityClass);
+    $entityListSearch = $this->entityListSearchLocator->getFastSearch($entityClass);
     return $entityListSearch->getEntityListFromSearchString($entityClass, $client, $searchString);
   }
 

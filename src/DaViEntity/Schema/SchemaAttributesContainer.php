@@ -10,7 +10,7 @@ use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
-use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
@@ -40,7 +40,7 @@ class SchemaAttributesContainer {
   private array $baseQueryAttributes = [];
 
   /**
-   * @var SearchDefinition[]
+   * @var SimpleSearchDefinition[]
    */
   private array $entityListSearchAttributes = [];
 
@@ -147,7 +147,7 @@ class SchemaAttributesContainer {
     return $this;
   }
 
-  public function addEntityListSearchAttribute(SearchDefinition $listSearch): SchemaAttributesContainer {
+  public function addEntityListSearchAttribute(SimpleSearchDefinition $listSearch): SchemaAttributesContainer {
     $this->entityListSearchAttributes[] = $listSearch;
     return $this;
   }

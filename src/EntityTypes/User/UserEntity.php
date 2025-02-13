@@ -18,8 +18,8 @@ use App\DaViEntity\DataProvider\CommonSqlDataProvider;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\ListProvider\CommonListProvider;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
-use App\DaViEntity\Search\CommonSearch;
-use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\SimpleSearch\CommonSimpleSearch;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\CommonRefiner;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
@@ -42,7 +42,7 @@ use App\Services\EntityActionHandler\UrlActionHandler;
 #[RepositoryDefinition(repositoryClass: UserRepository::class)]
 #[EntityTypeAttr(name: 'User', label: 'Benutzer')]
 #[BaseQuery(baseQuery: CommonBaseQuery::class),
-  SearchDefinition(entityListSearch: CommonSearch::class),
+  SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
   RefinerDefinition(refinerClass: CommonRefiner::class),

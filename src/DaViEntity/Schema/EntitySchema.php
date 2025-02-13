@@ -17,7 +17,7 @@ use App\DaViEntity\DataProvider\DataProviderDefinitionInterface;
 use App\DaViEntity\ListProvider\ListProviderDefinitionInterface;
 use App\DaViEntity\Refiner\RefinerDefinitionInterface;
 use App\DaViEntity\Repository\RepositoryDefinitionInterface;
-use App\DaViEntity\Search\SearchDefinitionInterface;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
@@ -94,7 +94,7 @@ class EntitySchema implements EntitySchemaInterface {
   private array $repositoryDefinitions = [];
 
   /**
-   * @var SearchDefinitionInterface[]
+   * @var SimpleSearchDefinitionInterface[]
    */
   private array $searchDefinitions = [];
 
@@ -552,21 +552,23 @@ class EntitySchema implements EntitySchemaInterface {
     return '';
   }
 
-  public function addSearchDefinition(SearchDefinitionInterface $definition): EntitySchemaInterface {
-    $this->searchDefinitions[] = $definition;
+  public function addSimpleSearchDefinition(SimpleSearchDefinitionInterface $definition): EntitySchemaInterface {
+    if($definition->isValid()) {
+      $this->searchDefinitions[] = $definition;
+    }
     return $this;
   }
 
-  public function getSearchDefinition(string $version): SearchDefinitionInterface | string {
+  public function getSimpleSearchClass(string $version): string {
     foreach ($this->searchDefinitions as $definition) {
       if(
         !$definition instanceof VersionListInterface
         || !$definition->hasVersion($version)
-        || !$definition instanceof SearchDefinitionInterface
+        || !$definition instanceof SimpleSearchDefinitionInterface
       ) {
         continue;
       }
-      return $definition;
+      return $definition->getSimpleSearchClass();
     }
 
     return '';

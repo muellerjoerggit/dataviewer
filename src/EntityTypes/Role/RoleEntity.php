@@ -14,8 +14,8 @@ use App\DaViEntity\DataProvider\CommonSqlDataProvider;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\ListProvider\CommonListProvider;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
-use App\DaViEntity\Search\CommonSearch;
-use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\SimpleSearch\CommonSimpleSearch;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\CommonRefiner;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
@@ -40,7 +40,7 @@ use App\Item\Property\PropertyItemInterface;
   ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
   RefinerDefinition(refinerClass: CommonRefiner::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
-  SearchDefinition(entityListSearch: CommonSearch::class),
+  SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   ListProviderDefinition(listProviderClass: CommonListProvider::class),
 ]

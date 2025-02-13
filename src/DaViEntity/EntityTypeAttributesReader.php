@@ -12,7 +12,7 @@ use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\EntityLabel\LabelCrafter;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
-use App\DaViEntity\Search\SearchDefinition;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseAttr;
@@ -69,7 +69,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       case BaseQuery::class:
         $container->addBaseQueryAttribute($attribute);
         break;
-      case SearchDefinition::class:
+      case SimpleSearchDefinition::class:
         $container->addEntityListSearchAttribute($attribute);
         break;
       case DataProviderDefinition::class:
@@ -125,7 +125,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
 
   public function getEntityListSearchClass(string | EntityInterface $classname): string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, SearchDefinition::class, SearchDefinition::CLASS_PROPERTY, '');
+    return $this->getAttributeKey($classname, SimpleSearchDefinition::class, SimpleSearchDefinition::CLASS_PROPERTY, '');
   }
 
   public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {

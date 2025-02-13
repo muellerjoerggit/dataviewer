@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\Search;
+namespace App\DaViEntity\SimpleSearch;
 
 use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\DaViQueryBuilder;
@@ -11,7 +11,7 @@ use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonSearch implements SearchInterface {
+class CommonSimpleSearch implements SimpleSearchInterface {
 
   use ExecuteQueryBuilderTrait;
 
