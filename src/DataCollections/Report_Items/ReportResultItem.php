@@ -2,8 +2,6 @@
 
 namespace App\DataCollections\Report_Items;
 
-use App\DataCollections\ReportElements_List\ReportResultList;
-
 class ReportResultItem extends AbstractReportItem {
 
   public const string ITEM_TYPE = 'result';
@@ -14,18 +12,18 @@ class ReportResultItem extends AbstractReportItem {
 
   private string $term = '';
   private	string $description = '';
-  private int $resultIcon = self::RESULT_ICON_UNKNOWN;
+  private ReportResultIcon $resultIcon = ReportResultIcon::Unknown;
   private string $termTooltip = '';
   private string $resultTooltip = '';
 
-  public static function create(int $resultIcon, string $term = ''): ReportResultItem {
+  public static function create(ReportResultIcon $resultIcon, string $term = ''): ReportResultItem {
     $item = new static();
     $item->setResultIcon($resultIcon);
     $item->setTerm($term);
     return $item;
   }
 
-  public static function createFull(int $resultIcon, string $term, string $description, string $termTooltip, string $resultTooltip): ReportResultItem {
+  public static function createFull(ReportResultIcon $resultIcon, string $term, string $description, string $termTooltip, string $resultTooltip): ReportResultItem {
     $item = new static();
     $item
       ->setResultIcon($resultIcon)
@@ -45,16 +43,16 @@ class ReportResultItem extends AbstractReportItem {
     return $this;
   }
 
-  public function getResultIcon(): int {
+  public function getResultIcon(): ReportResultIcon {
     return $this->resultIcon;
   }
 
   public function setSuccessOrFailedIcon(bool $result): ReportResultItem{
-    $this->setResultIcon($result ? self::RESULT_ICON_SUCCESS : self::RESULT_ICON_FAILED);
+    $this->setResultIcon($result ? ReportResultIcon::Success : ReportResultIcon::Failure);
     return $this;
   }
 
-  public function setResultIcon(int $resultIcon): ReportResultItem {
+  public function setResultIcon(ReportResultIcon $resultIcon): ReportResultItem {
     $this->resultIcon = $resultIcon;
     return $this;
   }
@@ -94,7 +92,7 @@ class ReportResultItem extends AbstractReportItem {
         'description' => $this->description,
         'termTooltip' => $this->termTooltip,
         'result' => $this->resultIcon,
-        'resultTooltip' => $this->resultTooltip
+        'resultTooltip' => $this->resultTooltip,
       ]
     );
   }
