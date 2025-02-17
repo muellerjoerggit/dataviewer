@@ -4,6 +4,7 @@ namespace App\Feature\Features;
 
 use App\DataCollections\Color;
 use App\DataCollections\Report;
+use App\DataCollections\Report_Items\ReportResultIcon;
 use App\DataCollections\ReportElements\ReportHeader;
 use App\DataCollections\ReportElements\ReportInfoText;
 use App\DataCollections\ReportElements\ReportPreformattedText;
@@ -83,26 +84,26 @@ END;
       ReportTableRow::create(
         ReportTableCell::create('scalar', 1),
         ReportTableCell::create('badge', ReportBadgeItem::createDefault('normales Badge')),
-        ReportTableCell::create('result', ReportResultItem::createFull(ReportResultItem::RESULT_ICON_SUCCESS, 'erfolgreich', '', 'zusätzliche Information', 'zusätzliche Infos zum Ergebnis')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultItem::RESULT_ICON_SUCCESS)),
+        ReportTableCell::create('result', ReportResultItem::createFull(ReportResultIcon::Success, 'erfolgreich', '', 'zusätzliche Information', 'zusätzliche Infos zum Ergebnis')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Success)),
       ),
       ReportTableRow::create(
         ReportTableCell::create('scalar', 'text'),
         ReportTableCell::create('badge', ReportBadgeItem::createWarningBadge('Warnung')),
-        ReportTableCell::create('result', ReportResultItem::create(ReportResultItem::RESULT_ICON_FAILED, 'fehlgeschlagen')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultItem::RESULT_ICON_FAILED)),
+        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::Failure, 'fehlgeschlagen')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Failure)),
       ),
       ReportTableRow::create(
         ReportTableCell::create('scalar', 'Lorem ipsum dolor sit amet'),
         ReportTableCell::create('badge', ReportBadgeItem::createOutlineBadge('Outline')),
-        ReportTableCell::create('result', ReportResultItem::create(ReportResultItem::RESULT_ICON_UNKNOWN, 'unbekannt')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultItem::RESULT_ICON_UNKNOWN)),
+        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::Unknown, 'unbekannt')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Unknown)),
       ),
       ReportTableRow::create(
         ReportTableCell::create('scalar', 123),
         ReportTableCell::create('badge', ReportBadgeItem::createSecondaryBadge('Secondary')),
-        ReportTableCell::create('result', ReportResultItem::create(ReportResultItem::RESULT_ICON_SUCCESS, 'erfolg')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultItem::RESULT_ICON_SUCCESS)),
+        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::Success, 'erfolg')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Success)),
       ),
     );
 

@@ -6,10 +6,6 @@ class ReportResultItem extends AbstractReportItem {
 
   public const string ITEM_TYPE = 'result';
 
-  public const int RESULT_ICON_UNKNOWN = 1;
-  public const int RESULT_ICON_SUCCESS = 2;
-  public const int RESULT_ICON_FAILED = 3;
-
   private string $term = '';
   private	string $description = '';
   private ReportResultIcon $resultIcon = ReportResultIcon::Unknown;
