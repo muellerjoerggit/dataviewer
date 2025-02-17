@@ -7,11 +7,11 @@ use Generator;
 /**
  *
  */
-class UniqueIdentifier {
+class UniqueKey {
 
   private array $identifiers = [];
 
-  public function addIdentifier(string $identifier, string | int $value): UniqueIdentifier {
+  public function addIdentifier(string $identifier, string | int $value): UniqueKey {
     $this->identifiers[$identifier] = $value;
     return $this;
   }
@@ -20,7 +20,7 @@ class UniqueIdentifier {
     return $this->identifiers;
   }
 
-  public function isCompositeIdentifier(): bool {
+  public function isCompositeKey(): bool {
     return count($this->getIdentifierKeys()) > 1;
   }
 
