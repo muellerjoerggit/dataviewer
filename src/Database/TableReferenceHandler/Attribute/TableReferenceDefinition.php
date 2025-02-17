@@ -5,7 +5,7 @@ namespace App\Database\TableReferenceHandler\Attribute;
 use App\Database\TableReferenceHandler\NullTableReferenceHandler;
 use Attribute;
 
-abstract class TableReferenceAttr implements TableReferenceAttrInterface {
+abstract class TableReferenceDefinition implements TableReferenceDefinitionInterface {
 
   protected readonly string $externalName;
   protected readonly string $fromEntityClass;

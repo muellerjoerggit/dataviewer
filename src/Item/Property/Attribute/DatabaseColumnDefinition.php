@@ -5,11 +5,10 @@ namespace App\Item\Property\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class DatabaseColumnAttr {
+class DatabaseColumnDefinition {
 
   public function __construct(
     public string $column = '',
-    public string $tableReferenceName = '',
   ) {}
 
   public function setColumn(string $column): static {
@@ -21,16 +20,8 @@ class DatabaseColumnAttr {
     return !empty($this->column);
   }
 
-  public function hasTableReferenceName(): bool {
-    return !empty($this->tableReferenceName);
-  }
-
   public function getColumn(): string {
     return $this->column;
-  }
-
-  public function getTableReferenceName(): string {
-    return $this->tableReferenceName;
   }
 
 }

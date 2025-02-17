@@ -2,24 +2,33 @@
 
 namespace App\Database\TableReferenceHandler;
 
+use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\DaViQueryBuilder;
 use App\Database\TableReference\TableReferenceHandlerInterface;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\EntityTypes\NullEntity\NullEntity;
+use Doctrine\DBAL\ArrayParameterType;
 
 abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInterface {
 
   public function __construct(
     protected readonly EntityTypeSchemaRegister $schemaRegister,
+    protected readonly BaseQueryLocator $baseQueryLocator,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration, bool $innerJoin = false, string | null $condition = null): void {
-    $toTable = $this->getReferencedTableName($tableReferenceConfiguration);
-    $fromTable = $this->getSourceTableName($tableReferenceConfiguration->getFromEntityClass());
+  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void {
+    $toSchema = $this->getToSchema($tableReferenceConfiguration);
+    $fromSchema = $this->getFromSchema($tableReferenceConfiguration);
 
-    if(empty($toTable) || empty($fromTable)) {
+    $condition = $this->getJoinCondition($queryBuilder, $tableReferenceConfiguration);
+
+    $toTable = $toSchema->getBaseTable();
+    $fromTable = $fromSchema->getBaseTable();
+
+    if(empty($toTable) || empty($fromTable) || !$condition) {
       return;
     }
 
@@ -30,41 +39,41 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     }
   }
 
-  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration): void {
-    $condition = $this->getWhereConditionColumn($queryBuilder, $tableReferenceConfiguration);
-    $this->joinTable($queryBuilder, $tableReferenceConfiguration, true, $condition);
+  abstract public function getJoinCondition(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null;
+
+  public function getFromSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema {
+    return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getFromEntityClass());
   }
 
-  public function joinTableConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration, EntityInterface $fromEntity): void {
-    $hasWhere = $this->addWhereConditionValue($queryBuilder, $tableReferenceConfiguration, $fromEntity);
-
-    if(!$hasWhere) {
-      return;
-    }
-
-    $innerJoin = $tableReferenceConfiguration->hasInnerJoin();
-    $condition = $this->getWhereConditionColumn($queryBuilder, $tableReferenceConfiguration);
-
-    $this->joinTable($queryBuilder, $tableReferenceConfiguration, $innerJoin, $condition);
+  public function getToSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema {
+    return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getToEntityClass());
   }
 
-  public function getReferencedTableName(TableReferenceAttrInterface $tableReferenceConfiguration): string {
-    $referencedEntityType = $this->getReferencedEntityType($tableReferenceConfiguration);
-    $schema = $this->schemaRegister->getSchemaFromEntityClass($referencedEntityType);
-    return $schema->getBaseTable();
+  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity, array $options = []): DaViQueryBuilder {
+    // ToDo: implement NullQueryBuilder
+    $referencedEntityClass = $this->getReferencedEntityClass($tableReferenceConfiguration);
+    $baseQuery = $this->baseQueryLocator->getBaseQueryFromEntityClass($referencedEntityClass, $fromEntity->getClient());
+    $toSchema = $this->schemaRegister->getSchemaFromEntityClass($referencedEntityClass);
+
+    $queryBuilder = $baseQuery->buildQueryFromSchema($referencedEntityClass, $fromEntity->getClient(), $options);
+    $property = $tableReferenceConfiguration->getToPropertyCondition();
+    $column = $toSchema->getColumn($property);
+    $propertyItem = $fromEntity->getPropertyItem($property);
+
+    $queryBuilder->andWhere(
+      $queryBuilder->expr()->in($column, ':table_reference_values')
+    );
+    $queryBuilder->setParameter('table_reference_values', $propertyItem->getValuesAsArray(), ArrayParameterType::INTEGER);
+
+    return $queryBuilder;
   }
 
-  public function getReferencedEntityType(TableReferenceAttrInterface $tableReferenceConfiguration): string {
+  protected function getReferencedEntityClass(TableReferenceDefinitionInterface $tableReferenceConfiguration): string {
     if($tableReferenceConfiguration->isValid()) {
       return $tableReferenceConfiguration->getToEntityClass();
     }
 
     return NullEntity::class;
-  }
-
-  protected function getSourceTableName(string $entityClass): string {
-    $schema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
-    return $schema->getBaseTable();
   }
 
 }

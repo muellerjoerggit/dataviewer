@@ -3,11 +3,11 @@
 namespace App\Database\TableReferenceHandler;
 
 
+use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\DatabaseLocator;
 use App\Database\DaViQueryBuilder;
-use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceAttr;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
-use App\DaViEntity\EntityInterface;
+use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
 class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
@@ -15,33 +15,13 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
 	public function __construct(
     protected readonly DatabaseLocator $databaseLocator,
     EntityTypeSchemaRegister $schemaRegister,
+    BaseQueryLocator $baseQueryLocator,
   ) {
-    parent::__construct($schemaRegister);
+    parent::__construct($schemaRegister, $baseQueryLocator);
   }
 
-  public function addWhereConditionValue(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration, EntityInterface $fromEntity): bool {
-    if(!$tableReferenceConfiguration instanceof CommonTableReferenceAttr) {
-      return false;
-    }
-
-    $toEntityType = $tableReferenceConfiguration->getToEntityClass();
-    $toColumn = $this->getColumn($toEntityType, $tableReferenceConfiguration->getToPropertyCondition());
-
-    if(empty($toColumn)) {
-      return false;
-    }
-
-    $item = $fromEntity->getPropertyItem($tableReferenceConfiguration->getFromPropertyCondition());
-    $value = $item->getFirstValue();
-
-    $queryBuilder->where($queryBuilder->expr()->eq($toColumn, ':value'));
-    $queryBuilder->setParameter('value', $value, $item->getConfiguration()->getQueryParameterType());
-
-    return true;
-  }
-
-  public function getWhereConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration): string | null {
-    if(!$tableReferenceConfiguration instanceof CommonTableReferenceAttr) {
+  public function getJoinCondition(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null {
+    if(!$tableReferenceConfiguration instanceof CommonTableReferenceDefinition) {
       return null;
     }
 
@@ -57,8 +37,8 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
   }
 
   protected function getColumn(string $entityClass, string $property): string {
-    $toSchema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
-    return !empty($property) ? $toSchema->getColumn($property) : '';
+    $schema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
+    return !empty($property) ? $schema->getColumn($property) : '';
   }
 
 }

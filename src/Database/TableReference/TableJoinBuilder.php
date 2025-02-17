@@ -3,7 +3,7 @@
 namespace App\Database\TableReference;
 
 use App\Database\DaViQueryBuilder;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\EntityTypes\NullEntity\NullEntity;
@@ -17,9 +17,9 @@ class TableJoinBuilder {
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
   ) {}
 
-  public function joinTableConditionColumn(DaViQueryBuilder $queryBuilder, TableReferenceAttrInterface $tableReferenceConfiguration): void {
+  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): void {
     $handler = $this->locator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
-    $handler->joinTableConditionColumn($queryBuilder, $tableReferenceConfiguration);
+    $handler->joinTable($queryBuilder, $tableReferenceConfiguration);
   }
 
   public function joinFromPropertyPath(DaViQueryBuilder $queryBuilder, EntitySchema $schema, string $path): void {
@@ -39,7 +39,7 @@ class TableJoinBuilder {
         break;
       }
 
-      $this->joinTableConditionColumn($queryBuilder, $tableReferenceConfig);
+      $this->joinTable($queryBuilder, $tableReferenceConfig);
       $currentSchema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);
     }
   }

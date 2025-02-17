@@ -2,13 +2,13 @@
 
 namespace App\Database\TableReferenceHandler\Attribute;
 
-interface TableReferenceAttrInterface {
+interface TableReferenceDefinitionInterface {
 
   public function getName(): string;
 
   public function getHandlerClass(): string;
 
-  public function setExternalName(string $name): static;
+  public function setExternalName(string $externalName): static;
 
   public function hasInnerJoin(): bool;
 
