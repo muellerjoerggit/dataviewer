@@ -4,202 +4,89 @@ namespace App\DataCollections;
 
 use App\DataCollections\ReportElements\ReportElementInterface;
 use App\DataCollections\ReportElements\ReportHeader;
-use App\DataCollections\ReportElements\ReportResult;
-use App\DataCollections\ReportElements\ReportTable;
+use App\DataCollections\ReportElements\ReportSection;
 
 class Report {
 
-	public const int RESULT_ICON_UNKNOWN = 1;
-	public const int RESULT_ICON_SUCCESS = 2;
-	public const int RESULT_ICON_FAILED = 3;
+  private array $reportBody = [];
+  private ReportHeader $reportHeader;
+  private bool $tableOfContent = false;
 
-	private array $reportBody = [];
-	private ReportHeader $reportHeader;
-	private bool $tableOfContent = false;
+  public function getReportBody(): array {
+    $ret = [];
 
-	public function getReportBody(): array {
-		$ret = [];
+    foreach ($this->reportBody as $sectionData) {
+      $sectionId = $sectionData->getId();
+      $ret[$sectionId] = $sectionData->toArray();
+      $ret[$sectionId]['children'] = [];
+      foreach ($sectionData->iterateChildren() as $element) {
+        if($element instanceof ReportElementInterface && $element->isValid()) {
+          $data = $element->getElementData();
+        } elseif(!is_array($element)) {
+          $data = [];
+        }
 
-		foreach ($this->reportBody as $sectionId => $sectionData) {
-			$ret[$sectionId]['type'] = $sectionData['type'];
-			$ret[$sectionId]['headline'] = $sectionData['headline'];
-			$ret[$sectionId]['anker'] = $sectionData['anker'];
-			$ret[$sectionId]['children'] = [];
-			foreach ($sectionData['children'] as $element) {
-				if($element instanceof ReportElementInterface) {
-					$ret[$sectionId]['children'][] = $element->getElementData();
-				} elseif(is_array($element)) {
-					$ret[$sectionId]['children'][] = $element;
-				}
-			}
-		}
+        if(empty($data)) {
+          continue;
+        }
 
-		return $ret;
-	}
+        $ret[$sectionId]['children'][] = $data;
+      }
+    }
 
-	public function getReportHeader(): ReportHeader {
-		return $this->reportHeader;
-	}
+    return $ret;
+  }
 
-	public function hasTableOfContent(): bool {
-		return $this->tableOfContent;
-	}
+  public function setReportHeader(ReportHeader $reportHeader): Report {
+    $this->reportHeader = $reportHeader;
+    return $this;
+  }
 
-	public function setTableOfContent(bool $tableOfContent): Report {
-		$this->tableOfContent = $tableOfContent;
-		return $this;
-	}
+  public function getReportHeader(): ReportHeader {
+    return $this->reportHeader;
+  }
 
-	public function createReportHeader(string $name, $description): Report {
-		$this->reportHeader = new ReportHeader($name, $description);
+  public function hasTableOfContent(): bool {
+    return $this->tableOfContent;
+  }
 
-		return $this;
-	}
+  public function setTableOfContent(bool $tableOfContent): Report {
+    $this->tableOfContent = $tableOfContent;
+    return $this;
+  }
 
-	public function addSection(string $headline): int {
-		$this->reportBody[] = [
-			'type' => 'section',
-			'headline' => $headline,
-			'children' => []
-		];
+  public function createSection(string $headline): ReportSection {
+    $id = array_key_last($this->reportBody);
+    $id = $id === null ? 0 : $id + 1;
+    $section = new ReportSection($id, $headline);
+    $this->reportBody[] = $section;
+    return $section;
+  }
 
-		$id = array_key_last($this->reportBody);
-		$this->reportBody[$id]['anker'] = 'section' . $id;
+  public function addElement(int $sectionId, string $term, string | array $messages = []): Report {
+    if(!isset($this->reportBody[$sectionId])) {
+      return $this;
+    }
 
-		return $id;
-	}
+    if(!is_array($messages)) {
+      $messages = [$messages];
+    }
 
-	public function addSubSection(string $headline): int {
-		$this->reportBody[] = [
-			'type' => 'subsection',
-			'headline' => $headline,
-			'children' => []
-		];
-		$id = array_key_last($this->reportBody);
-		$this->reportBody[$id]['anker'] = 'subSection' . $id;
+    $this->reportBody[$sectionId]['children'][] = [
+      'type' => 'element',
+      'term' => $term,
+      'messages' => $messages
+    ];
 
-		return $id;
-	}
+    return $this;
+  }
 
-	public function addElement(int $sectionId, string $term, string | array $messages = []): Report {
-		if(!isset($this->reportBody[$sectionId])) {
-			return $this;
-		}
-
-		if(!is_array($messages)) {
-			$messages = [$messages];
-		}
-
-		$this->reportBody[$sectionId]['children'][] = [
-			'type' => 'element',
-			'term' => $term,
-			'messages' => $messages
-		];
-
-		return $this;
-	}
-
-	/**
-	 * @deprecated
-	 * @param int $sectionId
-	 * @param array $header
-	 * @param array $table
-	 * @param array $columnsIcon
-	 * @param array $columnsModal
-	 * @param string $emptyResult
-	 * @param string $modalTitle
-	 * @param string $titleModalButton
-	 * @param bool $firstColumnSticky
-	 * @return $this
-	 */
-	public function addTable(
-		int $sectionId,
-		array $header,
-		array $table,
-		array $columnsIcon = [],
-		array $columnsModal = [],
-		string $emptyResult = 'keine Ergebnisse',
-		string $modalTitle = '',
-		string $titleModalButton = 'Öffnen',
-		bool $firstColumnSticky = false
-	): Report {
-		if(!isset($this->reportBody[$sectionId])) {
-			return $this;
-		}
-
-		$this->reportBody[$sectionId]['children'][] = [
-			'type' => 'table',
-			'header' => $header,
-			'table' => $table,
-			'emptyResult' => $emptyResult,
-			'modalColumns' => $columnsModal,
-			'iconColumns' => $columnsIcon,
-			'modalTitle' => $modalTitle,
-			'titleModalButton' => $titleModalButton,
-			'firstColumnSticky' => $firstColumnSticky
-		];
-
-		return $this;
-	}
-
-	public function addInfotext(int $sectionId, string $text): Report {
-		if(!isset($this->reportBody[$sectionId])) {
-			return $this;
-		}
-
-		$this->reportBody[$sectionId]['children'][] = [
-			'type' => 'infotext',
-			'message' => $text
-		];
-
-		return $this;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function addResult(int $sectionId, string $term, string $description = '', int $resultIcon = self::RESULT_ICON_UNKNOWN, string $termTooltip = '', string $resultTooltip = ''): Report {
-		if(!isset($this->reportBody[$sectionId])) {
-			return $this;
-		}
-
-		$this->reportBody[$sectionId]['children'][] = self::buildResult($term, $description, $resultIcon, $termTooltip, $resultTooltip);
-
-		return $this;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public static function buildResult(string $term, string $description = '', int $resultIcon = self::RESULT_ICON_UNKNOWN, string $termTooltip = '', string $resultTooltip = ''): array {
-		return [
-			'type' => 'result',
-			'term' => $term,
-			'description' => $description,
-			'termTooltip' => $termTooltip,
-			'result' => $resultIcon,
-			'resultTooltip' => $resultTooltip
-		];
-	}
-
-	public function addTableElement(int $sectionId, array $header, array $table): ReportTable {
-		$reportTable = new ReportTable($header, $table);
-		$this->reportBody[$sectionId]['children'][] = $reportTable;
-		return $reportTable;
-	}
-
-	public function addResultElement(int $sectionId): ReportResult {
-		$reportResult = new ReportResult();
-		$this->reportBody[$sectionId]['children'][] = $reportResult;
-		return $reportResult;
-	}
-
-	public function getAsArray(): array {
-		return [
-			'header' => $this->getReportHeader(),
-			'body' => $this->getReportBody(),
-			'tableOfContent' =>	$this->hasTableOfContent()
-		];
-	}
+  public function getAsArray(): array {
+    return [
+      'header' => $this->getReportHeader()->getElementData(),
+      'body' => $this->getReportBody(),
+      'tableOfContent' =>	$this->hasTableOfContent()
+    ];
+  }
 
 }

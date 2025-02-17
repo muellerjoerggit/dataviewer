@@ -75,4 +75,8 @@ class ReportResult implements ReportElementInterface {
 		return $this;
 	}
 
+  public function isValid(): bool {
+    return true;
+  }
+
 }

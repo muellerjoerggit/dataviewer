@@ -6,4 +6,6 @@ interface ReportElementInterface {
 
 	public function getElementData(): array;
 
+  public function isValid(): bool;
+
 }
