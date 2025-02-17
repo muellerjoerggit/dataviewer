@@ -2,13 +2,14 @@
 
 namespace App\EntityTypes\User;
 
-use App\Database\BaseQuery\BaseQuery;
+use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
-use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceAttr;
+use App\Database\TableReference\TableReferencePropertyDefinition;
+use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
 use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
 use App\DaViEntity\AbstractEntity;
-use App\DaViEntity\AdditionalData\AdditionalDataProvider;
+use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinition;
 use App\DaViEntity\AdditionalData\AdditionalDataProviderFromTableReferences;
 use App\DaViEntity\ColumnBuilder\CommonColumnBuilder;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
@@ -23,12 +24,12 @@ use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\CommonRefiner;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
-use App\DaViEntity\Schema\Attribute\DatabaseAttr;
+use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
-use App\DaViEntity\Schema\Attribute\ExtendedEntityOverviewDefinitionSchemaAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
 use App\Item\ItemInterface;
+use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;
@@ -41,20 +42,20 @@ use App\Services\EntityActionHandler\UrlActionHandler;
 
 #[RepositoryDefinition(repositoryClass: UserRepository::class)]
 #[EntityTypeAttr(name: 'User', label: 'Benutzer')]
-#[BaseQuery(baseQuery: CommonBaseQuery::class),
+#[BaseQueryDefinition(baseQueryClass: CommonBaseQuery::class),
   SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
   RefinerDefinition(refinerClass: CommonRefiner::class),
-  ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
+  ColumnBuilderDefinition(columnBuilderClass: CommonColumnBuilder::class),
   ListProviderDefinition(listProviderClass: CommonListProvider::class)
 ]
-#[AdditionalDataProvider(additionalDataProviderClass: AdditionalDataProviderFromTableReferences::class)]
-#[DatabaseAttr(
+#[AdditionalDataProviderDefinition(additionalDataProviderClass: AdditionalDataProviderFromTableReferences::class)]
+#[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
   baseTable: 'usr_data'),
 ]
-#[CommonTableReferenceAttr(
+#[CommonTableReferenceDefinition(
   name: 'roleMapping',
   handlerClass: CommonTableReferenceHandler::class,
   toEntityClass: RoleUserMapEntity::class,
@@ -73,8 +74,10 @@ class UserEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_INTEGER
-  )]
+      dataType: ItemInterface::DATA_TYPE_INTEGER
+    ),
+    DatabaseColumnDefinition
+  ]
   #[UniquePropertyDefinition,
     LabelPropertyAttr(rank: 10),
     EntityOverviewPropertyAttr(rank: 10)
@@ -86,9 +89,11 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_STRING,
-    label: 'Vorname'
-  )]
+      dataType: ItemInterface::DATA_TYPE_STRING,
+      label: 'Vorname'
+    ),
+    DatabaseColumnDefinition
+  ]
   #[LabelPropertyAttr(rank: 20),
     EntityOverviewPropertyAttr(rank: 20),
     SearchPropertyDefinition
@@ -100,9 +105,11 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_STRING,
-    label: 'Nachname'
-  )]
+      dataType: ItemInterface::DATA_TYPE_STRING,
+      label: 'Nachname'
+    ),
+    DatabaseColumnDefinition
+  ]
   #[LabelPropertyAttr(rank: 30),
     EntityOverviewPropertyAttr(rank: 30),
     SearchPropertyDefinition
@@ -114,9 +121,11 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_STRING,
-    label: 'E-Mail'
-  )]
+      dataType: ItemInterface::DATA_TYPE_STRING,
+      label: 'E-Mail'
+    ),
+    DatabaseColumnDefinition
+  ]
   #[SearchPropertyDefinition
   ]
   #[PropertyPreDefinedAttr([
@@ -126,9 +135,11 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_BOOL,
-    label: 'Aktiv'
-  )]
+      dataType: ItemInterface::DATA_TYPE_BOOL,
+      label: 'Aktiv'
+    ),
+    DatabaseColumnDefinition
+  ]
   #[EntityOverviewPropertyAttr(rank: 40)
   ]
   #[PropertyPreDefinedAttr([
@@ -138,9 +149,11 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_DATE_TIME,
-    label: 'Inaktivierungsdatum'
-  )]
+      dataType: ItemInterface::DATA_TYPE_DATE_TIME,
+      label: 'Inaktivierungsdatum'
+    ),
+    DatabaseColumnDefinition
+  ]
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'dateTime'],
   ])]
@@ -148,9 +161,14 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_INTEGER,
-    label: 'Rollen',
-    cardinality: ItemInterface::CARDINALITY_MULTIPLE
+      dataType: ItemInterface::DATA_TYPE_INTEGER,
+      label: 'Rollen',
+      cardinality: ItemInterface::CARDINALITY_MULTIPLE
+    ),
+  ]
+  #[TableReferencePropertyDefinition(
+    tableReferenceName: 'roleMapping',
+    property: 'rol_id',
   )]
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'integer'],
@@ -158,13 +176,15 @@ class UserEntity extends AbstractEntity {
   private $roles;
 
 
-  #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_STRING,
-    label: 'zweite E-Mail'
-  )]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'string'],
-  ])]
-  private $second_mail;
+//  #[PropertyAttr(
+//      dataType: ItemInterface::DATA_TYPE_STRING,
+//      label: 'zweite E-Mail'
+//    ),
+//    DatabaseColumnAttr
+//  ]
+//  #[PropertyPreDefinedAttr([
+//    [PreDefined::class, 'string'],
+//  ])]
+//  private $second_mail;
 
 }

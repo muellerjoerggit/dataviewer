@@ -2,7 +2,7 @@
 
 namespace App\Services\EntityAction;
 
-abstract class AbstractEntityActionConfigAttr implements EntityActionConfigAttrInterface {
+abstract class AbstractEntityActionDefinition implements EntityActionDefinitionInterface {
 
   public function __construct(
     public readonly string $handler,

@@ -6,6 +6,6 @@ use App\DaViEntity\EntityInterface;
 
 interface UrlEntityActionHandlerInterface {
 
-  public function generateUrl(EntityActionConfigAttrInterface $config, EntityInterface $entity): array;
+  public function generateUrl(EntityActionDefinitionInterface $config, EntityInterface $entity): array;
 
 }

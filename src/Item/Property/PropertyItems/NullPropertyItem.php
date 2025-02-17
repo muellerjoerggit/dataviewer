@@ -11,7 +11,7 @@ class NullPropertyItem extends AbstractNullItem implements PropertyItemInterface
   protected PropertyConfiguration $itemConfiguration;
 
   public function __construct() {
-    $this->itemConfiguration = new PropertyConfiguration('NullItem');
+    $this->itemConfiguration = PropertyConfiguration::createNull();
   }
 
   public function getConfiguration(): PropertyConfiguration {

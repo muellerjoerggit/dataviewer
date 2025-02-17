@@ -2,8 +2,13 @@
 
 namespace App\DaViEntity\ColumnBuilder;
 
-interface ColumnBuilderDefinitionInterface {
+use App\Services\Version\VersionInformationWrapperInterface;
+use App\Services\Version\VersionListWrapperInterface;
 
-  public function getEntityColumnBuilderClass(): string;
+interface ColumnBuilderDefinitionInterface extends VersionInformationWrapperInterface, VersionListWrapperInterface  {
+
+  public function getColumnBuilderClass(): string;
+
+  public function isValid(): bool;
 
 }

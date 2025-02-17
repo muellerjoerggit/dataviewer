@@ -2,7 +2,7 @@
 
 namespace App\Services\EntityAction;
 
-interface EntityActionConfigAttrInterface {
+interface EntityActionDefinitionInterface {
 
   public function isValid(): bool;
 

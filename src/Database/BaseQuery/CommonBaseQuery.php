@@ -9,6 +9,7 @@ use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\VersionProperties;
+use App\Item\Property\PropertyConfiguration;
 
 class CommonBaseQuery implements BaseQueryInterface {
 
@@ -28,6 +29,10 @@ class CommonBaseQuery implements BaseQueryInterface {
     $columns = $this->versionsProperties->filterPropertyKeysByVersion($entityTypeClass, $columns, $client);
 
     foreach ($columns as $property => $column) {
+      if($column instanceof PropertyConfiguration) {
+        $column = $column->getColumn();
+      }
+
       $queryBuilder->addSelect($column . ' AS ' . $property);
     }
 

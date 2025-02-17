@@ -14,7 +14,7 @@ use App\DaViEntity\Schema\EntitySchema;
 class NullFilterHandler implements SqlFilterHandlerInterface{
 
 	public static function getNullFilterDefinition(): SqlFilterDefinitionInterface {
-		return new SqlFilterDefinitionAttr(
+		return new SqlFilterDefinition(
       NullFilterHandler::class,
       'Null filter',
       'Null Filter Fallback, wenn es irgendwelche Probleme mit den Filtern gibt'

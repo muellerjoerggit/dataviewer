@@ -3,36 +3,37 @@
 namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfigurationBuilder;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\BaseQuery\BaseQueryDefinitionInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
+use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinitionInterface;
+use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinitionInterface;
+use App\DaViEntity\Creator\CreatorDefinitionInterface;
+use App\DaViEntity\DataProvider\DataProviderDefinitionInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
-use App\DaViEntity\Schema\Attribute\DatabaseAttr;
-use App\DaViEntity\Schema\Attribute\EntityOverviewDefinitionSchemaAttr as EntityOverviewClass;
+use App\DaViEntity\ListProvider\ListProviderDefinitionInterface;
+use App\DaViEntity\Refiner\RefinerDefinitionInterface;
+use App\DaViEntity\Repository\RepositoryDefinitionInterface;
+use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
-use App\DaViEntity\Schema\Attribute\ExtendedEntityOverviewDefinitionSchemaAttr as ExtendedEntityOverviewClass;
-use App\DaViEntity\Schema\Attribute\LabelDefinitionSchemaAttr as LabelPropClass;
-use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\LabelPropertyAttr as LabelPropProperty;
-use App\Item\Property\Attribute\SearchPropertyDefinition;
-use App\Item\Property\Attribute\UniquePropertyDefinition;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\Item\Property\PropertyAttributesReader;
 use App\Item\Property\PropertyConfigurationBuilder;
-use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionProperty;
+use App\Services\Version\VersionListInterface;
+use App\Services\Version\VersionService;
+use App\Services\Version\VersionInformationWrapperInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Finder\SplFileInfo;
 
 class EntitySchemaBuilder {
 
   private const string YAML_PARAM_AGGREGATIONS = 'aggregations';
-  private const string YAML_PARAM_PROPERTIES = 'properties';
 
   public function __construct(
     private readonly PropertyConfigurationBuilder $propertyConfigurationBuilder,
     private readonly AggregationConfigurationBuilder $aggregationConfigurationBuilder,
     private readonly EntityTypeAttributesReader $attributesReader,
     private readonly PropertyAttributesReader $propertyAttributesReader,
+    private readonly VersionService $versionService,
   ) {}
 
   public function buildSchema(SplFileInfo $file, string $entityClass): EntitySchemaInterface | null {
@@ -60,6 +61,7 @@ class EntitySchemaBuilder {
       $this->buildAggregations($schema,  $yaml);
     }
 
+    $this->fillEntityServices($schema, $attributesContainer);
     $this->fillUniqueProperties($schema, $attributesContainer);
     $this->fillLabelProperties($schema, $attributesContainer);
     $this->fillSearchProperties($schema, $attributesContainer);
@@ -73,15 +75,7 @@ class EntitySchemaBuilder {
     return $schema;
   }
 
-  private function reflect(string $entityClass): ReflectionClass | null {
-    try {
-      return new ReflectionClass($entityClass);
-    } catch (\ReflectionException $exception) {
-      return null;
-    }
-  }
-
-  private function fillEntityActions(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillEntityActions(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     foreach($container->iterateEntityActionConfigAttributes() as $attribute) {
       if(!$attribute->isValid()) {
         continue;
@@ -91,16 +85,16 @@ class EntitySchemaBuilder {
     }
   }
 
-  private function fillUniqueProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillUniqueProperties(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     $uniqueProperties = [];
     foreach ($container->iterateUniquePropertyDefinitions() as $definition) {
-      $uniqueProperties[$definition->getName()] = $definition->getProperty();
+      $uniqueProperties[$definition->getName()][] = $definition->getProperty();
     }
 
     $schema->setUniqueProperties($uniqueProperties);
   }
 
-  private function fillLabelProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillLabelProperties(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     $labels = [];
     foreach ($container->iterateLabelDefinitions() as $labelAttribute) {
       $labels[] = [
@@ -115,7 +109,7 @@ class EntitySchemaBuilder {
     $schema->setEntityLabelProperties($labelProp);
   }
 
-  private function fillEntityOverview(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillEntityOverview(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     $entityOverview = [];
     foreach ($container->iterateEntityOverviewDefinitions() as $definition) {
       $entityOverview[] = [
@@ -130,7 +124,7 @@ class EntitySchemaBuilder {
     $schema->setEntityOverviewProperties($entityOverview);
   }
 
-  private function fillExtendedEntityOverview(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillExtendedEntityOverview(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     $extendedEntityOverview = [];
     foreach ($container->iterateExtendedEntityOverviewDefinitions() as $definition) {
       $extendedEntityOverview[] = [
@@ -145,103 +139,13 @@ class EntitySchemaBuilder {
     $schema->setExtendedEntityOverviewProperties($extendedEntityOverview);
   }
 
-  private function fillSearchProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillSearchProperties(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     $searchProperties = [];
     foreach ($container->iterateSearchPropertyDefinitions() as $definition) {
       $searchProperties[] = $definition->getProperty();
     }
 
     $schema->setSearchProperties($searchProperties);
-  }
-
-  private function fillSpecialProperties(ReflectionClass $reflection, EntitySchemaInterface $schema): bool {
-    $uniqueProp = [];
-    $labelTemp = [];
-    $searchProps = [];
-    $entityOverview = [];
-    $extendedEntityOverview = [];
-    foreach($reflection->getProperties() as $property) {
-      $propertyName = $property->getName();
-      $uniquePropertyAttr = $property->getAttributes(UniquePropertyDefinition::class);
-      $uniquePropertyAttr = reset($uniquePropertyAttr);
-      if($uniquePropertyAttr instanceof ReflectionAttribute) {
-        $name = $uniquePropertyAttr->newInstance()->getName();
-        $uniqueProp[$name][] = $propertyName;
-      }
-
-      $this->processPropertyAttribute($property, LabelPropProperty::class, $labelTemp);
-      $this->processPropertyAttribute($property, EntityOverviewPropertyAttr::class, $entityOverview);
-      $this->processPropertyAttribute($property, ExtendedEntityOverviewPropertyAttr::class, $extendedEntityOverview);
-
-      $searchPropertyAttr = $property->getAttributes(SearchPropertyDefinition::class);
-      $searchPropertyAttr = reset($searchPropertyAttr);
-      if($searchPropertyAttr instanceof ReflectionAttribute) {
-        $searchProps[] = $propertyName;
-      }
-    }
-
-    $this->processClassAttribute($reflection, LabelPropClass::class, $labelTemp);
-    $this->processClassAttribute($reflection, EntityOverviewClass::class, $entityOverview);
-    $this->processClassAttribute($reflection, ExtendedEntityOverviewClass::class, $extendedEntityOverview);
-
-
-    if(empty($uniqueProp)) {
-      return false;
-    }
-
-    $labelProp = [];
-    if(!empty($labelTemp)) {
-      $labelProp = $this->sortProperties($labelTemp);
-    } else {
-      $firstUniqueProp = reset($uniqueProp);
-      foreach ($firstUniqueProp as $value) {
-        $labelProp[$value] = '';
-      }
-    }
-
-    $entityOverview = $this->sortProperties($entityOverview);
-    $extendedEntityOverview = $this->sortProperties($extendedEntityOverview);
-    $labelProp = array_keys($labelProp);
-
-    $schema->setUniqueProperties($uniqueProp);
-    $schema->setEntityLabelProperties($labelProp);
-    $schema->setSearchProperties(empty($searchProps) ? $labelProp : $searchProps);
-    $schema->setExtendedEntityOverviewProperties($extendedEntityOverview);
-    $schema->setEntityOverviewProperties($entityOverview);
-    return true;
-  }
-
-  private function processPropertyAttribute(ReflectionProperty $property, string $attrClass, array &$result): void {
-    $propertyAttr = $property->getAttributes($attrClass);
-    $propertyAttr = reset($propertyAttr);
-    if($propertyAttr instanceof ReflectionAttribute) {
-      $labelArgs = $propertyAttr->getArguments();
-
-      $result[] = [
-        'name' => $property->getName(),
-        'label' => $labelArgs['label'] ?? '',
-        'rank' => $labelArgs['rank'] ?? 0,
-      ];
-    }
-  }
-
-  private function processClassAttribute(ReflectionClass $reflection, string $attrClass, array &$result): void {
-    $classAttributes = $reflection->getAttributes($attrClass);
-
-    foreach ($classAttributes as $attribute) {
-      $args = $attribute->getArguments();
-      $path = $args['path'] ?? '';
-
-      if(empty($path)) {
-        continue;
-      }
-
-      $result[] = [
-        'name' => $path,
-        'label' => $args['label'] ?? '',
-        'rank' => $args['rank'] ?? 0,
-      ];
-    }
   }
 
   private function sortProperties(array $properties): array {
@@ -256,7 +160,7 @@ class EntitySchemaBuilder {
     return $ret;
   }
 
-  private function fillSchemaBasics(EntitySchemaInterface $schema, SchemaAttributesContainer $container): bool {
+  private function fillSchemaBasics(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): bool {
     $attr = $container->getEntityTypeAttr();
 
     if(!$attr instanceof EntityTypeAttr) {
@@ -271,9 +175,9 @@ class EntitySchemaBuilder {
     return true;
   }
 
-  private function fillDatabaseDetails(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function fillDatabaseDetails(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     foreach ($container->iterateTableReferenceAttributes() as $attribute) {
-      if(!$attribute instanceof TableReferenceAttrInterface) {
+      if(!$attribute instanceof TableReferenceDefinitionInterface) {
         continue;
       }
       $attribute
@@ -284,17 +188,25 @@ class EntitySchemaBuilder {
     }
   }
 
-  private function fillProperties(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
-    foreach ($container->iteratePropertyContainer() as $container) {
+  private function fillProperties(EntitySchemaInterface $schema, SchemaDefinitionsContainer $schemaContainer): void {
+    foreach ($schemaContainer->iteratePropertyContainer() as $container) {
       if(!$container->isValid()) {
         continue;
       }
-      $propertyConfiguration = $this->propertyConfigurationBuilder->buildPropertyConfiguration($container, $schema);
+      $propertyConfiguration = $this->propertyConfigurationBuilder->buildBasicPropertyConfiguration($container, $schema);
+      $container->setPropertyConfiguration($propertyConfiguration);
       $schema->addProperty($propertyConfiguration);
+    }
+
+    foreach ($schemaContainer->iteratePropertyContainer() as $container) {
+      if(!$container->isValid() || !$container->hasPropertyConfiguration()) {
+        continue;
+      }
+      $this->propertyConfigurationBuilder->fillPropertyConfiguration($container, $schema);
     }
   }
 
-  private function buildFilters(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
+  private function buildFilters(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
     foreach ($container->iterateSqlFilterDefinitionAttributes() as $attribute) {
       if(!$attribute->isValid()) {
         continue;
@@ -311,15 +223,103 @@ class EntitySchemaBuilder {
     }
   }
 
-  private function fillDatabase(EntitySchemaInterface $schema, SchemaAttributesContainer $container): void {
-    $attr = $container->getDatabaseAttr();
+  private function fillDatabase(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
+    $attr = $container->getDatabaseDefinition();
 
-    if(!$attr instanceof DatabaseAttr || !$attr->isValid()) {
+    if(!$attr instanceof DatabaseDefinition || !$attr->isValid()) {
       return;
     }
 
     $schema->setDatabase($attr->getDatabaseClass());
     $schema->setBaseTable($attr->getBaseTable());
+  }
+
+  private function fillEntityServices(EntitySchema $schema, SchemaDefinitionsContainer $container): void {
+    foreach ($container->iterateRepositoryDefinitions() as $repositoryDefinition) {
+      if(!$repositoryDefinition instanceof RepositoryDefinitionInterface || !$repositoryDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($repositoryDefinition);
+      $repositoryDefinition->setVersionList($list);
+      $schema->addRepositoryDefinition($repositoryDefinition);
+    }
+
+    foreach ($container->iterateBaseQueryDefinitions() as $baseQueryDefinition) {
+      if(!$baseQueryDefinition instanceof BaseQueryDefinitionInterface || !$baseQueryDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($baseQueryDefinition);
+      $baseQueryDefinition->setVersionList($list);
+      $schema->addBaseQueryDefinition($baseQueryDefinition);
+    }
+
+    foreach ($container->iterateSimpleSearchDefinitions() as $simpleSearchDefinition) {
+      if(!$simpleSearchDefinition instanceof SimpleSearchDefinitionInterface || !$simpleSearchDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($simpleSearchDefinition);
+      $simpleSearchDefinition->setVersionList($list);
+      $schema->addSimpleSearchDefinition($simpleSearchDefinition);
+    }
+
+    foreach ($container->iterateDataProviderDefinitions() as $dataProviderDefinition) {
+      if(!$dataProviderDefinition instanceof DataProviderDefinitionInterface || !$dataProviderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($dataProviderDefinition);
+      $dataProviderDefinition->setVersionList($list);
+      $schema->addDataProviderDefinition($dataProviderDefinition);
+    }
+
+    foreach ($container->iterateCreatorDefinitions() as $creatorDefinition) {
+      if(!$creatorDefinition instanceof CreatorDefinitionInterface || !$creatorDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($creatorDefinition);
+      $creatorDefinition->setVersionList($list);
+      $schema->addCreatorDefinition($creatorDefinition);
+    }
+
+    foreach ($container->iterateRefinerDefinitions() as $referenceDefinition) {
+      if(!$referenceDefinition instanceof RefinerDefinitionInterface || !$referenceDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($referenceDefinition);
+      $referenceDefinition->setVersionList($list);
+      $schema->addRefinerDefinition($referenceDefinition);
+    }
+
+    foreach ($container->iterateColumnBuilderDefinitions() as $columnBuilderDefinition) {
+      if(!$columnBuilderDefinition instanceof ColumnBuilderDefinitionInterface || !$columnBuilderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($columnBuilderDefinition);
+      $columnBuilderDefinition->setVersionList($list);
+      $schema->addColumnsBuilderDefinition($columnBuilderDefinition);
+    }
+
+    foreach ($container->iterateListProviderDefinitions() as $listProviderDefinition) {
+      if(!$listProviderDefinition instanceof ListProviderDefinitionInterface || !$listProviderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($listProviderDefinition);
+      $listProviderDefinition->setVersionList($list);
+      $schema->addListProviderDefinition($listProviderDefinition);
+    }
+
+    foreach ($container->iterateAdditionalDataProviderDefinitions() as $additionalDataProviderDefinition) {
+      if(!$additionalDataProviderDefinition instanceof AdditionalDataProviderDefinitionInterface || !$additionalDataProviderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($additionalDataProviderDefinition);
+      $additionalDataProviderDefinition->setVersionList($list);
+      $schema->addAdditionalDataProviderDefinition($additionalDataProviderDefinition);
+    }
+  }
+
+
+  private function getVersionList(VersionInformationWrapperInterface $definition): VersionListInterface {
+    return $this->versionService->getVersionList($definition);
   }
 
 }

@@ -2,7 +2,7 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttr;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinition;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
@@ -11,7 +11,7 @@ use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemInterface;
 use Generator;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 
 class NullEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface {
 
@@ -39,8 +39,8 @@ class NullEntityReferenceItemHandler implements EntityReferenceItemHandlerInterf
     return [];
   }
 
-  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceAttrInterface {
-    return TableReferenceAttr::createNullTableReference('null', 'NullEntity_null');
+  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
+    return TableReferenceDefinition::createNullTableReference('null', 'NullEntity_null');
   }
 
   public function getTargetEntityType(ItemConfigurationInterface $itemConfiguration): string {

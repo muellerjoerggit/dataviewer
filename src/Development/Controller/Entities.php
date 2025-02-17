@@ -13,12 +13,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class Entities extends AbstractController {
 
   public function getEntities(DaViEntityManager $entityManager): void {
-    $container = new FilterContainer('employees');
-    dd($entityManager->loadMultipleEntities('Employee', $container)[0]);
+    $container = new FilterContainer('umbrella');
+    dd($entityManager->loadMultipleEntities('RoleUserMap', $container));
   }
 
   public function getEntityByEntityKey(DaViEntityManager $entityManager): void {
-    $entityKey = EntityKey::createFromString('umbrella::Role::rol_id::2');
+    $entityKey = EntityKey::createFromString('umbrella::User::usr_id::2');
     dd($entityManager->loadEntityByEntityKey($entityKey));
   }
 

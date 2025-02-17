@@ -28,17 +28,12 @@ class CommonListProvider implements ListProviderInterface {
     private readonly ColumnBuilderLocator $entityColumnBuilderLocator,
   ) {}
 
-  public function getEntityList(string | EntityInterface $entityClass, FilterContainer $filterContainer): EntityList {
-    if($entityClass instanceof EntityInterface) {
-      $entityClass = $entityClass::class;
-    }
-
+  public function getEntityList(string $entityClass, FilterContainer $filterContainer): EntityList {
     $client = $filterContainer->getClient();
 
     $options = [EntityDataMapperInterface::OPTION_WITH_COLUMNS => false];
-    $queryBuilder = $this->queryLocator->getBaseQuery($entityClass)->buildQueryFromSchema($entityClass, $client, $options);
-
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityClass);
+    $queryBuilder = $this->queryLocator->getBaseQuery($schema, $client)->buildQueryFromSchema($entityClass, $client, $options);
 
     $entityColumnBuilder = $this->entityColumnBuilderLocator->getEntityColumnBuilder($entityClass, $filterContainer->getClient());
 

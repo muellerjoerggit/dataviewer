@@ -2,19 +2,19 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceAttr;
+use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
 use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\DaViEntity\UniqueIdentifier;
+use App\DaViEntity\UniqueKey;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\DaViEntity\EntityInterface;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 
 class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface {
 
@@ -50,7 +50,7 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 			return null;
 		}
 
-		$identifiers = (new UniqueIdentifier())->addIdentifier($property, $value);
+		$identifiers = (new UniqueKey())->addIdentifier($property, $value);
 
 		return EntityKey::create($client, $entityType, [$identifiers]);
 	}
@@ -94,11 +94,11 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     return $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
   }
 
-  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceAttrInterface {
+  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
     $property = $itemConfiguration->getItemName();
     $key = 'ref_' . $property;
 
-    $attr = CommonTableReferenceAttr::create($key, CommonTableReferenceHandler::class, $this->getTargetEntityType($itemConfiguration), [$property => $this->getTargetProperty($itemConfiguration)]);
+    $attr = CommonTableReferenceDefinition::create($key, CommonTableReferenceHandler::class, $this->getTargetEntityType($itemConfiguration), [$property => $this->getTargetProperty($itemConfiguration)]);
 
     $attr
       ->setExternalName($key)

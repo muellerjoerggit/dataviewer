@@ -2,7 +2,7 @@
 
 namespace App\Services\Version;
 
-class VersionList {
+class VersionList implements VersionListInterface{
 
   public function __construct(
     private readonly string $key,

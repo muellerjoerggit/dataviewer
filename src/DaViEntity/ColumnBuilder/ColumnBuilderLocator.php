@@ -2,8 +2,6 @@
 
 namespace App\DaViEntity\ColumnBuilder;
 
-use App\DaViEntity\EntityInterface;
-use App\DaViEntity\EntityTypeAttributesReader;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Services\AbstractLocator;
@@ -26,7 +24,6 @@ class ColumnBuilderLocator extends AbstractLocator {
     if(is_string($entitySchema)) {
       $entitySchema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entitySchema);
     }
-
     $version = $this->clientService->getClientVersion($client);
     $class = $entitySchema->getColumnsBuilderClass($version);
 

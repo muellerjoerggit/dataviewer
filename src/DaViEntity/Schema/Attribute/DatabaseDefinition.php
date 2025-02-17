@@ -5,7 +5,7 @@ namespace App\DaViEntity\Schema\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-class DatabaseAttr {
+class DatabaseDefinition {
 
   public function __construct(
     public readonly string $databaseClass,

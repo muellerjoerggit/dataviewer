@@ -16,7 +16,7 @@ class EntityActionHandlerLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getEntityActionHandler(EntityActionConfigAttrInterface $config) {
+  public function getEntityActionHandler(EntityActionDefinitionInterface $config) {
     $handler = $config->getHandler();
 
     if (!$this->has($handler)) {

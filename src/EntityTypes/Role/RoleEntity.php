@@ -2,7 +2,7 @@
 
 namespace App\EntityTypes\Role;
 
-use App\Database\BaseQuery\BaseQuery;
+use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
 use App\DaViEntity\AbstractEntity;
@@ -19,11 +19,11 @@ use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\CommonRefiner;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
-use App\DaViEntity\Schema\Attribute\DatabaseAttr;
+use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\Item\ItemInterface;
-use App\Item\Property\Attribute\DatabaseColumnAttr;
+use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;
@@ -36,15 +36,15 @@ use App\Item\Property\PropertyItemInterface;
 #[RepositoryDefinition(repositoryClass: RoleRepository::class)]
 #[EntityTypeAttr(name: 'Role', label: 'Role'),
 ]
-#[BaseQuery(baseQuery: CommonBaseQuery::class),
-  ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
+#[BaseQueryDefinition(baseQueryClass: CommonBaseQuery::class),
+  ColumnBuilderDefinition(columnBuilderClass: CommonColumnBuilder::class),
   RefinerDefinition(refinerClass: CommonRefiner::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
   SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   ListProviderDefinition(listProviderClass: CommonListProvider::class),
 ]
-#[DatabaseAttr(
+#[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
   baseTable: 'role'),
 ]
@@ -54,7 +54,7 @@ class RoleEntity extends AbstractEntity {
 
   #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
     EntityOverviewPropertyAttr,
-    DatabaseColumnAttr,
+    DatabaseColumnDefinition,
     UniquePropertyDefinition
   ]
   #[PropertyPreDefinedAttr([
@@ -68,7 +68,7 @@ class RoleEntity extends AbstractEntity {
     LabelPropertyAttr,
     SearchPropertyDefinition,
     EntityOverviewPropertyAttr,
-    DatabaseColumnAttr,
+    DatabaseColumnDefinition,
   ]
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'string'],
@@ -80,7 +80,7 @@ class RoleEntity extends AbstractEntity {
   ),
     SearchPropertyDefinition,
     EntityOverviewPropertyAttr,
-    DatabaseColumnAttr,
+    DatabaseColumnDefinition,
   ]
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'string'],

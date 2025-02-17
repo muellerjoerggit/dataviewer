@@ -2,7 +2,7 @@
 
 namespace App\Database\TableReference;
 
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\Database\TableReferenceHandler\NullTableReferenceHandler;
 use App\Services\AbstractLocator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
@@ -17,7 +17,7 @@ class TableReferenceHandlerLocator extends AbstractLocator {
 		parent::__construct($services);
 	}
 
-	public function getTableHandlerFromConfiguration(TableReferenceAttrInterface $tableReferenceConfiguration): TableReferenceHandlerInterface {
+	public function getTableHandlerFromConfiguration(TableReferenceDefinitionInterface $tableReferenceConfiguration): TableReferenceHandlerInterface {
 		$handler = $tableReferenceConfiguration->getHandlerClass();
 
 		if($this->has($handler)) {

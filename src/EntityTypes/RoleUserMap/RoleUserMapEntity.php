@@ -2,7 +2,7 @@
 
 namespace App\EntityTypes\RoleUserMap;
 
-use App\Database\BaseQuery\BaseQuery;
+use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
@@ -21,26 +21,29 @@ use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\CommonRefiner;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
-use App\DaViEntity\Schema\Attribute\DatabaseAttr;
+use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
+use App\Item\ItemInterface;
+use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
+use App\Item\Property\Attribute\PropertyAttr;
 use App\Item\Property\Attribute\PropertyPreDefinedAttr;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 
 #[RepositoryDefinition(repositoryClass: RoleUserMapRepository::class)]
 #[EntityTypeAttr(name: 'RoleUserMap', label: 'Rolle/User Map')]
-#[BaseQuery(baseQuery: CommonBaseQuery::class),
+#[BaseQueryDefinition(baseQueryClass: CommonBaseQuery::class),
   SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   CreatorDefinition(creatorClass: CommonCreator::class),
   RefinerDefinition(refinerClass: CommonRefiner::class),
-  ColumnBuilderDefinition(entityColumnBuilderClass: CommonColumnBuilder::class),
+  ColumnBuilderDefinition(columnBuilderClass: CommonColumnBuilder::class),
   ListProviderDefinition(listProviderClass: CommonListProvider::class)
 ]
-#[DatabaseAttr(
+#[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
   baseTable: 'role_user_map'),
 ]
@@ -48,6 +51,12 @@ class RoleUserMapEntity extends AbstractEntity {
 
   use EntityPropertyTrait;
 
+  #[PropertyAttr(
+    dataType: ItemInterface::DATA_TYPE_INTEGER,
+    label: 'Benutzer ID',
+  ),
+    DatabaseColumnDefinition
+  ]
   #[UniquePropertyDefinition,
     LabelPropertyAttr,
     EntityOverviewPropertyAttr
@@ -63,6 +72,12 @@ class RoleUserMapEntity extends AbstractEntity {
   )]
   private $usr_id;
 
+  #[PropertyAttr(
+    dataType: ItemInterface::DATA_TYPE_INTEGER,
+    label: 'Rollen ID'
+  ),
+    DatabaseColumnDefinition
+  ]
   #[UniquePropertyDefinition,
     LabelPropertyAttr,
     EntityOverviewPropertyAttr

@@ -2,13 +2,8 @@
 
 namespace App\Item\Property;
 
-use App\Database\SqlFilter\FilterGroup;
-use App\Database\SqlFilter\SqlFilterDefinition;
-use App\Database\SqlFilter\SqlFilterDefinitionBuilder;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\DaViEntity\Schema\EntitySchema;
-use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
@@ -23,28 +18,28 @@ class PropertyConfigurationBuilder {
     private readonly TableReferenceHandlerLocator $tableReferenceHandlersLocator,
   ) {}
 
-  public function buildPropertyConfiguration(PropertyAttributesContainer $container, EntitySchema $schema): PropertyConfiguration {
-    $propertyName = $container->getPropertyName();
-    $propertyConfiguration = $this->createPropertyConfiguration($propertyName);
+  public function buildBasicPropertyConfiguration(PropertyAttributesContainer $container, EntitySchema $schema): PropertyConfiguration {
+    $propertyConfiguration = new PropertyConfiguration($container->getPropertyName());
 
-    return $this->fillPropertyConfiguration($container, $propertyConfiguration, $schema);
-  }
-
-  private function createPropertyConfiguration(string $propertyName): ?PropertyConfiguration {
-    return new PropertyConfiguration($propertyName);
-  }
-
-  private function fillPropertyConfiguration(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): PropertyConfiguration {
     $this->fillBasic($container, $propertyConfiguration);
-    $this->fillDatabase($container, $propertyConfiguration, $schema);
-    $this->fillHandler($container, $propertyConfiguration);
+    $this->fillDatabaseColumn($container, $propertyConfiguration, $schema);
 
+    return $propertyConfiguration;
+  }
+
+  public function fillPropertyConfiguration(PropertyAttributesContainer $container, EntitySchema $schema): void {
+    if(!$container->hasPropertyConfiguration()) {
+      return;
+    }
+
+    $propertyConfiguration = $container->getPropertyConfiguration();
+
+    $this->fillTableReference($container, $propertyConfiguration, $schema);
+    $this->fillHandler($container, $propertyConfiguration);
 
 //    if(isset($config[VersionService::YAML_PARAM_VERSION])) {
 //      $this->fillVersion($container[VersionService::YAML_PARAM_VERSION], $propertyConfiguration);
 //    }
-
-    return $propertyConfiguration;
   }
 
   private function fillBasic(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration): void {
@@ -66,28 +61,47 @@ class PropertyConfigurationBuilder {
     }
   }
 
-  private function fillDatabase(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
-    if(!$container->hasDatabaseAttr()) {
+  private function fillDatabaseColumn(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
+    if(!$container->hasDatabasePropertyDefinition()) {
       return;
     }
 
-    $databaseAttr = $container->getDatabaseAttr();
+    $databasePropertyDefinition = $container->getDatabasePropertyDefinition();
 
-    if($databaseAttr->hasTableReferenceName() && $databaseAttr->hasColumn()) {
-      $tableReferenceConfiguration = $schema->getTableReference($databaseAttr->getTableReferenceName());
-      $handler = $this->tableReferenceHandlersLocator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
-      $baseTable = $handler->getReferencedTableName($tableReferenceConfiguration);
-      $propertyConfiguration->setTableReference($tableReferenceConfiguration);
-      $column = $baseTable . '.' . $databaseAttr->getColumn();
-      $schema->addTableReferenceColumn($tableReferenceConfiguration, $column, $propertyConfiguration->getItemName());
-    } elseif ($databaseAttr->hasColumn()) {
-      $column = $databaseAttr->getColumn();
-    } else {
+    if (!$databasePropertyDefinition->hasColumn()) {
       return;
     }
 
+    $column = $schema->getBaseTable() . '.' . $databasePropertyDefinition->getColumn();
     $propertyConfiguration->setColumn($column);
+    $schema->addColumn($propertyConfiguration);
   }
+
+  private function fillTableReference(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
+    if(!$container->hasTableReferencePropertyDefinition()) {
+      return;
+    }
+
+    $tableReferencePropertyDefinition = $container->getTableReferencePropertyDefinition();
+    $name = $tableReferencePropertyDefinition->getTableReferenceName();
+
+    if(!$tableReferencePropertyDefinition->isValid() || !$schema->hasTableReference($name)) {
+      return;
+    }
+
+    $tableReferenceConfiguration = $schema->getTableReference($name);
+    $handler = $this->tableReferenceHandlersLocator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
+    $toSchema = $handler->getToSchema($tableReferenceConfiguration);
+    $property = $tableReferencePropertyDefinition->getProperty();
+
+    if(!$toSchema->hasProperty($property)) {
+      return;
+    }
+
+    $referencePropertyConfig = $toSchema->getProperty($property);
+    $propertyConfiguration->setTableReference($tableReferenceConfiguration);
+    $schema->addTableReferenceColumn($tableReferenceConfiguration, $referencePropertyConfig, $propertyConfiguration->getItemName());
+}
 
   private function fillHandler(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration): void {
     foreach ($container->iterateItemHandlerDefinitions() as $handlerDefinition) {

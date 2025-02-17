@@ -2,7 +2,10 @@
 
 namespace App\DaViEntity\SimpleSearch;
 
-interface SimpleSearchDefinitionInterface {
+use App\Services\Version\VersionInformationWrapperInterface;
+use App\Services\Version\VersionListWrapperInterface;
+
+interface SimpleSearchDefinitionInterface  extends VersionInformationWrapperInterface, VersionListWrapperInterface  {
 
   public function getSimpleSearchClass(): string;
 

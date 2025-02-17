@@ -2,18 +2,21 @@
 
 namespace App\Item\Property;
 
+use App\Database\TableReference\TableReferencePropertyDefinition;
 use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
-use App\Item\Property\Attribute\DatabaseColumnAttr;
+use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\PropertyAttr;
 use App\Item\Property\Attribute\PropertySettingInterface;
 use Generator;
 use ReflectionProperty;
 
 class PropertyAttributesContainer {
+
+  private PropertyConfiguration $propertyConfiguration;
 
   private PropertyAttr $propertyAttr;
 
@@ -35,11 +38,26 @@ class PropertyAttributesContainer {
 
   private AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition;
 
-  private DatabaseColumnAttr $databaseAttr;
+  private DatabaseColumnDefinition $databasePropertyDefinition;
+
+  private TableReferencePropertyDefinition $tableReferencePropertyDefinition;
 
   public function __construct(
     private readonly ReflectionProperty $property,
   ) {}
+
+  public function hasPropertyConfiguration(): bool {
+    return isset($this->propertyConfiguration);
+  }
+
+  public function getPropertyConfiguration(): PropertyConfiguration {
+    return $this->propertyConfiguration;
+  }
+
+  public function setPropertyConfiguration(PropertyConfiguration $propertyConfiguration): PropertyAttributesContainer {
+    $this->propertyConfiguration = $propertyConfiguration;
+    return $this;
+  }
 
   public function getPropertyName(): string {
     return $this->property->getName();
@@ -119,17 +137,30 @@ class PropertyAttributesContainer {
     }
   }
 
-  public function getDatabaseAttr(): DatabaseColumnAttr {
-    return $this->databaseAttr;
+  public function getDatabasePropertyDefinition(): DatabaseColumnDefinition {
+    return $this->databasePropertyDefinition;
   }
 
-  public function setDatabaseAttr(DatabaseColumnAttr $databaseAttr): PropertyAttributesContainer {
-    $this->databaseAttr = $databaseAttr;
+  public function setDatabasePropertyDefinition(DatabaseColumnDefinition $databasePropertyDefinition): PropertyAttributesContainer {
+    $this->databasePropertyDefinition = $databasePropertyDefinition;
     return $this;
   }
 
-  public function hasDatabaseAttr(): bool {
-    return isset($this->databaseAttr);
+  public function hasDatabasePropertyDefinition(): bool {
+    return isset($this->databasePropertyDefinition);
+  }
+
+  public function getTableReferencePropertyDefinition(): TableReferencePropertyDefinition {
+    return $this->tableReferencePropertyDefinition;
+  }
+
+  public function setTableReferencePropertyDefinition(TableReferencePropertyDefinition $tableReferencePropertyDefinition): PropertyAttributesContainer {
+    $this->tableReferencePropertyDefinition = $tableReferencePropertyDefinition;
+    return $this;
+  }
+
+  public function hasTableReferencePropertyDefinition(): bool {
+    return isset($this->tableReferencePropertyDefinition);
   }
 
   public function isValid(): bool {

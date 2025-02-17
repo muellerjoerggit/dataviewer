@@ -11,10 +11,14 @@ class VersionService {
 
   private array $versionKeys = [];
   private array $versions = [];
+  private array $versionsLists = [];
+  private NullVersionList $nullVersionList;
+  private VersionList $allVersionList;
 
   public function __construct(
     private readonly VersionRepository $versionRepository,
   ) {
+    $this->nullVersionList = new NullVersionList();
     $this->init();
   }
 
@@ -43,6 +47,7 @@ class VersionService {
     } while (true);
 
     $this->versions = $list;
+    $this->allVersionList = new VersionList('all', array_keys($list));
     $this->versionKeys = array_keys($list);
   }
 
@@ -65,5 +70,57 @@ class VersionService {
     $index = $index ? $index : 0;
 
     return array_slice($this->versions, $index, null, true);
+  }
+
+  public function getVersionList(VersionInformationWrapperInterface $definition): VersionListInterface {
+    $versionString = $this->buildVersionString($definition);
+    if(isset($this->versionsLists[$versionString])) {
+      return $this->versionsLists[$versionString];
+    }
+
+    $sinceVersions = [];
+    $untilVersions = [];
+    foreach ($definition->getVersionInformation() as $key => $version) {
+      if(!in_array($key, VersionInformation::VALID_VERSION_INFORMATION_KEYS)) {
+        return $this->nullVersionList;
+      }
+
+      if(empty($version)) {
+        continue;
+      }
+
+      switch ($key) {
+        case VersionInformation::SINCE_VERSION:
+          $sinceVersions[] = $this->getVersionSince($version);
+          break;
+        case VersionInformation::UNTIL_VERSION:
+          $untilVersions[] = $this->getAllVersionsUntil($version);
+      }
+    }
+
+    if(empty($sinceVersions) && empty($untilVersions)) {
+      return $this->allVersionList;
+    } elseif(empty($untilVersions)) {
+      $versions = $sinceVersions;
+    } elseif (empty($sinceVersions)) {
+      $versions = $untilVersions;
+    } else {
+      $versions = array_intersect($sinceVersions, $untilVersions);
+    }
+
+    $list = new VersionList($versionString, $versions);
+    $this->versionsLists[$versionString] = $list;
+    return $list;
+  }
+
+  public function buildVersionString(VersionInformationWrapperInterface $versionInformation): string {
+    $versionString = '';
+    foreach ($versionInformation->getVersionInformation() as $key => $version) {
+      if(empty($version)) {
+        break;
+      }
+      $versionString .= empty($versionString) ? $key . '_' .  $version : '_' . $key . '_' .  $version ;
+    }
+    return $versionString;
   }
 }

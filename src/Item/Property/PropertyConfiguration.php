@@ -2,7 +2,7 @@
 
 namespace App\Item\Property;
 
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\Item\ItemConfiguration;
 use App\Item\ItemInterface;
 use Doctrine\DBAL\ArrayParameterType;
@@ -10,14 +10,12 @@ use Doctrine\DBAL\ParameterType;
 
 class PropertyConfiguration extends ItemConfiguration {
 
-  public const string YAML_PARAM_COLUMN = 'column';
-  public const string YAML_PARAM_FILTER = 'generatedFilter';
-  public const string YAML_PARAM_HANDLER = 'handler';
-  public const string YAML_PARAM_TABLE_REFERENCE = 'tableReference';
-  public const string YAML_PARAM_REFERENCED_COLUMN = 'referencedColumn';
-
   private string $column;
-  private TableReferenceAttrInterface $tableReference;
+  private TableReferenceDefinitionInterface $tableReference;
+
+  public static function createNull(): static {
+    return new static('NullItem');
+  }
 
   public function getColumn(): string {
     return $this->column ?? '';
@@ -57,11 +55,11 @@ class PropertyConfiguration extends ItemConfiguration {
     }
   }
 
-  public function getTableReference(): TableReferenceAttrInterface {
+  public function getTableReference(): TableReferenceDefinitionInterface {
     return $this->tableReference;
   }
 
-  public function setTableReference(TableReferenceAttrInterface $tableReference): PropertyConfiguration {
+  public function setTableReference(TableReferenceDefinitionInterface $tableReference): PropertyConfiguration {
     $this->tableReference = $tableReference;
     return $this;
   }

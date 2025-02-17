@@ -6,7 +6,6 @@ use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilterBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
-use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
 class CommonSqlDataProvider implements DataProviderInterface {
@@ -19,10 +18,10 @@ class CommonSqlDataProvider implements DataProviderInterface {
     protected readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
   ) {}
 
-  public function fetchEntityData(string | EntityInterface $entityClass, FilterContainer $filters, array $options = []): array {
+  public function fetchEntityData(string $entityClass, FilterContainer $filters, array $options = []): array {
     $client = $filters->getClient();
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityClass);
-    $queryBuilder = $this->queryLocator->getBaseQuery($entityClass)->buildQueryFromSchema($entityClass, $client, $options);
+    $queryBuilder = $this->queryLocator->getBaseQuery($schema, $filters->getClient())->buildQueryFromSchema($entityClass, $client, $options);
 
     $this->sqlFilterBuilder->buildFilteredQueryMultipleFilters($queryBuilder, $filters, $schema);
     $queryBuilder->setMaxResults($filters->getLimit());

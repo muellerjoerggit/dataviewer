@@ -4,7 +4,7 @@ namespace App\DaViEntity\Repository;
 
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilter;
-use App\Database\SqlFilter\SqlFilterDefinition;
+use App\Database\SqlFilterHandler\EntityKeyFilterHandler;
 use App\DataCollections\EntityList;
 use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
 use App\DaViEntity\Creator\CreatorLocator;
@@ -15,6 +15,7 @@ use App\DaViEntity\ListProvider\ListProviderLocator;
 use App\DaViEntity\Refiner\RefinerLocator;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
 
 abstract class AbstractRepository implements RepositoryInterface {
 
@@ -48,7 +49,7 @@ abstract class AbstractRepository implements RepositoryInterface {
   }
 
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
-    $definition = new SqlFilterDefinition('entityKeyFilter', 'EntityKeyFilterHandler');
+    $definition = new SqlFilterDefinitionAttr(EntityKeyFilterHandler::class, 'EntityKeyFilterHandler');
     $filter = new SqlFilter($definition, [$entityKey], 'entityKeyFilter');
     $filterContainer = new FilterContainer($entityKey->getClient(), [$filter]);
 

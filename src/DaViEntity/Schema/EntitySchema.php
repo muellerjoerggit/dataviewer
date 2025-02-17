@@ -3,13 +3,12 @@
 namespace App\DaViEntity\Schema;
 
 use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\BaseQuery\BaseQueryDefinitionInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\FilterGroup;
-use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
-use App\Database\SqlFilterHandler\NullFilterHandler;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttr;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinition;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinitionInterface;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinitionInterface;
 use App\DaViEntity\Creator\CreatorDefinitionInterface;
@@ -21,10 +20,9 @@ use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
-use App\Services\EntityAction\EntityActionConfigAttrInterface;
-use App\Services\Version\VersionListInterface;
+use App\Services\EntityAction\EntityActionDefinitionInterface;
+use App\Services\Version\VersionListWrapperInterface;
 use Generator;
-use Iterator;
 
 class EntitySchema implements EntitySchemaInterface {
 
@@ -103,6 +101,11 @@ class EntitySchema implements EntitySchemaInterface {
    */
   private array $validatorDefinition = [];
 
+  /**
+   * @var BaseQueryDefinitionInterface[]
+   */
+  private array $baseQueryDefinitions = [];
+
   public function __construct(
     private readonly string $entityClass,
   ) {
@@ -167,13 +170,16 @@ class EntitySchema implements EntitySchemaInterface {
     return $this->columns[$property] ?? '';
   }
 
+  public function addColumn(PropertyConfiguration $propertyConfiguration): EntitySchema {
+    if($propertyConfiguration->hasColumn() && !$propertyConfiguration->hasTableReference()) {
+      $this->columns[$propertyConfiguration->getItemName()] = $propertyConfiguration->getColumn();
+    }
+    return $this;
+  }
+
   public function addProperty(PropertyConfiguration $property): EntitySchemaInterface {
     $name = $property->getItemName();
     $this->properties[$name] = $property;
-    if($property->hasColumn() && !$property->hasTableReference()) {
-      $this->columns[$name] = $property->getColumn();
-    }
-
     return $this;
   }
 
@@ -357,7 +363,7 @@ class EntitySchema implements EntitySchemaInterface {
     return $this;
   }
 
-  public function addTableReference(TableReferenceAttrInterface $tableReferenceConfiguration): EntitySchemaInterface {
+  public function addTableReference(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchemaInterface {
     if($tableReferenceConfiguration->isValid()) {
       $name = $tableReferenceConfiguration->getName();
       $this->tableReferences[$name] = $tableReferenceConfiguration;
@@ -365,8 +371,12 @@ class EntitySchema implements EntitySchemaInterface {
     return $this;
   }
 
-  public function getTableReference(string $internalName): TableReferenceAttrInterface {
-    return $this->tableReferences[$internalName] ?? TableReferenceAttr::createNullTableReference($internalName, $this->entityType . '_' . $internalName);
+  public function hasTableReference(string $internalName): bool {
+    return isset($this->tableReferences[$internalName]);
+  }
+
+  public function getTableReference(string $internalName): TableReferenceDefinitionInterface {
+    return $this->tableReferences[$internalName] ?? TableReferenceDefinition::createNullTableReference($internalName, $this->entityType . '_' . $internalName);
   }
 
   public function iterateTableReferences(): Generator {
@@ -375,8 +385,8 @@ class EntitySchema implements EntitySchemaInterface {
     }
   }
 
-  public function addTableReferenceColumn(TableReferenceAttrInterface $tableReference, string $column, string $property): EntitySchemaInterface {
-    $this->tableReferenceColumns[$tableReference->getName()][$property] = $column;
+  public function addTableReferenceColumn(TableReferenceDefinitionInterface $tableReference, PropertyConfiguration $referencePropertyConfiguration, string $property): EntitySchemaInterface {
+    $this->tableReferenceColumns[$tableReference->getName()][$property] = $referencePropertyConfiguration;
     return $this;
   }
 
@@ -387,7 +397,7 @@ class EntitySchema implements EntitySchemaInterface {
     return $this->tableReferenceColumns[$tableReferenceInternalName] ?? [];
   }
 
-  public function addEntityAction(EntityActionConfigAttrInterface $actionConfiguration): EntitySchemaInterface {
+  public function addEntityAction(EntityActionDefinitionInterface $actionConfiguration): EntitySchemaInterface {
     if($actionConfiguration->isValid()) {
       $this->entityActions[] = $actionConfiguration;
     }
@@ -407,15 +417,11 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   /**
-   * @return Iterator<string>
+   * @return Generator<string>
    */
-  public function iterateAdditionalDataProviderClasses(string $version): Iterator {
+  public function iterateAdditionalDataProviderClasses(string $version): Generator {
     foreach ($this->additionalDataProviderDefinitions as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof AdditionalDataProviderDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
       yield $definition->getAdditionalDataProviderClass();
@@ -429,33 +435,23 @@ class EntitySchema implements EntitySchemaInterface {
 
   public function getColumnsBuilderClass(string $version): string {
     foreach ($this->columnBuildersDefinition as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof ColumnBuilderDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
-      return $definition->getEntityColumnBuilderClass();
+      return $definition->getColumnBuilderClass();
     }
 
     return '';
   }
 
   public function addCreatorDefinition(CreatorDefinitionInterface $definition): EntitySchemaInterface {
-    if($definition->isValid()) {
-      $this->creatorDefinitions[] = $definition;
-    }
+    $this->creatorDefinitions[] = $definition;
     return $this;
   }
 
   public function getCreatorClass(string $version): string {
     foreach ($this->creatorDefinitions as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof CreatorDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
       return $definition->getCreatorClass();
@@ -465,19 +461,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addDataProviderDefinition(DataProviderDefinitionInterface $definition): EntitySchemaInterface {
-    if($definition->isValid()) {
-      $this->dataProviderDefinitions[] = $definition;
-    }
+    $this->dataProviderDefinitions[] = $definition;
     return $this;
   }
 
   public function getDataProviderClass(string $version): DataProviderDefinitionInterface | string {
     foreach ($this->dataProviderDefinitions as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof DataProviderDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
       return $definition->getDataProviderClass();
@@ -487,19 +477,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addListProviderDefinition(ListProviderDefinitionInterface $definition): EntitySchemaInterface {
-    if($definition->isValid()) {
-      $this->listProviderDefinitions[] = $definition;
-    }
+    $this->listProviderDefinitions[] = $definition;
     return $this;
   }
 
   public function getListProviderClass(string $version): string {
     foreach ($this->listProviderDefinitions as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof ListProviderDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
       return $definition->getListProviderClass();
@@ -509,19 +493,13 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addRefinerDefinition(RefinerDefinitionInterface $definition): EntitySchemaInterface {
-    if($definition->isValid()) {
-      $this->refinerDefinitions[] = $definition;
-    }
+    $this->refinerDefinitions[] = $definition;
     return $this;
   }
 
   public function getRefinerClass(string $version): string {
     foreach ($this->refinerDefinitions as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof RefinerDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
       return $definition->getRefinerClass();
@@ -531,22 +509,32 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   public function addRepositoryDefinition(RepositoryDefinitionInterface $definition): EntitySchemaInterface {
-    if($definition->isValid()) {
-      $this->repositoryDefinitions[] = $definition;
-    }
+    $this->repositoryDefinitions[] = $definition;
     return $this;
   }
 
   public function getRepositoryClass(string $version): string {
     foreach ($this->repositoryDefinitions as $definition) {
-      if(
-        !$definition instanceof VersionListInterface
-        || !$definition->hasVersion($version)
-        || !$definition instanceof RepositoryDefinitionInterface
-      ) {
+      if(!$definition->hasVersion($version)) {
         continue;
       }
       return $definition->getRepositoryClass();
+    }
+
+    return '';
+  }
+
+  public function addBaseQueryDefinition(BaseQueryDefinitionInterface $definition): EntitySchemaInterface {
+    $this->baseQueryDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getBaseQueryClass(string $version): string {
+    foreach ($this->baseQueryDefinitions as $definition) {
+      if(!$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition->getBaseQueryClass();
     }
 
     return '';
@@ -562,7 +550,7 @@ class EntitySchema implements EntitySchemaInterface {
   public function getSimpleSearchClass(string $version): string {
     foreach ($this->searchDefinitions as $definition) {
       if(
-        !$definition instanceof VersionListInterface
+        !$definition instanceof VersionListWrapperInterface
         || !$definition->hasVersion($version)
         || !$definition instanceof SimpleSearchDefinitionInterface
       ) {
@@ -582,7 +570,7 @@ class EntitySchema implements EntitySchemaInterface {
   public function getValidatorClass(string $version): string {
     foreach ($this->validatorDefinition as $definition) {
       if(
-        !$definition instanceof VersionListInterface
+        !$definition instanceof VersionListWrapperInterface
         || !$definition->hasVersion($version)
         || !$definition instanceof ValidatorDefinitionInterface
       ) {

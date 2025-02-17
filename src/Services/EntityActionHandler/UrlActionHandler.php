@@ -4,7 +4,7 @@ namespace App\Services\EntityActionHandler;
 
 use App\DaViEntity\EntityInterface;
 use App\Services\ClientService;
-use App\Services\EntityAction\EntityActionConfigAttrInterface;
+use App\Services\EntityAction\EntityActionDefinitionInterface;
 use App\Services\EntityAction\EntityActionHandlerInterface;
 use App\Services\EntityAction\UrlEntityActionHandlerInterface;
 use App\Services\Placeholder\PlaceholderService;
@@ -16,7 +16,7 @@ class UrlActionHandler implements EntityActionHandlerInterface, UrlEntityActionH
     private readonly ClientService $clientService,
   ) {}
 
-  public function generateUrl(EntityActionConfigAttrInterface $config, EntityInterface $entity): array {
+  public function generateUrl(EntityActionDefinitionInterface $config, EntityInterface $entity): array {
     if(!$config instanceof UrlActionDefinitionAttr || !$config->isValid()) {
       return [];
     }

@@ -2,12 +2,12 @@
 
 namespace App\Services\EntityActionHandler;
 
-use App\Services\EntityAction\AbstractEntityActionConfigAttr;
+use App\Services\EntityAction\AbstractEntityActionDefinition;
 use App\Services\Placeholder\PlaceholderDefinitionInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class UrlActionDefinitionAttr extends AbstractEntityActionConfigAttr implements PlaceholderDefinitionInterface {
+class UrlActionDefinitionAttr extends AbstractEntityActionDefinition implements PlaceholderDefinitionInterface {
 
   public function __construct(
     string $handler,

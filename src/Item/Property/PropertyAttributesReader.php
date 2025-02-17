@@ -3,13 +3,14 @@
 namespace App\Item\Property;
 
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
-use App\DaViEntity\Schema\SchemaAttributesContainer;
+use App\Database\TableReference\TableReferencePropertyDefinition;
+use App\DaViEntity\Schema\SchemaDefinitionsContainer;
 use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
-use App\Item\Property\Attribute\DatabaseColumnAttr;
+use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
@@ -24,7 +25,7 @@ use ReflectionProperty;
 
 class PropertyAttributesReader extends AbstractAttributesReader {
 
-  public function appendPropertyAttributesContainer(SchemaAttributesContainer $container, string $entityClass): bool {
+  public function appendPropertyAttributesContainer(SchemaDefinitionsContainer $container, string $entityClass): bool {
     $reflection = $this->reflectClass($entityClass);
 
     if(!$reflection) {
@@ -41,7 +42,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     return true;
   }
 
-  private function processProperty(ReflectionProperty $property, SchemaAttributesContainer $schemaContainer): void {
+  private function processProperty(ReflectionProperty $property, SchemaDefinitionsContainer $schemaContainer): void {
     $propertyContainer = new PropertyAttributesContainer($property);
 
     foreach ($property->getAttributes() as $attribute) {
@@ -54,7 +55,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     PropertyAttributesContainer $propertyContainer,
     ReflectionProperty $property,
     ReflectionAttribute $attribute,
-    SchemaAttributesContainer $schemaContainer
+    SchemaDefinitionsContainer $schemaContainer
   ): void {
     $instance = $attribute->newInstance();
     $name = $property->getName();
@@ -64,7 +65,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
 
   private function processAttribute(
     PropertyAttributesContainer $propertyContainer,
-    SchemaAttributesContainer $schemaContainer,
+    SchemaDefinitionsContainer $schemaContainer,
     string $name,
     $instance
   ): void {
@@ -103,13 +104,15 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     } elseif ($instance instanceof SqlFilterDefinitionInterface) {
       $instance->setProperty($name);
       $schemaContainer->addSqlFilterDefinitionsAttribute($instance);
-    } elseif ($instance instanceof DatabaseColumnAttr) {
+    } elseif ($instance instanceof DatabaseColumnDefinition) {
       if(!$instance->hasColumn()) {
         $instance->setColumn($name);
       }
-      $propertyContainer->setDatabaseAttr($instance);
+      $propertyContainer->setDatabasePropertyDefinition($instance);
     } elseif ($instance instanceof PropertySettingInterface) {
       $propertyContainer->addPropertySetting($instance);
+    } elseif ($instance instanceof TableReferencePropertyDefinition) {
+      $propertyContainer->setTableReferencePropertyDefinition($instance);
     }
   }
 

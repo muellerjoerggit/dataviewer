@@ -14,7 +14,7 @@ class EntityKey {
 
   public static function createNullEntityKey(): EntityKey {
     $entityType = NullEntity::ENTITY_TYPE;
-    $uniqueIdentifier = (new UniqueIdentifier())->addIdentifier('id', 0);
+    $uniqueIdentifier = (new UniqueKey())->addIdentifier('id', 0);
 
     return new static ('', $entityType, [$uniqueIdentifier]);
   }
@@ -34,7 +34,7 @@ class EntityKey {
       $error = TRUE;
     }
 
-    $uniqueIdentifier = new UniqueIdentifier();
+    $uniqueIdentifier = new UniqueKey();
     foreach ($properties as $key => $property) {
       $uniqueIdentifier->addIdentifier($property, $values[$key]);
     }
@@ -57,13 +57,13 @@ class EntityKey {
   }
 
   /**
-   * @return UniqueIdentifier[]
+   * @return UniqueKey[]
    */
   public function getUniqueIdentifiers(): array {
     return $this->uniqueIdentifiers;
   }
 
-  private function buildEntityKeyString(UniqueIdentifier $uniqueIdentifier): string {
+  private function buildEntityKeyString(UniqueKey $uniqueIdentifier): string {
     $identifierString = $uniqueIdentifier->getAsString();
     return $this->getClient() . '::' . $this->getEntityType() . '::' . $identifierString;
   }
@@ -84,7 +84,7 @@ class EntityKey {
     return $this->getFirstEntityKeyAsString();
   }
 
-  private function getFirstUniqueIdentifier(): UniqueIdentifier {
+  private function getFirstUniqueIdentifier(): UniqueKey {
     return reset($this->uniqueIdentifiers);
   }
 

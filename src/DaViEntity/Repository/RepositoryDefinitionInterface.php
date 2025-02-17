@@ -2,7 +2,10 @@
 
 namespace App\DaViEntity\Repository;
 
-interface RepositoryDefinitionInterface {
+use App\Services\Version\VersionInformationWrapperInterface;
+use App\Services\Version\VersionListWrapperInterface;
+
+interface RepositoryDefinitionInterface extends VersionInformationWrapperInterface, VersionListWrapperInterface  {
 
   public function getRepositoryClass(): string;
 

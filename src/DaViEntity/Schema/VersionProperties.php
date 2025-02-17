@@ -3,6 +3,7 @@
 namespace App\DaViEntity\Schema;
 
 use App\DaViEntity\EntityInterface;
+use App\Item\Property\PropertyConfiguration;
 use App\Services\ClientService;
 use App\Services\Version\VersionInformation;
 use App\Services\Version\VersionService;
@@ -22,11 +23,13 @@ class VersionProperties {
 
     $ret = [];
     foreach ($input as $propertyKey => $data) {
-      if(!$schema->hasProperty($propertyKey)) {
+      if($data instanceof PropertyConfiguration) {
+        $property = $data;
+      } elseif(!$schema->hasProperty($propertyKey)) {
         continue;
+      } else {
+        $property = $schema->getProperty($propertyKey);
       }
-
-      $property = $schema->getProperty($propertyKey);
 
       $propertyVersion = $property->getVersion();
 

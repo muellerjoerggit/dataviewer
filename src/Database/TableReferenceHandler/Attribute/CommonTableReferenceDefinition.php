@@ -5,7 +5,7 @@ namespace App\Database\TableReferenceHandler\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-class CommonTableReferenceAttr extends TableReferenceAttr {
+class CommonTableReferenceDefinition extends TableReferenceDefinition {
 
   public function __construct(
     string $name,
@@ -44,7 +44,7 @@ class CommonTableReferenceAttr extends TableReferenceAttr {
     return current($this->propertyConditions);
   }
 
-  public static function create(string $name, string $handlerClass, string $toEntityClass, array $propertyConditions): CommonTableReferenceAttr {
+  public static function create(string $name, string $handlerClass, string $toEntityClass, array $propertyConditions): CommonTableReferenceDefinition {
     return new static($name, $handlerClass, $toEntityClass, $propertyConditions);
   }
 

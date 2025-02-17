@@ -2,11 +2,10 @@
 
 namespace App\DaViEntity;
 
-use App\Database\BaseQuery\BaseQuery;
-use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceAttrInterface;
-use App\DaViEntity\AdditionalData\AdditionalDataProvider;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
+use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinition;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
@@ -15,18 +14,18 @@ use App\DaViEntity\ListProvider\ListProviderDefinition;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
-use App\DaViEntity\Schema\Attribute\DatabaseAttr;
+use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
-use App\DaViEntity\Schema\SchemaAttributesContainer;
+use App\DaViEntity\Schema\SchemaDefinitionsContainer;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Services\AbstractAttributesReader;
-use App\Services\EntityAction\EntityActionConfigAttrInterface;
+use App\Services\EntityAction\EntityActionDefinitionInterface;
 use ReflectionAttribute;
 
 class EntityTypeAttributesReader extends AbstractAttributesReader {
 
-  public function buildSchemaAttributesContainer(string $entityClass): SchemaAttributesContainer {
-    $container = new SchemaAttributesContainer();
+  public function buildSchemaAttributesContainer(string $entityClass): SchemaDefinitionsContainer {
+    $container = new SchemaDefinitionsContainer();
     $reflection = $this->reflectClass($entityClass);
 
     if(!$reflection) {
@@ -41,15 +40,15 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
     return $container;
   }
 
-  private function addAttributeInstanceToContainer(SchemaAttributesContainer $container, mixed $attribute): void {
+  private function addAttributeInstanceToContainer(SchemaDefinitionsContainer $container, mixed $attribute): void {
     if(!is_object($attribute)) {
       return;
     }
 
-    if($attribute instanceof TableReferenceAttrInterface) {
+    if($attribute instanceof TableReferenceDefinitionInterface) {
       $container->addTableReferenceAttribute($attribute);
       return;
-    } elseif ($attribute instanceof EntityActionConfigAttrInterface) {
+    } elseif ($attribute instanceof EntityActionDefinitionInterface) {
       $container->addEntityActionConfigAttribute($attribute);
       return;
     } elseif ($attribute instanceof SqlFilterDefinitionInterface && $attribute->isValid()) {
@@ -60,35 +59,35 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       case EntityTypeAttr::class:
         $container->setEntityTypeAttr($attribute);
         break;
-      case DatabaseAttr::class:
-        $container->setDatabaseAttr($attribute);
+      case DatabaseDefinition::class:
+        $container->setDatabaseDefinition($attribute);
         break;
       case RepositoryDefinition::class:
-        $container->addRepositoryAttribute($attribute);
+        $container->addRepositoryDefinition($attribute);
         break;
-      case BaseQuery::class:
-        $container->addBaseQueryAttribute($attribute);
+      case BaseQueryDefinition::class:
+        $container->addBaseQueryDefinition($attribute);
         break;
       case SimpleSearchDefinition::class:
-        $container->addEntityListSearchAttribute($attribute);
+        $container->addSimpleSearchDefinition($attribute);
         break;
       case DataProviderDefinition::class:
-        $container->addDataProviderAttribute($attribute);
+        $container->addDataProviderDefinition($attribute);
         break;
       case CreatorDefinition::class:
-        $container->addCreatorAttribute($attribute);
+        $container->addCreatorDefinition($attribute);
         break;
       case RefinerDefinition::class:
-        $container->addRefinerAttribute($attribute);
+        $container->addRefinerDefinition($attribute);
         break;
       case ColumnBuilderDefinition::class:
-        $container->addColumnBuilderAttribute($attribute);
+        $container->addColumnBuilderDefinition($attribute);
         break;
       case ListProviderDefinition::class:
-        $container->addListProviderAttribute($attribute);
+        $container->addListProviderDefinition($attribute);
         break;
-      case AdditionalDataProvider::class:
-        $container->addAdditionalDataProviderAttribute($attribute);
+      case AdditionalDataProviderDefinition::class:
+        $container->addAdditionalDataProviderDefinition($attribute);
         break;
     }
   }
@@ -116,11 +115,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
   public function getEntityType(string | EntityInterface $classname): ?string {
     $classname = $this->resolveEntityClass($classname);
     return $this->getAttributeKey($classname, EntityTypeAttr::class, EntityTypeAttr::NAME_PROPERTY, NullEntity::ENTITY_TYPE);
-  }
-
-  public function getBaseQueryClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, BaseQuery::class, BaseQuery::CLASS_PROPERTY, '');
   }
 
   public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {

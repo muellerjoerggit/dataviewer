@@ -2,7 +2,10 @@
 
 namespace App\DaViEntity\Creator;
 
-interface CreatorDefinitionInterface {
+use App\Services\Version\VersionInformationWrapperInterface;
+use App\Services\Version\VersionListWrapperInterface;
+
+interface CreatorDefinitionInterface extends VersionInformationWrapperInterface, VersionListWrapperInterface  {
 
   public function getCreatorClass(): string;
 
