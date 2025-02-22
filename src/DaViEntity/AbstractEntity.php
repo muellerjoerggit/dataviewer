@@ -30,6 +30,10 @@ abstract class AbstractEntity implements EntityInterface {
     return $this->missingEntity;
   }
 
+  public function isAvailable(): bool {
+    return true;
+  }
+
   public function setMissingEntity(bool $missingEntity): EntityInterface {
     $this->missingEntity = $missingEntity;
     return $this;
