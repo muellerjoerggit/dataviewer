@@ -18,9 +18,10 @@ class PreRenderingItemHandlerLocator extends AbstractLocator {
   }
 
   public function getPreRenderingHandlerFromItem(ItemConfigurationInterface $itemConfiguration): PreRenderingItemHandlerInterface {
-    $handlerName = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_PRE_RENDERING);
-    if ($handlerName && $this->has($handlerName)) {
-      return $this->get($handlerName);
+    $handler = $itemConfiguration->getPreRenderingHandlerDefinition()->getHandlerClass();
+
+    if ($this->has($handler)) {
+      return $this->get($handler);
     } else {
       return $this->get(NullPreRenderingItemHandler::class);
     }

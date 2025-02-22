@@ -51,19 +51,14 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
   protected function getEntities(EntityInterface $entity, string $property): array {
     $item = $entity->getPropertyItem($property);
     $entities = [];
-    if (!$item instanceof ReferenceItemInterface && $item->countValues() === 0) {
-      return [];
-    } elseif (!$item instanceof ReferenceItemInterface && $item->countValues() > 0) {
-      foreach ($item->iterateValues() as $value) {
-        $entities[] = $this->buildValueArray($value);
-      }
-    } else {
-      $itemConfiguration = $item->getConfiguration();
-      $options = $this->getEntityOverviewOptions($itemConfiguration);
+    if(!$item->hasEntityKeys()) {
+      return $entities;
+    }
 
-      foreach ($item->iterateEntityKeys() as $entityKey) {
-        $entities[] = $this->buildEntityArray($entityKey, $options);
-      }
+    $itemConfiguration = $item->getConfiguration();
+    $options = $this->getEntityOverviewOptions($itemConfiguration);
+    foreach ($item->iterateEntityKeys() as $entityKey) {
+      $entities[] = $this->buildEntityArray($entityKey, $options);
     }
 
     return $entities;
@@ -78,14 +73,18 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
   }
 
   protected function getEntityOverviewOptions(ItemConfigurationInterface $itemConfiguration): array {
-    $config = $itemConfiguration->getPreRenderingHandlerSetting();
+    $config = $itemConfiguration->getPreRenderingHandlerDefinition();
     return [
       EntityViewBuilderInterface::FORMAT => FALSE,
-      EntityViewBuilderInterface::PROPERTIES => $config['entityOverview'] ?? [],
+//      EntityViewBuilderInterface::PROPERTIES => $config['entityOverview'] ?? [],
+      EntityViewBuilderInterface::PROPERTIES => [],
     ];
   }
 
-  protected function buildEntityArray(EntityKey $entityKey, array $options): array {
+  protected function buildEntityArray(EntityKey | null $entityKey, array $options): array {
+    if(!$entityKey) {
+      return $this->buildValueArray('Fehler EntityKey');
+    }
     $entity = $this->entityManager->getEntity($entityKey);
     $labelEntity = $this->entityManager->getEntityLabel($entity);
     $entityOverview = $this->entityManager->getEntityOverview($entity, $options);

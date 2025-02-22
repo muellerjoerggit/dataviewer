@@ -49,7 +49,7 @@ class CommonEntityValidator implements EntityValidatorInterface {
         continue;
       }
 
-      if ($itemConfiguration->hasValidatorHandler()) {
+      if ($itemConfiguration->hasValidatorHandlerDefinition()) {
         foreach ($itemConfiguration->iterateValidatorHandlers() as $validatorHandler => $handlerSettings) {
           $handler = $this->validatorHandlerLocator->getHandler($validatorHandler);
           $handler->validateItemFromGivenEntity($entity, $property);

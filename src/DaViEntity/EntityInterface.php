@@ -27,6 +27,8 @@ interface EntityInterface {
 
   public function isMissingEntity(): bool;
 
+  public function isAvailable(): bool;
+
   public function setMissingEntity(bool $missingEntity): EntityInterface;
 
   public function getEntityKeyAsObj(): EntityKey;

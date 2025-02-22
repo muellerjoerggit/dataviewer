@@ -4,8 +4,10 @@ namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\EntityKey;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
+use App\Item\Property\Attribute\OptionItemSettingDefinition;
 
 class EntityReferenceOptionsPreRenderingItemHandler extends EntityReferencePreRenderingItemHandler {
 
@@ -20,18 +22,23 @@ class EntityReferenceOptionsPreRenderingItemHandler extends EntityReferencePreRe
   protected function getEntities(EntityInterface $entity, string $property): array {
     $item = $entity->getPropertyItem($property);
     $itemConfiguration = $item->getConfiguration();
-    $handler = $this->referenceHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-    $options = $item->getConfiguration()->getSetting('options', []);
+
+    $options = null;
+    if($itemConfiguration->hasSetting(OptionItemSettingDefinition::class)) {
+      $options = $itemConfiguration->getSetting(OptionItemSettingDefinition::class);
+    }
+
     $entityOverviewOptions = $this->getEntityOverviewOptions($itemConfiguration);
 
     $entities = [];
-    foreach ($item->iterateValues() as $value) {
-      if (in_array($value, $options)) {
-        $entities[] = $this->buildValueArray($value);
+    foreach ($item->iterateEntityKeyCollection() as $rawValue => $entityKey) {
+      if ($options instanceof OptionItemSettingDefinition && $options->hasOption($rawValue)) {
+        $entities[] = $this->buildValueArray($rawValue);
+      } elseif ($entityKey instanceof EntityKey) {
+        $entities[] = $this->buildEntityArray($entityKey, $entityOverviewOptions);
+      } else {
+        $entities[] = $this->buildValueArray($rawValue);
       }
-
-      $entityKey = $handler->buildEntityKey($value, $itemConfiguration, $entity->getClient());
-      $entities[] = $this->buildEntityArray($entityKey, $entityOverviewOptions);
     }
 
     return $entities;

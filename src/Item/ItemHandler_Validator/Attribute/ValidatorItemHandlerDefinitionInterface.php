@@ -6,6 +6,4 @@ use App\Item\ItemHandler\Attribute\ItemHandlerDefinitionInterface;
 
 interface ValidatorItemHandlerDefinitionInterface extends ItemHandlerDefinitionInterface {
 
-
-
 }

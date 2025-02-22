@@ -19,17 +19,21 @@ class EntityReferenceItemHandlerLocator extends AbstractLocator {
   }
 
   public function getEntityReferenceHandlerFromItem(ItemConfigurationInterface $itemConfiguration): EntityReferenceItemHandlerInterface {
-    if ($itemConfiguration instanceof ItemInterface) {
-      $itemConfiguration = $itemConfiguration->getConfiguration();
+    if(!$itemConfiguration->hasEntityReferenceHandler()) {
+      return $this->getNullItemHandler();
     }
 
-    $handler = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_ENTITY_REFERENCE);
+    $handler = $itemConfiguration->getReferenceItemHandlerDefinition()->getHandlerClass();
 
     if ($this->has($handler)) {
       return $this->get($handler);
     } else {
-      return $this->get(NullEntityReferenceItemHandler::class);
+      return $this->getNullItemHandler();
     }
+  }
+
+  private function getNullItemHandler(): EntityReferenceItemHandlerInterface {
+    return $this->get(NullEntityReferenceItemHandler::class);
   }
 
 }

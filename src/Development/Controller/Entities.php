@@ -23,7 +23,7 @@ class Entities extends AbstractController {
   }
 
   public function preRenderEntity(DaViEntityManager $entityManager): void {
-    $entityKey = EntityKey::createFromString('umbrella::RoleUserMap::usr_id+rol_id::11+1');
+    $entityKey = EntityKey::createFromString('umbrella::User::usr_id::1');
     dd($entityManager->preRenderEntity($entityKey));
   }
 

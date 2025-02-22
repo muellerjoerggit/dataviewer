@@ -30,8 +30,9 @@ class EntityTypeSchemaRegister {
     $this->schemas[$entityType] = $this->entitySchemaBuilder->buildSchema($schemaFile, $entityClass);
   }
 
-  public function getPropertyConfigurationFromPath(string $path, string $entityType): PropertyConfiguration {
-    [$entityType, $property] = $this->getEntityTypePropertyFromPath($path, $entityType);
+  public function getPropertyConfigurationFromPath(string $path, string $entityClass): PropertyConfiguration {
+    [$entityClass, $property] = $this->getEntityTypePropertyFromPath($path, $entityClass);
+    $entityType = $this->entityTypesRegister->getEntityTypeByEntityClass($entityClass);
 
     return $this->getPropertyConfiguration($entityType, $property);
   }
@@ -40,7 +41,7 @@ class EntityTypeSchemaRegister {
     return $this->getEntityTypeSchema($entityType)->getProperty($property);
   }
 
-  private function getEntityTypePropertyFromPath(string $path, string $entityType): array  {
+  private function getEntityTypePropertyFromPath(string $path, string $entityClass): array  {
     $separatorPos = strpos($path, '.');
     if ($separatorPos) {
       $pathSection = substr($path, 0, $separatorPos);
@@ -50,20 +51,19 @@ class EntityTypeSchemaRegister {
       $path = '';
     }
 
-    $schema = $this->getEntityTypeSchema($entityType);
+    $schema = $this->getSchemaFromEntityClass($entityClass);
 
     $itemConfiguration = $schema->getProperty($pathSection);
     if ($itemConfiguration->hasEntityReferenceHandler() && !empty($path)) {
       $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-      $targetEntityType = $handler->getTargetEntityType($itemConfiguration);
-      $targetProperty = $handler->getTargetProperty($itemConfiguration);
+      [$targetEntityClass, $targetProperty] = $handler->getTargetSetting($itemConfiguration);
 
-      if (!empty($targetEntityType) && !empty($targetProperty)) {
-        return $this->getEntityTypePropertyFromPath($path, $targetEntityType);
+      if (!empty($targetEntityClass) && !empty($targetProperty)) {
+        return $this->getEntityTypePropertyFromPath($path, $targetEntityClass);
       }
     }
 
-    return [$entityType, $pathSection];
+    return [$entityClass, $pathSection];
   }
 
   public function getSchemaFromEntityClass(string | EntityInterface $entityClass): EntitySchema {

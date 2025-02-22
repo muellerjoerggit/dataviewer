@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Item\ItemHandler_EntityReference\Attribute;
+namespace App\Item\ItemHandler_PreRendering\Attribute;
 
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-abstract class EntityReferenceItemHandlerDefinitionAttr extends AbstractEntityReferenceItemHandlerDefinition {
+class PreRenderingItemHandlerDefinition extends AbstractPreRenderingItemHandlerDefinition {
 
   public function __construct(
     string $handlerClass

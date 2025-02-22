@@ -7,7 +7,7 @@ use App\Item\ItemHandler\Attribute\AbstractItemHandlerDefinition;
 abstract class AbstractValidatorItemHandlerDefinition extends AbstractItemHandlerDefinition implements ValidatorItemHandlerDefinitionInterface {
 
   public function __construct(
-    string $handlerClass
+    string $handlerClass,
   ) {
     parent::__construct($handlerClass);
   }

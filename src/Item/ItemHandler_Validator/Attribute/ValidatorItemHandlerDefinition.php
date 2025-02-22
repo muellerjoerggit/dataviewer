@@ -6,12 +6,17 @@ use App\Item\ItemHandler_EntityReference\Attribute\AbstractEntityReferenceItemHa
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-abstract class ValidatorItemHandlerDefinitionAttr extends AbstractValidatorItemHandlerDefinition {
+abstract class ValidatorItemHandlerDefinition extends AbstractValidatorItemHandlerDefinition {
 
   public function __construct(
-    string $handlerClass
+    string $handlerClass,
+    public readonly string $logCode,
   ) {
     parent::__construct($handlerClass);
+  }
+
+  public function getLogCode(): string {
+    return $this->logCode;
   }
 
 }

@@ -30,17 +30,17 @@ class TableJoinBuilder {
       $propertyConfig = $currentSchema->getProperty($property);
       if($propertyConfig->hasEntityReferenceHandler()) {
         $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($propertyConfig);
-        $tableReferenceConfig = $handler->buildTableReferenceConfiguration($propertyConfig, $currentSchema);
-        $targetEntityType = $handler->getTargetEntityType($propertyConfig);
+        $tableReferenceConfig = $handler->buildTableReferenceDefinition($propertyConfig, $currentSchema);
+        [$targetEntityClass, $property] = $handler->getTargetSetting($propertyConfig);
       } elseif($propertyConfig->hasTableReference()) {
         $tableReferenceConfig = $propertyConfig->getTableReference();
-        $targetEntityType = $tableReferenceConfig->getToEntityClass();
+        $targetEntityClass = $tableReferenceConfig->getToEntityClass();
       } else {
         break;
       }
 
       $this->joinTable($queryBuilder, $tableReferenceConfig);
-      $currentSchema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);
+      $currentSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);
     }
   }
 

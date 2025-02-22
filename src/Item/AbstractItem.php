@@ -180,13 +180,22 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
 
   public function iterateEntityKeys(): Generator {
     if($this->hasEntityKeys()) {
-      foreach ($this->values->iterateEntityKeys() as $entityKey) {
+      foreach ($this->values->getAllEntityKeys() as $entityKey) {
         yield $entityKey;
       }
     } else {
       yield from [];
     }
+  }
 
+  public function iterateEntityKeyCollection(): Generator {
+    if($this->values instanceof EntityKeyCollection) {
+      foreach ($this->values->iterateAllEntries() as $entry) {
+        yield $entry[EntityKeyCollection::RAW_VALUE] => $entry[EntityKeyCollection::KEY];
+      }
+    } else {
+      yield from [];
+    }
   }
 
   public function getEntityKey(): array | EntityKey {

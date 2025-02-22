@@ -39,7 +39,7 @@ abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandle
 
   protected function buildValues(ItemInterface $item): array {
     $itemConfiguration = $item->getConfiguration();
-    $handlerSettings = $itemConfiguration->getPreRenderingHandlerSetting();
+    $handlerSettings = $itemConfiguration->getPreRenderingHandlerDefinition();
     $values = $item->getValuesAsArray();
 
     if ($itemConfiguration->hasFormatterHandler()) {

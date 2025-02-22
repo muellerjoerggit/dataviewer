@@ -19,44 +19,29 @@ class ValidatorItemHandlerLocator extends AbstractLocator {
   }
 
   public function getValidatorHandlerFromItem(ItemConfigurationInterface $itemConfiguration): array {
-    if ($itemConfiguration instanceof ItemInterface) {
-      $itemConfiguration = $itemConfiguration->getConfiguration();
-    }
-
     $ret = [];
-    $handlers = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_VALIDATOR);
 
-    if (!$handlers) {
+    if (!$itemConfiguration->hasValidatorHandlerDefinition()) {
       return [];
     }
 
-    foreach ($handlers as $handler) {
-      $ret[] = $this->getHandler($handler);
+    foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitions() as $definition) {
+      $handler = $definition->getHandlerClass();
+      if(isset($ret[$handler])) {
+        continue;
+      }
+
+      $ret[$handler] = $this->getHandler($handler);
     }
 
     return $ret;
   }
 
   public function getHandler(string $handler): ValidatorItemHandlerInterface {
-    if ($handler && $this->has($handler)) {
+    if ($this->has($handler)) {
       return $this->get($handler);
     }
     return $this->get(NullValidatorItemHandler::class);
-  }
-
-  /**
-   * @param array $validationSetting
-   *
-   * @return array
-   * @deprecated
-   */
-  public function getValidatorHandlerFromEntityReferenceSetting(array $validationSetting): array {
-    $ret = [];
-    foreach ($validationSetting as $handler => $settings) {
-      $ret[] = $this->getHandler($handler);
-    }
-
-    return $ret;
   }
 
 }

@@ -4,63 +4,42 @@ namespace App\Item\ItemHandler_Validator;
 
 use App\DaViEntity\EntityInterface;
 use App\Item\ItemConfigurationInterface;
+use App\Item\ItemHandler_Validator\Attribute\JsonValidatorItemHandlerDefinition;
 use App\Services\Validation\ErrorCodes;
 
 /**
  * validates json
- *
- * yaml config example:
- * <code>
- * JsonValidatorItemHandler:
- *   jsonType: "jsonObject"
- *   jsonMandatory: true
- *   logCode: "INT-2000"
- * </code>
- *
- * options:
- * <code>
- *  jsonType = mandatory json type
- *  jsonMandatory = if false then null and empty strings are skipped
- * respectively are valid; default false
- * </code>
  */
 class JsonValidatorItemHandler extends AbstractValidatorItemHandler {
 
-  public const JSON_TYPE_OBJECT = 'jsonObject';
-
-  /** array of json objects */
-  public const JSON_ARRAY_OBJECTS = 'arrayObjects';
-
   public function validateItemFromGivenEntity(EntityInterface $entity, string $property): void {
-    [
-      $item,
-      $itemConfiguration,
-      $handlerSetting,
-    ] = $this->getContext($entity, $property);
-
-    if (!$item) {
+    if ($entity->hasPropertyItem($property)) {
+      $item = $entity->getPropertyItem($property);
+      $itemConfiguration = $item->getConfiguration();
+    } else {
       return;
     }
 
-    $errorCode = $handlerSetting['logCode'] ?? ErrorCodes::ERROR_CODE_MISSING;
-
     foreach ($item->iterateValues() as $value) {
-      if (!$this->validateJson($value, $itemConfiguration)) {
-        $this->setItemValidationResultByCode($entity, $property, $errorCode);
+      foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitionsByClass(static::class) as $definition) {
+        if(!$definition instanceof JsonValidatorItemHandlerDefinition) {
+          continue;
+        }
+
+        if (!$this->validateJson($value, $itemConfiguration)) {
+          $this->setItemValidationResultByCode($entity, $property, $definition->getLogCode());
+        }
       }
     }
   }
 
-  private function validateJson(mixed $value, ItemConfigurationInterface $itemConfiguration): bool {
-    $handlerSetting = $itemConfiguration->getValidatorItemHandlerSettings(static::class);
-    $jsonType = $handlerSetting['jsonType'] ?? '';
-    $jsonMandatory = $handlerSetting['jsonMandatory'] ?? FALSE;
+  private function validateJson(JsonValidatorItemHandlerDefinition $definition, mixed $value): bool {
 
-    if (!$jsonMandatory && ($value === NULL || $value === '')) {
-      return TRUE;
+    if(!$definition->isJsonMandatory() && ($value === NULL || $value === '')) {
+      return true;
     }
 
-    if ($jsonType === self::JSON_TYPE_OBJECT && !$this->isValidJsonObject($value)) {
+    if ($definition->isJsonObject() && !$this->isValidJsonObject($value)) {
       return FALSE;
     }
 
@@ -92,8 +71,14 @@ class JsonValidatorItemHandler extends AbstractValidatorItemHandler {
   }
 
   public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
-    if (!$this->validateJson($value, $itemConfiguration)) {
-      return FALSE;
+    foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitionsByClass(static::class) as $definition) {
+      if(!$definition instanceof JsonValidatorItemHandlerDefinition) {
+        continue;
+      }
+
+      if (!$this->validateJson($value, $itemConfiguration)) {
+        return false;
+      }
     }
 
     return TRUE;

@@ -2,7 +2,7 @@
 
 namespace App\Item\Property\Attribute;
 
-abstract class AbstractPropertySetting implements PropertySettingInterface {
+abstract class AbstractItemSetting implements ItemSettingInterface {
 
   public function getClass(): string {
     return static::class;

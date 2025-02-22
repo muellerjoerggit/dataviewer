@@ -7,8 +7,10 @@ use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\DaViEntity\Schema\EntityTypesRegister;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
+use App\Item\Property\Attribute\OptionItemSettingDefinition;
 
 /**
  * Item handler for entity references with few preconfigured non-reference exceptions
@@ -19,63 +21,67 @@ class EntityReferenceOptionsItemHandler extends CommonEntityReferenceItemHandler
     DaViEntityManager $entityManager,
     ValidatorItemHandlerLocator $validatorHandlerLocator,
     EntityTypeSchemaRegister $schemaRegister,
+    EntityTypesRegister $entityTypesRegister
   ) {
-		parent::__construct($entityManager, $validatorHandlerLocator, $schemaRegister);
-	}
-
-	public function iterateEntityKeys(EntityInterface $entity, string $property): \Generator {
-		$item = $entity->getPropertyItem($property);
-    $itemConfiguration = $item->getConfiguration();
-
-		$options = $itemConfiguration->getSetting('options', []);
-		foreach ($item->getValuesAsOneDimensionalArray() As $value) {
-			if(in_array($value, $options)) {
-				continue;
-			}
-
-			if(!$this->validateReferenceValue($entity, $property, $value)) {
-				continue;
-			}
-
-			if(!is_array($value)) {
-				$entityKey = $this->buildEntityKey($value, $itemConfiguration, $entity->getClient());
-				yield $entityKey;
-			}
-		}
+		parent::__construct($entityManager, $validatorHandlerLocator, $schemaRegister, $entityTypesRegister);
 	}
 
 	public function getLabelFromValue(ItemConfigurationInterface $itemConfiguration, $value, string $client): string {
-		$options = $itemConfiguration->getSetting('options', []);
+		$options = $this->getOptionSetting($itemConfiguration);
 
-		if(array_key_exists($value, $options)) {
-			return $options[$value]['label'] ?? $value;
+		if($options instanceof OptionItemSettingDefinition) {
+			return $options->getLabel($value);
 		}
 
-		$entityKey = $this->buildEntityKey($value, $itemConfiguration, $client);
-		return $this->entityManager->getEntityLabel($entityKey) ?? '';
+    $referenceDefinition = $this->getReferenceDefinition($itemConfiguration);
+    if($referenceDefinition) {
+      $entityKey = $this->buildEntityKey($value, $referenceDefinition, $client);
+      $this->entityManager->getEntityLabel($entityKey);
+    }
+
+		return '';
 	}
+
+  private function getOptionSetting(ItemConfigurationInterface $itemConfiguration): OptionItemSettingDefinition | null {
+    if($itemConfiguration->hasSetting(OptionItemSettingDefinition::class)) {
+      return $itemConfiguration->getSetting(OptionItemSettingDefinition::class);
+    }
+
+    return null;
+  }
 
   public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null {
     $collection = new EntityKeyCollection();
     $item = $entity->getPropertyItem($property);
     $values = $item->getValuesAsArray();
-
     $itemConfiguration = $item->getConfiguration();
-    $options = $itemConfiguration->getSetting('options', []);
+    $options = $this->getOptionSetting($itemConfiguration);
+    $referenceDefinition = $this->getReferenceDefinition($itemConfiguration);
+    $client = $entity->getClient();
+    $hasValidator = false;
+
+    if($referenceDefinition) {
+      $targetItemConfiguration = $this->getTargetItemConfiguration($referenceDefinition);
+      $hasValidator = $targetItemConfiguration->hasValidatorHandlerDefinition();
+    }
 
     foreach ($values as $value) {
-      if(in_array($value, $options) || !$this->validateReferenceValue($entity, $property, $value)) {
+      if(
+        ($options instanceof OptionItemSettingDefinition && $options->hasOption($value) )
+        || !$referenceDefinition
+        || !$hasValidator
+        || !$this->validateReferenceValue($targetItemConfiguration, $value, $client)
+      ) {
         $collection->addRawValue($value);
         continue;
       }
 
-      if(is_scalar($value)) {
-        $entityKey = $this->buildEntityKey($value, $item->getConfiguration(), $entity->getClient());
-        if(!($entityKey instanceof EntityKey)) {
-          continue;
-        }
-        $collection->addKey($entityKey, $value);
+      $entityKey = $this->buildEntityKey($value, $referenceDefinition, $entity->getClient());
+      if(!($entityKey instanceof EntityKey)) {
+        $collection->addRawValue($value);
+        continue;
       }
+      $collection->addKey($entityKey, $value);
     }
 
     return $collection->hasValues() ? $collection : null;

@@ -7,8 +7,8 @@ use Generator;
 
 class EntityKeyCollection implements ArrayInterface {
 
-  private const string KEY = 'key';
-  private const string RAW_VALUE = 'raw';
+  public const string KEY = 'key';
+  public const string RAW_VALUE = 'raw';
 
   private array $collection = [];
 
@@ -53,9 +53,9 @@ class EntityKeyCollection implements ArrayInterface {
     return $this->getAllRawValues();
   }
 
-  public function iterateEntityKeys(): Generator {
+  public function iterateAllEntries(): Generator {
     foreach ($this->collection as $entry) {
-      yield $entry[self::KEY];
+      yield $entry;
     }
   }
 

@@ -27,7 +27,12 @@ use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
+use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
+use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
+use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
@@ -48,7 +53,7 @@ use App\Services\EntityActionHandler\UrlActionHandler;
   CreatorDefinition(creatorClass: CommonCreator::class),
   RefinerDefinition(refinerClass: CommonRefiner::class),
   ColumnBuilderDefinition(columnBuilderClass: CommonColumnBuilder::class),
-  ListProviderDefinition(listProviderClass: CommonListProvider::class)
+  ListProviderDefinition(listProviderClass: CommonListProvider::class),
 ]
 #[AdditionalDataProviderDefinition(additionalDataProviderClass: AdditionalDataProviderFromTableReferences::class)]
 #[DatabaseDefinition(
@@ -173,6 +178,13 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'integer'],
   ])]
+  #[EntityReferenceItemHandlerDefinition(
+      handlerClass: CommonEntityReferenceItemHandler::class,
+      targetEntity: RoleEntity::class,
+      targetProperty: 'rol_id',
+    ),
+    PreRenderingItemHandlerDefinition(handlerClass: EntityReferencePreRenderingItemHandler::class)
+  ]
   private $roles;
 
 

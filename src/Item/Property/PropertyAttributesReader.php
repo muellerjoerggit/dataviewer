@@ -16,7 +16,7 @@ use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;
 use App\Item\Property\Attribute\PropertyPreDefinedAttr;
-use App\Item\Property\Attribute\PropertySettingInterface;
+use App\Item\Property\Attribute\ItemSettingInterface;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Services\AbstractAttributesReader;
@@ -109,7 +109,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
         $instance->setColumn($name);
       }
       $propertyContainer->setDatabasePropertyDefinition($instance);
-    } elseif ($instance instanceof PropertySettingInterface) {
+    } elseif ($instance instanceof ItemSettingInterface) {
       $propertyContainer->addPropertySetting($instance);
     } elseif ($instance instanceof TableReferencePropertyDefinition) {
       $propertyContainer->setTableReferencePropertyDefinition($instance);

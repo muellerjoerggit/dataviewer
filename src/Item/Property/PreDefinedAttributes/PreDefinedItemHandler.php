@@ -2,7 +2,7 @@
 
 namespace App\Item\Property\PreDefinedAttributes;
 
-use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionAttr;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
 use App\Item\ItemHandler_PreRendering\CommonPreRenderingItemHandler;
 use App\Item\ItemHandler_PreRendering\TablePreRenderingItemHandler;
 
@@ -10,7 +10,7 @@ class PreDefinedItemHandler {
 
   public static function commonPreRenderingHandler(): array {
     return [
-      new PreRenderingItemHandlerDefinitionAttr(
+      new PreRenderingItemHandlerDefinition(
         CommonPreRenderingItemHandler::class,
       ),
     ];
@@ -18,7 +18,7 @@ class PreDefinedItemHandler {
 
   public static function tablePreRenderingHandler(): array {
     return [
-      new PreRenderingItemHandlerDefinitionAttr(
+      new PreRenderingItemHandlerDefinition(
         TablePreRenderingItemHandler::class,
       ),
     ];

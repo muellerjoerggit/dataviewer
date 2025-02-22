@@ -21,7 +21,7 @@ class EntityTypesRegister {
     EntityTypesReader $entityTypesReader
   ) {
     $this->entityTypes = $entityTypesReader->read();
-    $this->entityClasses = array_column($this->entityTypes, EntityTypesReader::KEY_ENTITY_CLASS, EntityTypesReader::KEY_ENTITY_TYPE);
+    $this->entityClasses = array_column($this->entityTypes, EntityTypesReader::KEY_ENTITY_TYPE, EntityTypesReader::KEY_ENTITY_CLASS);
   }
 
   public function getSchemaFile(string $type): SplFileInfo {
@@ -30,6 +30,10 @@ class EntityTypesRegister {
 
   public function getEntityClassByEntityType(string $entityType): string {
     return $this->entityTypes[$entityType][EntityTypesReader::KEY_ENTITY_CLASS];
+  }
+
+  public function getEntityTypeByEntityClass(string $entityClass): string {
+    return $this->entityClasses[$entityClass];
   }
 
   public function resolveEntityController($input): EntityControllerInterface {

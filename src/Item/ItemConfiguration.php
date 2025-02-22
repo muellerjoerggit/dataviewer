@@ -9,7 +9,7 @@ use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInter
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
-use App\Item\Property\Attribute\PropertySettingInterface;
+use App\Item\Property\Attribute\ItemSettingInterface;
 use App\Services\AppNamespaces;
 use App\Services\Export\ExportFormatter\ExportFormatterAttributeInterface;
 use App\Services\Version\VersionInformation;
@@ -54,6 +54,10 @@ class ItemConfiguration implements ItemConfigurationInterface {
   public function __construct(
     protected readonly string $name
   ) {}
+
+  public static function createNullConfiguration(): ItemConfigurationInterface {
+    return new ItemConfiguration('NullItem');
+  }
 
   public function getItemName(): string {
     return $this->name;
@@ -103,24 +107,63 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this;
   }
 
-  public function addValidatorItemHandler(ValidatorItemHandlerDefinitionInterface $handler): ItemConfigurationInterface {
-    $this->validatorItemHandlers[] = $handler;
-    return $this;
-  }
 
   public function setPreRenderingItemHandlerDefinition(PreRenderingItemHandlerDefinitionInterface $preRenderingItemHandlerDefinition): ItemConfigurationInterface {
     $this->preRenderingItemHandlerDefinition = $preRenderingItemHandlerDefinition;
     return $this;
   }
 
-  public function setFormatterItemHandlerDefinition(FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition): ItemConfigurationInterface {
-    $this->formatterItemHandlerDefinition = $formatterItemHandlerDefinition;
+  public function getPreRenderingHandlerDefinition(): PreRenderingItemHandlerDefinitionInterface {
+    return $this->preRenderingItemHandlerDefinition;
+  }
+
+
+  // Validator item handler ####################################
+  public function addValidatorItemHandlerDefinition(ValidatorItemHandlerDefinitionInterface $handler): ItemConfigurationInterface {
+    $this->validatorItemHandlers[$handler::class][] = $handler;
     return $this;
   }
 
+  public function hasValidatorHandlerDefinition(): bool {
+    return !empty($this->validatorItemHandlers);
+  }
+
+  /**
+   * @return Generator<ValidatorItemHandlerDefinitionInterface>
+   */
+  public function iterateValidatorItemHandlerDefinitions(): Generator {
+    foreach ($this->validatorItemHandlers as $validatorItemHandlerDefinitions) {
+      foreach ($validatorItemHandlerDefinitions as $validatorItemHandlerDefinition) {
+        yield $validatorItemHandlerDefinition;
+      }
+    }
+  }
+
+  /**
+   * @return Generator<ValidatorItemHandlerDefinitionInterface>
+   */
+  public function iterateValidatorItemHandlerDefinitionsByClass(string $definitionClass): Generator {
+    if(!empty($this->validatorItemHandlers[$definitionClass])) {
+      foreach ($this->validatorItemHandlers[$definitionClass] as $validatorItemHandlerDefinition) {
+        yield $validatorItemHandlerDefinition;
+      }
+    } else {
+      yield from [];
+    }
+  }
+
+  // Entity reference item handler ####################################
   public function setReferenceItemHandlerDefinition(EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition): ItemConfigurationInterface {
     $this->referenceItemHandlerDefinition = $referenceItemHandlerDefinition;
     return $this;
+  }
+
+  public function hasEntityReferenceHandler(): bool {
+    return isset($this->referenceItemHandlerDefinition) && $this->referenceItemHandlerDefinition->isValid();
+  }
+
+  public function getReferenceItemHandlerDefinition(): EntityReferenceItemHandlerDefinitionInterface {
+    return $this->referenceItemHandlerDefinition;
   }
 
   public function setAdditionalDataItemHandlerDefinition(AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition): ItemConfigurationInterface {
@@ -132,22 +175,22 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->preRenderingItemHandlerDefinition;
   }
 
+  // Formatter item handler ####################################
+  public function setFormatterItemHandlerDefinition(FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition): ItemConfigurationInterface {
+    $this->formatterItemHandlerDefinition = $formatterItemHandlerDefinition;
+    return $this;
+  }
+
+  public function hasFormatterHandler(): bool {
+    return isset($this->formatterItemHandlerDefinition) && $this->formatterItemHandlerDefinition->isValid();
+  }
+
   public function getFormatterItemHandlerDefinition(): FormatterItemHandlerDefinitionInterface {
     return $this->formatterItemHandlerDefinition;
   }
 
-  public function getReferenceItemHandlerDefinition(): EntityReferenceItemHandlerDefinitionInterface {
-    return $this->referenceItemHandlerDefinition;
-  }
-
   public function getAdditionalDataItemHandlerDefinition(): AdditionalDataItemHandlerDefinitionInterface {
     return $this->additionalDataItemHandlerDefinition;
-  }
-
-  public function iterateValidatorItemHandlerDefinition(): Generator {
-    foreach ($this->validatorItemHandlers as $validatorItemHandlerDefinition) {
-      yield $validatorItemHandlerDefinition;
-    }
   }
 
   public function getHandlerByType(string $handlerType): string|array|bool {
@@ -166,20 +209,8 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->handlerSettings[ItemHandlerInterface::HANDLER_ADDITIONAL_DATA] ?? [];
   }
 
-  public function hasEntityReferenceHandler(): bool {
-    return $this->hasHandlerByType(ItemHandlerInterface::HANDLER_ENTITY_REFERENCE);
-  }
-
   public function hasAdditionalDataHandler(): bool {
     return $this->hasHandlerByType(ItemHandlerInterface::HANDLER_ADDITIONAL_DATA);
-  }
-
-  public function hasFormatterHandler(): bool {
-    return $this->hasHandlerByType(ItemHandlerInterface::HANDLER_VALUE_FORMATTER);
-  }
-
-  public function hasValidatorHandler(): bool {
-    return $this->hasHandlerByType(ItemHandlerInterface::HANDLER_VALIDATOR);
   }
 
   public function iterateValidatorHandlers(): Generator {
@@ -197,16 +228,16 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->handlerSettings[ItemHandlerInterface::HANDLER_ENTITY_REFERENCE] ?? [];
   }
 
-  public function getPreRenderingHandlerSetting(): array {
-    return $this->handlerSettings[ItemHandlerInterface::HANDLER_PRE_RENDERING] ?? [];
+  public function getSetting($definitionClass): ItemSettingInterface {
+    return $this->settings[$definitionClass];
   }
 
-  public function getSetting($setting): mixed {
-    return $this->settings[$setting];
+  public function hasSetting($definitionClass): bool {
+    return isset($this->settings[$definitionClass]);
   }
 
-  public function addSetting(PropertySettingInterface $setting): ItemConfigurationInterface {
-    $this->settings[$setting->getClass()] = $setting;
+  public function addSetting(ItemSettingInterface $definition): ItemConfigurationInterface {
+    $this->settings[$definition->getClass()] = $definition;
     return $this;
   }
 

@@ -9,7 +9,7 @@ class NullItem extends AbstractNullItem {
   protected ItemConfigurationInterface $itemConfiguration;
 
   public function __construct() {
-    $this->itemConfiguration = new ItemConfiguration('NullItem');
+    $this->itemConfiguration = ItemConfiguration::createNullConfiguration();
   }
 
   public function getConfiguration(): ItemConfigurationInterface {

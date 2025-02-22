@@ -2,7 +2,7 @@
 
 namespace App\Item\Property\Attribute;
 
-interface PropertySettingInterface {
+interface ItemSettingInterface {
 
   public function getClass(): string;
 

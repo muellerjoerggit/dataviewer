@@ -4,28 +4,15 @@ namespace App\Item\ItemHandler_Validator;
 
 use App\DaViEntity\EntityInterface;
 use App\Item\ItemConfigurationInterface;
+use App\Item\ItemHandler_Validator\Attribute\ExpressionValidatorItemHandlerDefinition;
 use App\Logger\Logger;
 use App\Services\Validation\ErrorCodes;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * validation with help of symfony expression language
- *
- * yaml configuration
- * <code>
- *  ExpressionValidatorItemHandler:
- *    not_null:
- *      logTitle: "NULL nicht erlaubt"
- *      logLevel: "warning"
- *      expression: "value not null"
- * </code>
- *
  */
 class ExpressionValidatorItemHandler extends AbstractValidatorItemHandler implements ValidatorItemHandlerInterface {
-
-  public function __construct(Logger $logger, ErrorCodes $errorCodes) {
-    parent::__construct($logger, $errorCodes);
-  }
 
   public function validateItemFromGivenEntity(EntityInterface $entity, string $property): void {
     if ($entity->hasPropertyItem($property)) {
@@ -36,44 +23,39 @@ class ExpressionValidatorItemHandler extends AbstractValidatorItemHandler implem
     }
 
     foreach ($item->getValuesAsArray() as $value) {
-      $validationResult = $this->validateValueFromItemConfiguration($itemConfiguration, $value, $entity->getClient());
-      if (!$validationResult) {
-        $this->setItemValidationResult($validationResult, $item, $entity);
-      } elseif (!isset($validationResult['result'])) {
-        $this->errorValidation();
+      foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitionsByClass(static::class) as $definition) {
+        if(!$definition instanceof ExpressionValidatorItemHandlerDefinition) {
+          continue;
+        }
+
+        if(!$this->checkExpression($definition, $value)) {
+          $this->setItemValidationResultByCode($entity, $property, $definition->getLogCode());
+        }
       }
     }
   }
 
   public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
-    $settings = $itemConfiguration->getValidatorItemHandlerSettings($this::class);
-    $label = $itemConfiguration->getLabel();
+    foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitionsByClass(static::class) as $definition) {
+      if(!$definition instanceof ExpressionValidatorItemHandlerDefinition) {
+        continue;
+      }
 
-    foreach ($settings as $handlerSetting) {
-      $check = $this->checkExpression($handlerSetting, $value);
-      $negation = $handlerSetting['negation'] ?? FALSE;
-
-      if (!$check && !$negation) {
-        return FALSE;
+      if(!$this->checkExpression($definition, $value)) {
+        return false;
       }
     }
 
-    return TRUE;
+    return true;
   }
 
-  private function checkExpression(array $setting, mixed $value): bool {
+  private function checkExpression(ExpressionValidatorItemHandlerDefinition $definition, mixed $value): bool {
     $expressionLanguage = new ExpressionLanguage();
-    $result = TRUE;
     if (!is_array($value)) {
       $value = ['value' => $value];
     }
 
-    if (isset($setting['expression'])) {
-      $expression = $setting['expression'];
-      $result = $expressionLanguage->evaluate($expression, $value);
-    }
-
-    return $result;
+    return !$definition->isNegate() && $expressionLanguage->evaluate($definition->getExpression(), $value);
   }
 
 }

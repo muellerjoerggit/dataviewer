@@ -14,16 +14,6 @@ use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerInterface;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
-/**
- * Configuration example:
- * <code>
- *   count_users_status:
- *    title: "Number of users by status"
- *    description: "Number of users with the respective role grouped by user
- * status (active or inactive)" handler: CountGroupAggregationHandler:
- * properties: rol_id: "Role id" usr_id.active: "Active"
- * </code>
- */
 class CountGroupAggregationHandler extends AbstractAggregationHandler {
 
 

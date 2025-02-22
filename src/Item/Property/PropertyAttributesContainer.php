@@ -10,7 +10,7 @@ use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitio
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\PropertySettingInterface;
+use App\Item\Property\Attribute\ItemSettingInterface;
 use Generator;
 use ReflectionProperty;
 
@@ -21,7 +21,7 @@ class PropertyAttributesContainer {
   private PropertyAttr $propertyAttr;
 
   /**
-   * @var PropertySettingInterface[]
+   * @var ItemSettingInterface[]
    */
   private array $propertySettings = [];
 
@@ -119,7 +119,7 @@ class PropertyAttributesContainer {
     }
   }
 
-  public function addPropertySetting(PropertySettingInterface $setting): PropertyAttributesContainer {
+  public function addPropertySetting(ItemSettingInterface $setting): PropertyAttributesContainer {
     $this->propertySettings[] = $setting;
     return $this;
   }
@@ -129,7 +129,7 @@ class PropertyAttributesContainer {
   }
 
   /**
-   * @return Generator<PropertySettingInterface>
+   * @return Generator<ItemSettingInterface>
    */
   public function iteratePropertySetting(): Generator {
     foreach ($this->propertySettings as $setting) {

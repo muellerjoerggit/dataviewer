@@ -124,4 +124,8 @@ class NullEntity implements EntityInterface {
     return [];
   }
 
+  public function isAvailable(): bool {
+    return false;
+  }
+
 }

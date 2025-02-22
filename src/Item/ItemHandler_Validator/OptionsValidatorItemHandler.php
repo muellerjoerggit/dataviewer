@@ -4,52 +4,44 @@ namespace App\Item\ItemHandler_Validator;
 
 use App\DaViEntity\EntityInterface;
 use App\Item\ItemConfigurationInterface;
+use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinition;
+use App\Item\Property\Attribute\OptionItemSettingDefinition;
 
-/**
- * checks, whether
- *
- * yaml config example:
- * <code>
- * OptionsValidatorItemHandler:
- *   logCode: "INT-2000"
- * </code>
- *
- */
 class OptionsValidatorItemHandler extends AbstractValidatorItemHandler {
 
-  public const ERROR_CODE_UNKNOWN_OPTION = 'ALL-3000';
-
   public function validateItemFromGivenEntity(EntityInterface $entity, string $property): void {
-    [
-      $item,
-      $itemConfiguration,
-      $handlerSetting,
-    ] = $this->getContext($entity, $property);
-
-    if (!$item) {
+    if ($entity->hasPropertyItem($property)) {
+      $item = $entity->getPropertyItem($property);
+      $itemConfiguration = $item->getConfiguration();
+    } else {
       return;
     }
 
-    $errorCode = $handlerSetting['logCode'] ?? self::ERROR_CODE_UNKNOWN_OPTION;
-    $options = $itemConfiguration->getSetting('options', []);
-    $emptyAllowed = $options['emptyAllowed'] ?? FALSE;
-
-    if (!$emptyAllowed && $item->isValuesNull()) {
-      $this->setItemValidationResultByCode($entity, $property, $errorCode);
-      return;
+    $options = null;
+    if($itemConfiguration->hasSetting(OptionItemSettingDefinition::class)) {
+      $options = $itemConfiguration->getSetting(OptionItemSettingDefinition::class);
     }
 
     foreach ($item->iterateValues() as $value) {
-      if (!array_key_exists($value, $options)) {
-        $this->setItemValidationResultByCode($entity, $property, $errorCode, ['option' => $value]);
+      foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitionsByClass(static::class) as $definition) {
+        if (!$definition instanceof ValidatorItemHandlerDefinition) {
+          continue;
+        }
+
+        if (!$options instanceof OptionItemSettingDefinition && !$options->hasOption($value)) {
+          $this->setItemValidationResultByCode($entity, $property, $definition->getLogCode(), ['option' => $value]);
+        }
       }
     }
   }
 
   public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
-    $options = $itemConfiguration->getSetting('options', []);
+    $options = null;
+    if($itemConfiguration->hasSetting(OptionItemSettingDefinition::class)) {
+      $options = $itemConfiguration->getSetting(OptionItemSettingDefinition::class);
+    }
 
-    if (!array_key_exists($value, $options)) {
+    if ($options instanceof OptionItemSettingDefinition && $options->hasOption($value)) {
       return FALSE;
     }
 

@@ -4,50 +4,22 @@ namespace App\Item\ItemHandler_Validator;
 
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\EntityKey;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
+use App\Item\ItemHandler_Validator\Attribute\ReferenceValidatorItemHandlerDefinition;
 use App\Item\ItemInterface;
 use App\Logger\Logger;
 use App\Services\Validation\ErrorCodes;
 
 /**
  *
- * ToDo: finish validation
- *
  * validates referenced entities
  *
- * yaml config example:
- * <code>
- * EntityReferenceValidatorItemHandler:
- *  all:
- *    mandatory: true
- *    checks:
- *      - "availability"
- *      - "critical"
- *      - "missing"
- *    logCode: "INT-2000"
- * </code>
- *
- * options:
- * <code>
- *  missing = checks whether the referenced entity exists
- *  availability = checks whether the referenced is available
- *  critical = checks whether the referenced has a critical error
- *  all = all of the above
- * </code>
  */
 class EntityReferenceValidatorItemHandler extends AbstractValidatorItemHandler implements ValidatorItemHandlerInterface {
 
-  public const VALIDATION_TYPE_MISSING = 'missing';
-
-  public const VALIDATION_TYPE_AVAILABILITY = 'availability';
-
-  public const VALIDATION_TYPE_ALL = 'all';
-
-  public const VALIDATION_TYPE_CRITICAL = 'critical';
-
   public function __construct(
-    private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
     private readonly DaViEntityManager $entityManager,
     ErrorCodes $errorCodes,
     Logger $logger
@@ -62,99 +34,71 @@ class EntityReferenceValidatorItemHandler extends AbstractValidatorItemHandler i
       return;
     }
 
-    $referenceHandler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($item->getConfiguration());
     $referencedEntities = [];
 
     foreach ($item->iterateEntityKeys() as $entityKey) {
-      if (!$entityKey) {
+      if (!$entityKey instanceof EntityKey) {
         continue;
       }
 
       $referencedEntity = $this->entityManager->getEntity($entityKey);
-      //			$this->entityManager->validateEntity($referencedEntity);
       $referencedEntities[] = $referencedEntity;
     }
 
-    $this->validateReferencedEntities($referencedEntities, $item, $entity);
+    $this->validateReferencedEntities($referencedEntities, $item->getConfiguration(), $entity);
   }
 
-  private function validateReferencedEntities(array $referencedEntities, ItemInterface|ItemConfigurationInterface $item, ?EntityInterface $sourceEntity = NULL): array {
-    if ($item instanceof ItemInterface) {
-      $itemConfiguration = $item->getConfiguration();
-    } elseif ($item instanceof ItemConfigurationInterface) {
-      $itemConfiguration = $item;
-      $item = NULL;
-    }
-    $handlerSettings = $itemConfiguration->getValidatorItemHandlerSettings($this::class);
-    $label = $itemConfiguration->getLabel();
-    $totalResult = [];
+  private function validateReferencedEntities(array $referencedEntities, ItemConfigurationInterface $itemConfiguration, EntityInterface | null $sourceEntity = null): void {
+    $result = true;
 
-    foreach ($handlerSettings as $validationSetting) {
-      $mandatory = $validationSetting['mandatory'] ?? FALSE;
-      $resultHandlerSetting = [];
-      $checks = $validationSetting['checks'] ?? [];
-      $logCode = $validationSetting['logCode'] ?? ErrorCodes::ERROR_CODE_MISSING;
-
-      if (empty($checks)) {
+    foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitionsByClass(static::class) as $definition) {
+      if(!$definition instanceof ReferenceValidatorItemHandlerDefinition) {
         continue;
       }
 
-      if (!is_array($checks)) {
-        $checks = [$checks];
-      }
-
+      $hasAtLeastOneReference = false;
       foreach ($referencedEntities as $referencedEntity) {
         if (!($referencedEntity instanceof EntityInterface)) {
           continue;
         }
 
-        $result = TRUE;
+        $hasAtLeastOneReference = true;
+        $missing = $referencedEntity->isMissingEntity();
+        $available = $referencedEntity->isAvailable();
+        $critical = $referencedEntity->hasCriticalLogs();
 
-        if (
-          in_array(self::VALIDATION_TYPE_MISSING, $checks)
-          && ($referencedEntity->isMissingEntity())
-        ) {
-          $result = FALSE;
-          //				} elseif (
-          //					in_array(self::VALIDATION_TYPE_AVAILABILITY, $checks)
-          //					&& (!$referencedEntity->isAvailable())
-          //				) {
-          //					$result = false;
-        } elseif (
-          in_array(self::VALIDATION_TYPE_CRITICAL, $checks)
-          && ($referencedEntity->hasCriticalLogs())
-        ) {
-          $result = FALSE;
+        if ($definition->isNotMissing() && $missing) {
+          $this->setItemValidationResultByCode($sourceEntity, $itemConfiguration->getItemName(), $definition->getNotMissingLogCode());
+          $result = false;
+          break;
         }
 
-        if (!$result) {
-          $this->setItemValidationResultByCode($sourceEntity, $itemConfiguration->getItemName(), $logCode);
-          $resultHandlerSetting[] = FALSE;
-        } else {
-          $resultHandlerSetting[] = TRUE;
+        if ($definition->isNotAvailable() && !$available) {
+          $this->setItemValidationResultByCode($sourceEntity, $itemConfiguration->getItemName(), $definition->getNotAvailableLogCode());
+          $result = false;
+          break;
+        }
+
+        if ($definition->isNotCritical() && $critical) {
+          $this->setItemValidationResultByCode($sourceEntity, $itemConfiguration->getItemName(), $definition->getNotCriticalLogCode());
+          $result = false;
+          break;
         }
       }
 
-      if ($mandatory && empty($resultHandlerSetting)) {
-        $this->setItemValidationResultByCode($sourceEntity, $itemConfiguration->getItemName(), $logCode);
-        $resultHandlerSetting[] = FALSE;
+      if(!$definition->isMandatory() && !$hasAtLeastOneReference) {
+        $this->setItemValidationResultByCode($sourceEntity, $itemConfiguration->getItemName(), $definition->getMandatoryLogCode());
+        $result = false;
       }
 
-      $totalResult[] = in_array(FALSE, $resultHandlerSetting);
+      if(!$result) {
+        return;
+      }
     }
-
-    return $totalResult;
   }
 
   public function validateValueFromItemConfiguration(ItemConfigurationInterface $itemConfiguration, $value, string $client): bool {
-    $referenceHandler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-    $entityKey = $referenceHandler->buildEntityKey($value, $itemConfiguration, $client);
-    $referencedEntity = $this->entityManager->getEntity($entityKey);
-    //		$this->entityManager->validateEntity($referencedEntity);
-
-    $totalResult = $this->validateReferencedEntities([$referencedEntity], $itemConfiguration);
-
-    return in_array(FALSE, $totalResult);
+    return false;
   }
 
 }

@@ -34,7 +34,7 @@ class ExportEntityTypeConfiguration {
     }
 
     $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-    $referenceEntityType = $handler->getTargetEntityType($itemConfiguration);
+    [$referenceEntityType, $property] = $handler->getTargetSetting($itemConfiguration);
 
       $schema = $this->schemaRegister->getEntityTypeSchema($referenceEntityType);
       return [

@@ -24,6 +24,12 @@ use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
+use App\EntityTypes\Role\RoleEntity;
+use App\EntityTypes\User\UserEntity;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
+use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
+use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
@@ -32,6 +38,7 @@ use App\Item\Property\Attribute\PropertyAttr;
 use App\Item\Property\Attribute\PropertyPreDefinedAttr;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
+use App\Item\Property\PropertyItemInterface;
 
 #[RepositoryDefinition(repositoryClass: RoleUserMapRepository::class)]
 #[EntityTypeAttr(name: 'RoleUserMap', label: 'Rolle/User Map')]
@@ -70,7 +77,14 @@ class RoleUserMapEntity extends AbstractEntity {
     description: 'Alle Rollen des Nutzers anzeigen',
     group: false
   )]
-  private $usr_id;
+  #[EntityReferenceItemHandlerDefinition(
+    handlerClass: CommonEntityReferenceItemHandler::class,
+    targetEntity: UserEntity::class,
+    targetProperty: 'usr_id',
+  ),
+    PreRenderingItemHandlerDefinition(handlerClass: EntityReferencePreRenderingItemHandler::class)
+  ]
+  private PropertyItemInterface $usr_id;
 
   #[PropertyAttr(
     dataType: ItemInterface::DATA_TYPE_INTEGER,
@@ -91,6 +105,13 @@ class RoleUserMapEntity extends AbstractEntity {
     description: 'Alle Benutzer der Rolle anzeigen',
     group: false
   )]
-  private $rol_id;
+  #[EntityReferenceItemHandlerDefinition(
+      handlerClass: CommonEntityReferenceItemHandler::class,
+      targetEntity: RoleEntity::class,
+      targetProperty: 'rol_id',
+    ),
+    PreRenderingItemHandlerDefinition(handlerClass: EntityReferencePreRenderingItemHandler::class)
+  ]
+  private PropertyItemInterface $rol_id;
 
 }

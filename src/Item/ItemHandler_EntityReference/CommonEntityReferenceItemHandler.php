@@ -9,12 +9,18 @@ use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\DaViEntity\Schema\EntityTypesRegister;
 use App\DaViEntity\UniqueKey;
+use App\EntityTypes\NullEntity\NullEntity;
+use App\Item\ItemConfiguration;
 use App\Item\ItemConfigurationInterface;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
+use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\DaViEntity\EntityInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
+use App\Item\NullItem;
 
 class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface {
 
@@ -22,20 +28,24 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 		protected readonly DaViEntityManager $entityManager,
 		protected readonly ValidatorItemHandlerLocator $validatorHandlerLocator,
 		protected readonly EntityTypeSchemaRegister $schemaRegister,
+    protected readonly EntityTypesRegister $entityTypesRegister,
 	) {}
 
-  protected function validateReferenceValue(EntityInterface $entity, string $property, $value): bool {
-    $targetItemConfiguration = $this->getTargetItemConfiguration($entity->getPropertyItem($property)->getConfiguration());
+  protected function isDefinitionValid($referenceDefinition): bool {
+    return $referenceDefinition instanceof EntityReferenceItemHandlerDefinition;
+  }
+
+  protected function validateReferenceValue(ItemConfigurationInterface $targetItemConfiguration, $value, string $client): bool {
     $validatorHandlers = $this->validatorHandlerLocator->getValidatorHandlerFromItem($targetItemConfiguration);
-    $client = $entity->getClient();
 
     foreach ($validatorHandlers as $validationHandler) {
       if(!($validationHandler instanceof ValidatorItemHandlerInterface)) {
         continue;
       }
-      $validationResult = $validationHandler->validateValueFromItemConfiguration($targetItemConfiguration, $value, $client);
 
-      if(!$validationResult) {
+      dump(!$validationHandler->validateValueFromItemConfiguration($targetItemConfiguration, $value, $client));
+
+      if(!$validationHandler->validateValueFromItemConfiguration($targetItemConfiguration, $value, $client)) {
         return false;
       }
     }
@@ -43,10 +53,15 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     return true;
   }
 
-	public function buildEntityKey($value, ItemConfigurationInterface $itemConfiguration, string $client): ?EntityKey	{
-    [$entityType, $property] = $this->getTargetSetting($itemConfiguration);
+	public function buildEntityKey($value, EntityReferenceItemHandlerDefinitionInterface $referenceDefinition, string $client): ?EntityKey	{
+    if(!$this->isDefinitionValid($referenceDefinition)) {
+      return null;
+    }
 
-		if(empty($entityType) || empty($property)) {
+    [$entityClass, $property] = $this->getTargetSetting($referenceDefinition);
+    $entityType = $this->entityTypesRegister->getEntityTypeByEntityClass($entityClass);
+
+		if(empty($entityType) || empty($property) || !is_scalar($value)) {
 			return null;
 		}
 
@@ -63,67 +78,80 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
 		return $this->entityManager->getEntityOverview($entityKey, $options) ?? [];
 	}
 
-  public function getTargetSetting(ItemConfigurationInterface $itemConfiguration): array {
-    $referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-    $entityType = $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
-    $property = $referenceSettings['target_property'] ?? '';
+  public function getTargetSetting(EntityReferenceItemHandlerDefinitionInterface | ItemConfigurationInterface $referenceDefinition): array {
+    if($referenceDefinition instanceof ItemConfigurationInterface) {
+      $referenceDefinition = $this->getReferenceDefinition($referenceDefinition);
+    }
 
-    return [$entityType, $property];
+    if(!$referenceDefinition || !$this->isDefinitionValid($referenceDefinition)) {
+      return [NullEntity::class, 'id'];
+    }
+
+    return [$referenceDefinition->getTargetEntity(), $referenceDefinition->getTargetProperty()];
   }
 
-	protected function getTargetItemConfiguration(ItemConfigurationInterface $itemConfiguration): ItemConfigurationInterface {
-		$referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-		$entityType = $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
-		$property = $this->getTargetProperty($itemConfiguration);
-		$schema = $this->schemaRegister->getEntityTypeSchema($entityType);
+	protected function getTargetItemConfiguration(EntityReferenceItemHandlerDefinitionInterface $referenceDefinition): ItemConfigurationInterface {
+    [$entityClass, $property] = $this->getTargetSetting($referenceDefinition);
+		$schema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
 		return $schema->getProperty($property);
 	}
 
-  public function getTargetProperty(ItemConfigurationInterface $itemConfiguration): string {
-    $referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-    return $referenceSettings['target_property'] ?? '';
-  }
-
   public function getLabelFromValue(ItemConfigurationInterface $itemConfiguration, $value, string $client): string {
-    $entityKey = $this->buildEntityKey($value, $itemConfiguration, $client);
+    $referenceDefinition = $itemConfiguration->getReferenceItemHandlerDefinition();
+    if(!$this->isDefinitionValid($referenceDefinition)) {
+      return '';
+    }
+
+    $entityKey = $this->buildEntityKey($value, $referenceDefinition, $client);
     return $this->entityManager->getEntityLabel($entityKey) ?? '';
   }
 
-  public function getTargetEntityType(ItemConfigurationInterface $itemConfiguration): string {
-    $referenceSettings = $itemConfiguration->getEntityReferenceHandlerSetting();
-    return $referenceSettings[EntityReferenceItemHandlerInterface::YAML_PARAM_TARGET_ENTITY_TYPE] ?? '';
-  }
-
-  public function buildTableReferenceConfiguration(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
+  public function buildTableReferenceDefinition(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
     $property = $itemConfiguration->getItemName();
     $key = 'ref_' . $property;
+    [$entityClass, $property] = $this->getTargetSetting($itemConfiguration);
 
-    $attr = CommonTableReferenceDefinition::create($key, CommonTableReferenceHandler::class, $this->getTargetEntityType($itemConfiguration), [$property => $this->getTargetProperty($itemConfiguration)]);
+    $definition = CommonTableReferenceDefinition::create($key, CommonTableReferenceHandler::class, $entityClass, $property);
 
-    $attr
+    $definition
       ->setExternalName($key)
       ->setFromEntityClass($schema->getEntityClass());
 
-    return $attr;
+    return $definition;
+  }
+
+  protected function getReferenceDefinition(ItemConfigurationInterface $itemConfiguration): EntityReferenceItemHandlerDefinitionInterface | null {
+    if($itemConfiguration->hasEntityReferenceHandler() && $this->isDefinitionValid($itemConfiguration->getReferenceItemHandlerDefinition())) {
+      return $itemConfiguration->getReferenceItemHandlerDefinition();
+    }
+
+    return null;
   }
 
   public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null {
     $collection = new EntityKeyCollection();
     $item = $entity->getPropertyItem($property);
     $values = $item->getValuesAsArray();
+    $itemConfiguration = $item->getConfiguration();
+    $referenceDefinition = $this->getReferenceDefinition($itemConfiguration);
+    $client = $entity->getClient();
+
+    if($referenceDefinition) {
+      $targetItemConfiguration = $this->getTargetItemConfiguration($referenceDefinition);
+    }
 
     foreach ($values as $value) {
-      if(!$this->validateReferenceValue($entity, $property, $value)) {
+      if(!$referenceDefinition || !$this->validateReferenceValue($targetItemConfiguration, $value, $client)) {
+        $collection->addRawValue($value);
         continue;
       }
 
-      if(is_scalar($value)) {
-        $entityKey = $this->buildEntityKey($value, $item->getConfiguration(), $entity->getClient());
-        if(!($entityKey instanceof EntityKey)) {
-          continue;
-        }
-        $collection->addKey($entityKey, $value);
+      $entityKey = $this->buildEntityKey($value, $referenceDefinition, $entity->getClient());
+      if(!($entityKey instanceof EntityKey)) {
+        $collection->addRawValue($value);
+        continue;
       }
+      $collection->addKey($entityKey, $value);
     }
 
     return $collection->hasValues() ? $collection : null;

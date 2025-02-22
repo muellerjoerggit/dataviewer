@@ -119,7 +119,7 @@ class PropertyConfigurationBuilder {
     } elseif($handlerDefinition instanceof AdditionalDataItemHandlerDefinitionInterface) {
       $propertyConfiguration->setAdditionalDataItemHandlerDefinition($handlerDefinition);
     } elseif($handlerDefinition instanceof ValidatorItemHandlerDefinitionInterface) {
-      $propertyConfiguration->addValidatorItemHandler($handlerDefinition);
+      $propertyConfiguration->addValidatorItemHandlerDefinition($handlerDefinition);
     }
   }
 

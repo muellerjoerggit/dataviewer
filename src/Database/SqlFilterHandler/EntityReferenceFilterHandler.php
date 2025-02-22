@@ -51,7 +51,7 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
       $targetEntityClass = $filterDefinition->getTargetEntityClass();
 		} else {
       $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($config);
-      $targetEntityClass = $handler->getTargetEntityType($config);
+      [$targetEntityClass, $property] = $handler->getTargetSetting($config);
     }
 
 		$targetSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);

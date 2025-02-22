@@ -10,14 +10,12 @@ use Exception;
 class DateTimeFormatterItemHandler extends AbstractFormatterItemHandler {
 
   public function getArrayFormatted(ItemInterface $item): array {
-    $ret = array_map(function($dateTimeRaw) use ($item) {
+    return array_map(function($dateTimeRaw) use ($item) {
       return $this->getValueFormatted($item, $dateTimeRaw);
     }, $item->getValuesAsOneDimensionalArray());
-
-    return $ret;
   }
 
-  public function getValueFormatted(ItemConfigurationInterface|ItemInterface $itemConfiguration, $value): string {
+  public function getValueFormatted(ItemConfigurationInterface | ItemInterface $itemConfiguration, $value): string {
     $dateTime = $this->getDateTime($value);
 
     if (!($dateTime instanceof DateTime)) {
@@ -57,7 +55,7 @@ class DateTimeFormatterItemHandler extends AbstractFormatterItemHandler {
     return $ret;
   }
 
-  public function getValueRawFormatted(ItemConfigurationInterface|ItemInterface $itemConfiguration, $value): string {
+  public function getValueRawFormatted(ItemConfigurationInterface | ItemInterface $itemConfiguration, $value): string {
     $dateTime = $this->getDateTime($value);
 
     if (!($dateTime instanceof DateTime)) {

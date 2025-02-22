@@ -21,7 +21,6 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
 
   public function preRenderEntity(EntityInterface $entity): array {
     $propertiesRenderArray = [];
-    $parameterRenderArray = [];
 
     foreach ($entity->getSchema()->iterateProperties() as $property => $config) {
       $item = $entity->getPropertyItem($property);
@@ -50,15 +49,10 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
 
     return [
       'entityKey' => $entity->getEntityKeyAsObj()->getFirstEntityKeyAsString(),
-      'entityOverview' => $this->buildEntityOverview($entity),
       'label' => $this->entityManager->getEntityLabel($entity),
-      'showReferences' => !empty($references),
-      'references' => [],
-      'showProperties' => !empty($propertiesRenderArray),
+      'entityOverview' => $this->buildEntityOverview($entity),
+      'extEntityOverview' => $this->buildExtendedEntityOverview($entity),
       'properties' => $propertiesRenderArray,
-      'showParameters' => !empty($parameterRenderArray),
-      'parameters' => $parameterRenderArray,
-      'showLogs' => !empty($logsByLevel),
       'logsByLevel' => $logsByLevel,
       'entityActions' => $this->actionPreRenderingBuilder->buildEntityActions($entity),
     ];
@@ -121,8 +115,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
   }
 
   public function buildExtendedEntityOverview(EntityInterface $entity, array $options = []): array {
-    $defaultOverview = $entity->getSchema()
-      ->getExtendedEntityOverviewProperties();
+    $defaultOverview = $entity->getSchema()->getExtendedEntityOverviewProperties();
     $options = $this->getDefaultOverviewOptions($options, $entity, $defaultOverview);
 
     $header = [];
