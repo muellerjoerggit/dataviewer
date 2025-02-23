@@ -27,10 +27,6 @@ abstract class AbstractEntityController implements EntityControllerInterface{
     return $this->entityTypeSchemaRegister->getEntityTypeSchema($entityType);
   }
 
-  public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = null, array $options = []): array | TableData {
-    return $this->dataMapper->fetchAggregatedData($client, $this->schema, $aggregation, $filterContainer, $options);
-  }
-
   public function getEntityLabel(EntityInterface $entity): string {
     $entityLabelProperties = $this->schema->getEntityLabelProperties();
     $uniqueProperties = $this->schema->getUniqueProperties();

@@ -26,6 +26,4 @@ interface EntityDataMapperInterface {
 
   public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder;
 
-  public function fetchAggregatedData(string $client, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration, FilterContainer $filterContainer = NULL): mixed;
-
 }

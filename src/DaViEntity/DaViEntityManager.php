@@ -13,6 +13,7 @@ use App\DaViEntity\Repository\RepositoryLocator;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\DaViEntity\ViewBuilder\ViewBuilderLocator;
+use App\EntityServices\AggregatedData\AggregatedDataProviderLocator;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemInterface;
@@ -28,6 +29,7 @@ class DaViEntityManager {
     private readonly RepositoryLocator $entityRepositoryLocator,
     private readonly ViewBuilderLocator $viewBuilderLocator,
     private readonly OverviewBuilderLocator $overviewBuilderLocator,
+    private readonly AggregatedDataProviderLocator $aggregatedDataProviderLocator,
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
@@ -42,9 +44,9 @@ class DaViEntityManager {
     return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->loadMultipleEntities($filterContainer, $options);
   }
 
-  public function loadAggregatedEntityData($input, string $client, string|AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $options = []): array|TableData {
-    $controller = $this->getEntityController($input);
-    return $controller->loadAggregatedData($client, $aggregation, $filterContainer, $options);
+  public function loadAggregatedData(string $entityClass, string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $options = []): TableData {
+    $provider = $this->aggregatedDataProviderLocator->getAggregatedDataProvider($entityClass, $client);
+    return $provider->fetchAggregatedData($entityClass, $client, $aggregation, $filterContainer, $options);
   }
 
   public function getEntityLabel(mixed $entityKey): string {

@@ -10,7 +10,7 @@ use App\DaViEntity\Schema\EntitySchema;
 
 class NullAggregationHandler implements AggregationHandlerInterface {
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): TableData {
     return new TableData([], []);
   }
 
@@ -18,7 +18,7 @@ class NullAggregationHandler implements AggregationHandlerInterface {
     EntitySchema $schema,
     DaViQueryBuilder $queryBuilder,
     AggregationConfiguration $aggregationConfiguration,
-    array $columnsBlacklist = []
+    array $options = []
   ): void {}
 
 }

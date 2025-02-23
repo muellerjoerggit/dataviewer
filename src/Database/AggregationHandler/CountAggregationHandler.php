@@ -15,7 +15,7 @@ class CountAggregationHandler extends AbstractAggregationHandler {
     $queryBuilder->select('COUNT(*) AS ' . AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN);
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): TableData {
     $data = $this->executeQueryBuilder($queryBuilder, [EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ONE], 0);
 
     $headerColumns = $aggregationConfiguration->getSetting('header');

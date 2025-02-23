@@ -54,7 +54,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
 
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): TableData {
     $data = $this->executeQueryBuilder($queryBuilder);
 
     $headerColumns = $aggregationConfiguration->getSetting('header');
