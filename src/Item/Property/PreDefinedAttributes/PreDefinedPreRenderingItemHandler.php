@@ -6,7 +6,7 @@ use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitio
 use App\Item\ItemHandler_PreRendering\CommonPreRenderingItemHandler;
 use App\Item\ItemHandler_PreRendering\TablePreRenderingItemHandler;
 
-class PreDefinedItemHandler {
+class PreDefinedPreRenderingItemHandler {
 
   public static function commonPreRenderingHandler(): array {
     return [

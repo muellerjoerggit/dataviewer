@@ -37,7 +37,7 @@ use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
 use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
-use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionAttr;
+use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinition;
 use App\Item\ItemHandler_Formatter\OptionsFormatterItemHandler;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
 use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
@@ -170,7 +170,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'integer'],
   ])]
-  #[FormatterItemHandlerDefinitionAttr(handlerClass: OptionsFormatterItemHandler::class)]
+  #[FormatterItemHandlerDefinition(handlerClass: OptionsFormatterItemHandler::class)]
   private $active;
 
 

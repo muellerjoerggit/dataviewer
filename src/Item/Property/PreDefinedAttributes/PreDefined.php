@@ -8,14 +8,14 @@ class PreDefined {
     return array_merge(
       PreDefinedFilter::commonTextFilter(),
       PreDefinedFilter::nullCheckFilter(),
-      PreDefinedItemHandler::commonPreRenderingHandler(),
+      PreDefinedPreRenderingItemHandler::commonPreRenderingHandler(),
     );
   }
 
   public static function integer(): array {
     return array_merge(
       PreDefinedFilter::nullCheckFilter(),
-      PreDefinedItemHandler::commonPreRenderingHandler(),
+      PreDefinedPreRenderingItemHandler::commonPreRenderingHandler(),
     );
   }
 
@@ -23,13 +23,14 @@ class PreDefined {
     return array_merge(
       PreDefinedFilter::dateTimeFilter(),
       PreDefinedFilter::nullCheckFilter(),
-      PreDefinedItemHandler::commonPreRenderingHandler(),
+      PreDefinedPreRenderingItemHandler::commonPreRenderingHandler(),
+      PreDefinedFormatterItemHandler::dateTimeFormatterHandler(),
     );
   }
 
   public static function table(): array {
     return array_merge(
-      PreDefinedItemHandler::tablePreRenderingHandler(),
+      PreDefinedPreRenderingItemHandler::tablePreRenderingHandler(),
     );
   }
 
