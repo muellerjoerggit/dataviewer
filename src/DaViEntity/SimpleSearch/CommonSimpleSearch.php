@@ -16,7 +16,6 @@ class CommonSimpleSearch implements SimpleSearchInterface {
   use ExecuteQueryBuilderTrait;
 
   public function __construct(
-    protected readonly EntityDataMapperInterface $dataMapper,
     protected readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
     protected readonly BaseQueryLocator $queryLocator,
     protected readonly ColumnBuilderLocator $entityColumnBuilderLocator,

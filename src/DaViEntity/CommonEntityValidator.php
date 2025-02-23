@@ -30,6 +30,8 @@ class CommonEntityValidator implements EntityValidatorInterface {
     $this->postValidateEntity($entity, $options);
   }
 
+
+
   protected function buildOptions(array $options): array {
     return array_merge([
       self::VALIDATE_ENTITY_TYPE => TRUE,

@@ -2,6 +2,10 @@
 
 namespace App\DaViEntity\Validator;
 
-class NullValidator {
+use App\DaViEntity\EntityInterface;
+
+class NullValidator implements ValidatorInterface {
+
+  public function validateEntity(EntityInterface $entity, array $options = []): void {}
 
 }

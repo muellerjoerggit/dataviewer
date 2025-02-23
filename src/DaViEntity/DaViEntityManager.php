@@ -14,6 +14,7 @@ use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\DaViEntity\ViewBuilder\ViewBuilderLocator;
 use App\EntityServices\AggregatedData\AggregatedDataProviderLocator;
+use App\EntityServices\EntityLabel\LabelCrafterLocator;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemInterface;
 
@@ -28,14 +29,11 @@ class DaViEntityManager {
     private readonly ViewBuilderLocator $viewBuilderLocator,
     private readonly OverviewBuilderLocator $overviewBuilderLocator,
     private readonly AggregatedDataProviderLocator $aggregatedDataProviderLocator,
+    private readonly LabelCrafterLocator $labelCrafterLocator,
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
     return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->loadEntityData($filterContainer, $options);
-  }
-
-  public function getEntityController($input): EntityControllerInterface {
-    return $this->entityTypesRegister->resolveEntityController($input);
   }
 
   public function loadMultipleEntities(string $entityType, FilterContainer $filterContainer, array $options = []): array {
@@ -49,8 +47,8 @@ class DaViEntityManager {
 
   public function getEntityLabel(mixed $entityKey): string {
     $entity = $this->evaluateEntity($entityKey);
-    $controller = $this->getEntityController($entity);
-    return $controller->getEntityLabel($entity);
+    $crafter = $this->labelCrafterLocator->getEntityLabelCrafter($entity::class, $entity->getClient());
+    return $crafter->getEntityLabel($entity);
   }
 
   public function evaluateEntity(mixed $entity): EntityInterface {

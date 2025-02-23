@@ -24,10 +24,14 @@ use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
+use App\DaViEntity\Validator\ValidatorBase;
+use App\DaViEntity\Validator\ValidatorDefinition;
 use App\DaViEntity\ViewBuilder\CommonViewBuilder;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
+use App\EntityServices\EntityLabel\CommonLabelCrafter;
+use App\EntityServices\EntityLabel\LabelCrafterDefinition;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
 use App\Item\ItemHandler_AdditionalData\AggregationFilterAdditionalDataItemHandler;
 use App\Item\ItemHandler_AdditionalData\Attribute\AggregationAdditionalDataHandlerDefinition;
@@ -41,6 +45,7 @@ use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Item\Property\PropertyItemInterface;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 #[RepositoryDefinition(repositoryClass: RoleRepository::class)]
 #[EntityTypeAttr(name: 'Role', label: 'Role'),
@@ -55,6 +60,8 @@ use App\Item\Property\PropertyItemInterface;
   OverviewBuilderDefinition(overviewBuilderClass: CommonOverviewBuilder::class),
   ViewBuilderDefinition(viewBuilderClass: CommonViewBuilder::class),
   SqlAggregatedDataProviderDefinition(aggregatedDataProviderClass: SqlAggregatedDataProvider::class),
+  LabelCrafterDefinition(labelCrafterClass: CommonLabelCrafter::class),
+  ValidatorDefinition(validatorClass: ValidatorBase::class),
 ]
 #[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
@@ -65,7 +72,7 @@ class RoleEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
-    EntityOverviewPropertyAttr,
+    EntityOverviewPropertyAttr(rank: 10),
     DatabaseColumnDefinition,
     UniquePropertyDefinition
   ]

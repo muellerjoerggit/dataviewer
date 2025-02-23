@@ -22,8 +22,10 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\Attribute\ExtEntityOverviewDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
+use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
+use App\EntityServices\EntityLabel\LabelCrafterDefinitionInterface;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyAttributesContainer;
@@ -144,6 +146,16 @@ class SchemaDefinitionsContainer {
    * @var AggregatedDataProviderDefinitionInterface[]
    */
   private array $aggregatedDataProviderDefinitions = [];
+
+  /**
+   * @var LabelCrafterDefinitionInterface[]
+   */
+  private array $labelCrafterDefinitions = [];
+
+  /**
+   * @var ValidatorDefinitionInterface[]
+   */
+  private array $validatorDefinitions = [];
 
   public function getEntityTypeAttr(): EntityTypeAttr | null {
     return $this->entityTypeAttr ?? null;
@@ -483,6 +495,35 @@ class SchemaDefinitionsContainer {
    */
   public function iterateAggregatedDataProviderDefinitions(): Generator {
     foreach ($this->aggregatedDataProviderDefinitions as $definition) {
+      yield $definition;
+    }
+  }
+
+  public function addLabelCrafterDefinition(LabelCrafterDefinitionInterface $definition): SchemaDefinitionsContainer {
+    $this->labelCrafterDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<LabelCrafterDefinitionInterface>
+   */
+  public function iterateLabelCrafterDefinitions(): Generator {
+    foreach ($this->labelCrafterDefinitions as $definition) {
+      yield $definition;
+    }
+  }
+
+
+  public function addValidatorDefinition(ValidatorDefinitionInterface $definition): SchemaDefinitionsContainer {
+    $this->validatorDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<ValidatorDefinitionInterface>
+   */
+  public function iterateValidatorDefinitions(): Generator {
+    foreach ($this->validatorDefinitions as $definition) {
       yield $definition;
     }
   }

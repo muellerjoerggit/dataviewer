@@ -2,7 +2,6 @@
 
 namespace App\DaViEntity\Schema;
 
-use App\DaViEntity\EntityControllerInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\Services\AppNamespaces;
@@ -21,8 +20,6 @@ class EntityTypesReader {
   public const string KEY_SCHEMA_FILE = 'yamlSchema';
 
   public const string KEY_ERROR_CODE_FILE = 'errorCode';
-
-  public const string KEY_CONTROLLER_CLASS = 'controller';
 
   public const string KEY_ENTITY_CLASS = 'entityClass';
 
@@ -97,9 +94,7 @@ class EntityTypesReader {
     $className = $reflectionClass->getName();
     $key = '';
 
-    if (in_array(EntityControllerInterface::class, $interfaces)) {
-      $key = self::KEY_CONTROLLER_CLASS;
-    } elseif (in_array(EntityInterface::class, $interfaces)) {
+    if (in_array(EntityInterface::class, $interfaces)) {
       $key = self::KEY_ENTITY_CLASS;
     }
 

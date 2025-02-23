@@ -21,6 +21,4 @@ interface EntityDataMapperInterface {
 
   public const string OPTION_FETCH_TYPE = 'fetchType';
 
-  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder;
-
 }

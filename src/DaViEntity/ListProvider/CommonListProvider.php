@@ -10,9 +10,8 @@ use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DataCollections\EntityList;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderLocator;
 use App\DaViEntity\EntityDataMapperInterface;
-use App\DaViEntity\EntityInterface;
-use App\DaViEntity\EntityLabel\LabelCrafterLocator;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\EntityServices\EntityLabel\LabelCrafterLocator;
 
 class CommonListProvider implements ListProviderInterface {
 

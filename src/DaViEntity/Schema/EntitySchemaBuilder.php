@@ -16,8 +16,10 @@ use App\DaViEntity\Repository\RepositoryDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
+use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
+use App\EntityServices\EntityLabel\LabelCrafterDefinitionInterface;
 use App\Item\Property\PropertyAttributesReader;
 use App\Item\Property\PropertyConfigurationBuilder;
 use App\Services\Version\VersionListInterface;
@@ -338,8 +340,25 @@ class EntitySchemaBuilder {
       $aggregatedDataProviderDefinition->setVersionList($list);
       $schema->addAggregatedDataProviderDefinition($aggregatedDataProviderDefinition);
     }
-  }
 
+    foreach ($container->iterateLabelCrafterDefinitions() as $labelCrafterDefinition) {
+      if(!$labelCrafterDefinition instanceof LabelCrafterDefinitionInterface || !$labelCrafterDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($labelCrafterDefinition);
+      $labelCrafterDefinition->setVersionList($list);
+      $schema->addLabelCrafterDefinition($labelCrafterDefinition);
+    }
+
+    foreach ($container->iterateValidatorDefinitions() as $validatorDefinition) {
+      if(!$validatorDefinition instanceof ValidatorDefinitionInterface || !$validatorDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($validatorDefinition);
+      $validatorDefinition->setVersionList($list);
+      $schema->addValidatorDefinition($validatorDefinition);
+    }
+  }
 
   private function getVersionList(VersionInformationWrapperInterface $definition): VersionListInterface {
     return $this->versionService->getVersionList($definition);

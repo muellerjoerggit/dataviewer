@@ -16,6 +16,7 @@ use App\DaViEntity\Refiner\RefinerLocator;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
+use App\DaViEntity\Validator\ValidatorLocator;
 
 abstract class AbstractRepository implements RepositoryInterface {
 
@@ -27,6 +28,7 @@ abstract class AbstractRepository implements RepositoryInterface {
     protected readonly AdditionalDataProviderLocator $additionalDataProviderLocator,
     protected readonly RefinerLocator $entityRefinerLocator,
     protected readonly ListProviderLocator $entityListProviderLocator,
+    protected readonly ValidatorLocator $validatorLocator,
     protected readonly string $entityClass
   ) {}
 
@@ -76,6 +78,7 @@ abstract class AbstractRepository implements RepositoryInterface {
   protected function refineEntity(EntityInterface $entity): void {
     $this->processAdditionalData($entity);
     $this->entityRefinerLocator->getEntityRefiner($entity::class, $entity->getClient())->refineEntity($entity);
+    $this->validateEntity($entity);
   }
 
   protected function processAdditionalData(EntityInterface $entity): void {
@@ -83,6 +86,11 @@ abstract class AbstractRepository implements RepositoryInterface {
     foreach ($dataProviders as $dataProvider) {
       $dataProvider->loadData($entity);
     }
+  }
+
+  protected function validateEntity(EntityInterface $entity): void {
+    $validator = $this->validatorLocator->getValidator($entity->getSchema(), $entity->getClient());
+    $validator->validateEntity($entity);
   }
 
 }

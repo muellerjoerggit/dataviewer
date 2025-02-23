@@ -30,10 +30,14 @@ use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
+use App\DaViEntity\Validator\ValidatorBase;
+use App\DaViEntity\Validator\ValidatorDefinition;
 use App\DaViEntity\ViewBuilder\CommonViewBuilder;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
+use App\EntityServices\EntityLabel\CommonLabelCrafter;
+use App\EntityServices\EntityLabel\LabelCrafterDefinition;
 use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\User\UserEntity;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
@@ -62,6 +66,8 @@ use App\Item\Property\PropertyItemInterface;
   OverviewBuilderDefinition(overviewBuilderClass: CommonOverviewBuilder::class),
   ViewBuilderDefinition(viewBuilderClass: CommonViewBuilder::class),
   SqlAggregatedDataProviderDefinition(aggregatedDataProviderClass: SqlAggregatedDataProvider::class),
+  LabelCrafterDefinition(labelCrafterClass: CommonLabelCrafter::class),
+  ValidatorDefinition(validatorClass: ValidatorBase::class),
 ]
 #[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,

@@ -21,6 +21,7 @@ use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
+use App\EntityServices\EntityLabel\LabelCrafterDefinitionInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -123,6 +124,11 @@ class EntitySchema implements EntitySchemaInterface {
    * @var AggregatedDataProviderDefinitionInterface[]
    */
   private array $aggregatedDataProviderDefinitions = [];
+
+  /**
+   * @var LabelCrafterDefinitionInterface[]
+   */
+  private array $labelCrafterDefinitions = [];
 
   public function __construct(
     private readonly string $entityClass,
@@ -643,6 +649,22 @@ class EntitySchema implements EntitySchemaInterface {
         continue;
       }
       return $definition->getAggregatedDataProviderClass();
+    }
+
+    return '';
+  }
+
+  public function addLabelCrafterDefinition(LabelCrafterDefinitionInterface $definition): EntitySchemaInterface {
+    $this->labelCrafterDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getLabelCrafterClass(string $version): string {
+    foreach ($this->labelCrafterDefinitions as $definition) {
+      if(!$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition->getLabelCrafterClass();
     }
 
     return '';

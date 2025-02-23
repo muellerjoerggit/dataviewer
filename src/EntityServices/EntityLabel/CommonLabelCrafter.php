@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DaViEntity\EntityLabel;
+namespace App\EntityServices\EntityLabel;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -32,6 +32,30 @@ class CommonLabelCrafter implements LabelCrafterInterface {
     }
 
     return $rows;
+  }
+
+  public function getEntityLabel(EntityInterface $entity): string {
+    $schema = $entity->getSchema();
+    $entityLabelProperties = $schema->getEntityLabelProperties();
+    $uniqueProperties = $schema->getUniqueProperties();
+    $uniqueProperties = reset($uniqueProperties);
+    $label = '';
+    foreach ($entityLabelProperties as $property) {
+      $value = $entity->getPropertyValueAsString($property);
+      $label = empty($label) ? $value : $label . ' ' . $value;
+    }
+
+    $unique = '';
+    foreach ($uniqueProperties as $property) {
+      $value = $entity->getPropertyValueAsString($property);
+      $unique = empty($unique) ? $value : $unique . ' ' . $value;
+    }
+
+    if(!empty($unique)) {
+      $label = $label . ' (' . $unique . ')';
+    }
+
+    return $label;
   }
 
 }

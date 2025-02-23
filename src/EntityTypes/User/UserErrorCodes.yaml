@@ -1,2 +1,10 @@
 abbreviation: "USR"
 codes:
+  1000:
+    message: "User {usr_id} has no user role"
+    description: ""
+    categories:
+      - "Roles"
+    placeholders:
+      usr_id: "usr_id"
+    level: "critical"

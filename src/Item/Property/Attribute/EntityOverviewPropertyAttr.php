@@ -10,7 +10,7 @@ class EntityOverviewPropertyAttr extends AbstractPropertyAttribute implements En
 
   public function __construct(
     public readonly string $label = '',
-    public readonly int $rank = 0,
+    public readonly int $rank = 100,
   ) {}
 
   public function getLabel(): string {

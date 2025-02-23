@@ -10,17 +10,18 @@ use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinition;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinition;
 use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
-use App\DaViEntity\EntityLabel\LabelCrafter;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
 use App\DaViEntity\OverviewBuilder\OverviewBuilderDefinition;
-use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
+use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
+use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
+use App\EntityServices\EntityLabel\LabelCrafterDefinitionInterface;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Services\AbstractAttributesReader;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -59,6 +60,10 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       $container->addSqlFilterDefinitionsAttribute($attribute);
     } elseif ($attribute instanceof AggregationDefinitionInterface && $attribute->isValid()) {
       $container->addAggregationDefinitionAttribute($attribute);
+    } elseif ($attribute instanceof LabelCrafterDefinitionInterface && $attribute->isValid()) {
+      $container->addLabelCrafterDefinition($attribute);
+    } elseif ($attribute instanceof ValidatorDefinitionInterface && $attribute->isValid()) {
+      $container->addValidatorDefinition($attribute);
     }
 
     switch(get_class($attribute)) {
@@ -130,11 +135,6 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
   public function getEntityType(string | EntityInterface $classname): ?string {
     $classname = $this->resolveEntityClass($classname);
     return $this->getAttributeKey($classname, EntityTypeAttr::class, EntityTypeAttr::NAME_PROPERTY, NullEntity::ENTITY_TYPE);
-  }
-
-  public function getEntityLabelCrafterClass(string | EntityInterface $classname): string {
-    $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, LabelCrafter::class, LabelCrafter::CLASS_PROPERTY, '');
   }
 
   private function resolveEntityClass(string | EntityInterface $classname): string {

@@ -10,6 +10,7 @@ use App\DaViEntity\Refiner\RefinerLocator;
 use App\DaViEntity\Repository\AbstractRepository;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
+use App\DaViEntity\Validator\ValidatorLocator;
 
 class RoleUserMapRepository extends AbstractRepository {
 
@@ -21,6 +22,7 @@ class RoleUserMapRepository extends AbstractRepository {
     AdditionalDataProviderLocator $additionalDataProviderLocator,
     RefinerLocator $entityRefinerLocator,
     ListProviderLocator $entityListProviderLocator,
+    ValidatorLocator $validatorLocator,
   ) {
     parent::__construct(
       $entityTypesRegister,
@@ -30,6 +32,7 @@ class RoleUserMapRepository extends AbstractRepository {
       $additionalDataProviderLocator,
       $entityRefinerLocator,
       $entityListProviderLocator,
+      $validatorLocator,
       RoleUserMapEntity::class
     );
   }
