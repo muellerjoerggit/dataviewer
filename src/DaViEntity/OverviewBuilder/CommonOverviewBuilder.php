@@ -101,7 +101,7 @@ class CommonOverviewBuilder implements OverviewBuilderInterface {
 
     $header['validationData'] = 'Logs';
     $data['validationData'] = [
-      'type' => ViewBuilderInterface::EXT_OVERVIEW_VALIDATION,
+      'type' => ExtEntityOverviewEnum::VALIDATION,
       'data' => [
         'red' => $entity->countRedLogs(),
         'yellow' => $entity->countYellowLogs(),

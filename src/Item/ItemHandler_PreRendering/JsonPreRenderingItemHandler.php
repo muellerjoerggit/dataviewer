@@ -3,6 +3,7 @@
 namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\OverviewBuilder\ExtEntityOverviewEnum;
 use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
@@ -35,7 +36,7 @@ class JsonPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
   public function getExtendedOverview(ItemInterface $item, array $options): array {
     return [
-      'type' => ViewBuilderInterface::EXT_OVERVIEW_JSON,
+      'type' => ExtEntityOverviewEnum::JSON,
       'data' => [
         'json' => $item->getFirstValueAsString(),
       ],

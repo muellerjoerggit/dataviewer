@@ -3,6 +3,7 @@
 namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
+use App\DaViEntity\OverviewBuilder\ExtEntityOverviewEnum;
 use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
@@ -50,7 +51,7 @@ class HtmlPreRenderingItemHandler extends AbstractPreRenderingItemHandler {
     $cleanedText = $this->htmlSanitizer->htmlToText($sanitizedHtml);
 
     return [
-      'type' => ViewBuilderInterface::EXT_OVERVIEW_HTML,
+      'type' => ExtEntityOverviewEnum::HTML,
       'data' => [
         'rawHtml' => $firstValue,
         'sanitizedHtml' => $sanitizedHtml,
