@@ -18,9 +18,9 @@ class AdditionalDataItemHandlerLocator extends AbstractLocator {
   }
 
   public function getAdditionalDataItemHandler(ItemConfigurationInterface $itemConfiguration): AdditionalDataItemHandlerInterface {
-    $handlerName = $itemConfiguration->getHandlerByType(ItemHandlerInterface::HANDLER_ADDITIONAL_DATA);
-    if ($handlerName && $this->has($handlerName)) {
-      return $this->get($handlerName);
+    $handler = $itemConfiguration->getAdditionalDataHandlerDefinition()->getHandlerClass();
+    if ($handler && $this->has($handler)) {
+      return $this->get($handler);
     } else {
       return $this->get(NullAdditionalDataItemHandler::class);
     }

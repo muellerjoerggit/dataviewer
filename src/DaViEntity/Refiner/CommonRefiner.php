@@ -25,7 +25,7 @@ class CommonRefiner implements RefinerInterface {
         $item = $entity->getPropertyItem($property);
       }
 
-      if ($itemConfiguration->hasAdditionalDataHandler()) {
+      if ($itemConfiguration->hasAdditionalDataHandlerHandler()) {
         $handler = $this->additionalDataItemHandlerLocator->getAdditionalDataItemHandler($itemConfiguration);
         $data = $handler->getValues($entity, $property);
         $item->setRawValues($data);

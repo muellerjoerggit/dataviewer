@@ -2,6 +2,7 @@
 
 namespace App\DaViEntity;
 
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
@@ -56,6 +57,8 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       return;
     } elseif ($attribute instanceof SqlFilterDefinitionInterface && $attribute->isValid()) {
       $container->addSqlFilterDefinitionsAttribute($attribute);
+    } elseif ($attribute instanceof AggregationDefinitionInterface && $attribute->isValid()) {
+      $container->addAggregationDefinitionAttribute($attribute);
     }
 
     switch(get_class($attribute)) {

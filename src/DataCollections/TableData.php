@@ -13,6 +13,14 @@ class TableData implements ArrayInterface {
     $this->rows = $rows;
   }
 
+  public static function create(array $header, array $rows): static {
+    return new static($header, $rows);
+  }
+
+  public static function createEmptyTableData(): static {
+    return new static([], []);
+  }
+
   public function getHeader(): array {
     return $this->header;
   }

@@ -2,10 +2,7 @@
 
 namespace App\DaViEntity;
 
-use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\FilterContainer;
-use App\DataCollections\EntityList;
 use App\DaViEntity\Schema\EntitySchema;
 
 interface EntityDataMapperInterface {

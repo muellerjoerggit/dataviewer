@@ -10,6 +10,7 @@ class AbstractSqlFilterDefinition implements SqlFilterDefinitionInterface {
 
   public function __construct(
     public readonly string $filterHandler,
+    public readonly string $key = '',
     public readonly string $title = 'Filter',
     public readonly string $description = '',
     public readonly bool $group = true,
@@ -21,7 +22,7 @@ class AbstractSqlFilterDefinition implements SqlFilterDefinitionInterface {
   }
 
   public function getKey(): string {
-    return $this->property . '_' . AppNamespaces::getShortName($this->filterHandler);
+    return empty($this->key) ? $this->property . '_' . AppNamespaces::getShortName($this->filterHandler) : $this->key;
   }
 
   public function setProperty(string $property): static {

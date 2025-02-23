@@ -2,6 +2,7 @@
 
 namespace App\DaViEntity\Schema;
 
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\BaseQuery\BaseQueryDefinitionInterface;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
@@ -93,6 +94,11 @@ class SchemaDefinitionsContainer {
    * @var SqlFilterDefinitionInterface[]
    */
   private array $sqlFilterAttributes = [];
+
+  /**
+   * @var AggregationDefinitionInterface[]
+   */
+  private array $aggregationDefinitions = [];
 
   /**
    * @var PropertyAttributesContainer[]
@@ -345,6 +351,24 @@ class SchemaDefinitionsContainer {
 
   public function hasSqlFilterDefinitions(): bool {
     return !empty($this->sqlFilterAttributes);
+  }
+
+  public function addAggregationDefinitionAttribute(AggregationDefinitionInterface $aggregationDefinition): SchemaDefinitionsContainer {
+    $this->aggregationDefinitions[] = $aggregationDefinition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<AggregationDefinitionInterface>
+   */
+  public function iterateAggregationDefinitionAttributes(): Generator {
+    foreach ($this->aggregationDefinitions as $aggregationDefinition) {
+      yield $aggregationDefinition;
+    }
+  }
+
+  public function hasAggregationDefinitions(): bool {
+    return !empty($this->aggregationDefinitions);
   }
 
   public function addLabelDefinition(LabelDefinitionInterface $labelDefinition): SchemaDefinitionsContainer {

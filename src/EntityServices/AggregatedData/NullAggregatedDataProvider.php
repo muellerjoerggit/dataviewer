@@ -2,7 +2,7 @@
 
 namespace App\EntityServices\AggregatedData;
 
-use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\TableData;
 
@@ -11,11 +11,11 @@ class NullAggregatedDataProvider implements AggregatedDataProviderInterface {
   public function fetchAggregatedData(
     string $entityClass,
     string $client,
-    AggregationConfiguration $aggregationConfiguration,
+    AggregationDefinitionInterface $aggregationDefinition,
     FilterContainer $filterContainer = null,
     array $options = []
   ): TableData {
-    return new TableData([], []);
+    return TableData::createEmptyTableData();
   }
 
 }

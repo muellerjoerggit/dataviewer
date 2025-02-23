@@ -2,10 +2,9 @@
 
 namespace App\DaViEntity\Schema;
 
-use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\FilterGroup;
-use App\Database\SqlFilter\SqlFilterDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReference\TableReferenceConfiguration;
 use App\Item\Property\PropertyConfiguration;
@@ -79,14 +78,14 @@ interface EntitySchemaInterface {
 
   public function setExtendedEntityOverviewProperties(array $extendedEntityOverview): EntitySchemaInterface;
 
-  public function addAggregation(AggregationConfiguration $aggregationConfiguration): EntitySchemaInterface;
+  public function addAggregation(AggregationDefinitionInterface $aggregationDefinition): EntitySchemaInterface;
 
   public function hasAggregations(): bool;
 
-  public function getAggregation(string $name): ?AggregationConfiguration;
+  public function getAggregation(string $name): AggregationDefinitionInterface | null;
 
   /**
-   * @return \Generator<AggregationConfiguration>
+   * @return \Generator<AggregationDefinitionInterface>
    */
   public function iterateAggregations(): Generator;
 

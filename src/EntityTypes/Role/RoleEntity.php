@@ -26,6 +26,11 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\DaViEntity\ViewBuilder\CommonViewBuilder;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
+use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
+use App\Item\ItemHandler_AdditionalData\AggregationFilterAdditionalDataItemHandler;
+use App\Item\ItemHandler_AdditionalData\Attribute\AggregationAdditionalDataHandlerDefinition;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
@@ -49,6 +54,7 @@ use App\Item\Property\PropertyItemInterface;
   ListProviderDefinition(listProviderClass: CommonListProvider::class),
   OverviewBuilderDefinition(overviewBuilderClass: CommonOverviewBuilder::class),
   ViewBuilderDefinition(viewBuilderClass: CommonViewBuilder::class),
+  SqlAggregatedDataProviderDefinition(aggregatedDataProviderClass: SqlAggregatedDataProvider::class),
 ]
 #[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
@@ -100,6 +106,17 @@ class RoleEntity extends AbstractEntity {
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'table'],
   ])]
+  #[AggregationAdditionalDataHandlerDefinition(
+    handlerClass: AggregationFilterAdditionalDataItemHandler::class,
+    targetEntityClass: RoleUserMapEntity::class,
+    aggregationKey: 'count_users',
+    filters: [
+      'role' => [
+          'filter' => 'rol_id',
+          'filterMapping' => 'rol_id',
+        ]
+    ],
+  )]
   private PropertyItemInterface $count_user;
 
   #[PropertyAttr(
@@ -109,6 +126,18 @@ class RoleEntity extends AbstractEntity {
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'table'],
   ])]
+  #[AggregationAdditionalDataHandlerDefinition(
+    handlerClass: AggregationFilterAdditionalDataItemHandler::class,
+    targetEntityClass: RoleUserMapEntity::class,
+    aggregationKey: 'count_users_status',
+    filters: [
+      'role' => [
+        'filter' => 'rol_id',
+        'filterMapping' => 'rol_id',
+      ]
+    ],
+    propertyBlacklist: ['rol_id']
+  )]
   private PropertyItemInterface $count_user_status;
 
 }

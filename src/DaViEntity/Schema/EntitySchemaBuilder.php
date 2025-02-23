@@ -2,7 +2,6 @@
 
 namespace App\DaViEntity\Schema;
 
-use App\Database\Aggregation\AggregationConfigurationBuilder;
 use App\Database\BaseQuery\BaseQueryDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\AdditionalData\AdditionalDataProviderDefinitionInterface;
@@ -24,16 +23,12 @@ use App\Item\Property\PropertyConfigurationBuilder;
 use App\Services\Version\VersionListInterface;
 use App\Services\Version\VersionService;
 use App\Services\Version\VersionInformationWrapperInterface;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Finder\SplFileInfo;
 
 class EntitySchemaBuilder {
 
-  private const string YAML_PARAM_AGGREGATIONS = 'aggregations';
-
   public function __construct(
     private readonly PropertyConfigurationBuilder $propertyConfigurationBuilder,
-    private readonly AggregationConfigurationBuilder $aggregationConfigurationBuilder,
     private readonly EntityTypeAttributesReader $attributesReader,
     private readonly PropertyAttributesReader $propertyAttributesReader,
     private readonly VersionService $versionService,
@@ -42,7 +37,6 @@ class EntitySchemaBuilder {
   public function buildSchema(SplFileInfo $file, string $entityClass): EntitySchemaInterface | null {
     $attributesContainer = $this->attributesReader->buildSchemaAttributesContainer($entityClass);
     $this->propertyAttributesReader->appendPropertyAttributesContainer($attributesContainer, $entityClass);
-    $yaml = Yaml::parseFile($file->getRealPath());
     $schema = new EntitySchema($entityClass);
 
     if(!$attributesContainer->isValid()) {
@@ -60,8 +54,8 @@ class EntitySchemaBuilder {
       $this->buildFilters($schema, $attributesContainer);
     }
 
-    if(isset($yaml[self::YAML_PARAM_AGGREGATIONS])) {
-      $this->buildAggregations($schema,  $yaml);
+    if($attributesContainer->hasAggregationDefinitions()) {
+      $this->buildAggregations($schema, $attributesContainer);
     }
 
     $this->fillEntityServices($schema, $attributesContainer);
@@ -219,10 +213,9 @@ class EntitySchemaBuilder {
     }
   }
 
-  private function buildAggregations(EntitySchema $schema, $yaml): void {
-    foreach($yaml[self::YAML_PARAM_AGGREGATIONS] as $key => $aggregationArray) {
-      $aggregationConfiguration = $this->aggregationConfigurationBuilder->buildAggregationConfiguration($aggregationArray, $key);
-      $schema->addAggregation($aggregationConfiguration);
+  private function buildAggregations(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): void {
+    foreach ($container->iterateAggregationDefinitionAttributes() as $attribute) {
+      $schema->addAggregation($attribute);
     }
   }
 

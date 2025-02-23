@@ -2,8 +2,8 @@
 
 namespace App\Database\AggregationHandler;
 
-use App\Database\Aggregation\AggregationConfiguration;
-use App\Database\Aggregation\AggregationHandlerInterface;
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
+use App\Database\AggregationHandler\Attribute\CountAggregationHandlerDefinition;
 use App\Database\DaViQueryBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\EntityDataMapperInterface;
@@ -11,17 +11,23 @@ use App\DaViEntity\Schema\EntitySchema;
 
 class CountAggregationHandler extends AbstractAggregationHandler {
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
-    $queryBuilder->select('COUNT(*) AS ' . AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN);
+  private const string COUNT_COLUMN = 'count_column';
+
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationDefinitionInterface $aggregationDefinition, array $options = []): void {
+    $queryBuilder->select('COUNT(*) AS ' . self::COUNT_COLUMN);
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): TableData {
-    $data = $this->executeQueryBuilder($queryBuilder, [EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ONE], 0);
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData {
+    if(!$aggregationDefinition instanceof CountAggregationHandlerDefinition) {
+      return $this->createEmptyTableData();
+    }
 
-    $headerColumns = $aggregationConfiguration->getSetting('header');
-    $headerColumns[AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN] = $headerColumns[AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN] ?? 'Anzahl';
+    $count = $this->executeQueryBuilder($queryBuilder, [EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ONE], 0);
 
-    return new TableData($headerColumns, [[AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN => $data]]);
+    return TableData::create(
+      [self::COUNT_COLUMN => $aggregationDefinition->getLabelCountColumn()],
+      [[self::COUNT_COLUMN =>  $count]],
+    );
   }
 
 }

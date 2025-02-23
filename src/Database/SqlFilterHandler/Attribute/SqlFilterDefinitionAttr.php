@@ -9,12 +9,13 @@ class SqlFilterDefinitionAttr extends AbstractSqlFilterDefinition implements Sql
 
   public function __construct(
     string $filterHandler,
+    string $key = '',
     string $title = 'Filter',
     string $description = '',
     bool $group = true,
     string $groupKey = ''
   ) {
-    parent::__construct($filterHandler, $title, $description, $group, $groupKey);
+    parent::__construct($filterHandler, $key, $title, $description, $group, $groupKey);
   }
 
 }

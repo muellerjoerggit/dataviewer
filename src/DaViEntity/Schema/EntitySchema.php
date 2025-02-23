@@ -2,7 +2,7 @@
 
 namespace App\DaViEntity\Schema;
 
-use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\BaseQuery\BaseQueryDefinitionInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\FilterGroup;
@@ -345,9 +345,9 @@ class EntitySchema implements EntitySchemaInterface {
     return $config->getDataType() === ItemInterface::DATA_TYPE_INTEGER;
   }
 
-  public function addAggregation(AggregationConfiguration $aggregationConfiguration): EntitySchemaInterface {
-    $name = $aggregationConfiguration->getName();
-    $this->aggregations[$name] = $aggregationConfiguration;
+  public function addAggregation(AggregationDefinitionInterface $aggregationDefinition): EntitySchemaInterface {
+    $name = $aggregationDefinition->getName();
+    $this->aggregations[$name] = $aggregationDefinition;
     return $this;
   }
 
@@ -355,7 +355,7 @@ class EntitySchema implements EntitySchemaInterface {
     return !empty($this->aggregations);
   }
 
-  public function getAggregation(string $name): ?AggregationConfiguration {
+  public function getAggregation(string $name): AggregationDefinitionInterface | null {
     if(isset($this->aggregations[$name])) {
       return $this->aggregations[$name];
     }
@@ -364,9 +364,9 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   /**
-   * @return \Generator<AggregationConfiguration>
+   * @return Generator<AggregationDefinitionInterface>
    */
-  public function iterateAggregations(): \Generator {
+  public function iterateAggregations(): Generator {
     foreach($this->aggregations as $key => $aggregation) {
       yield $key => $aggregation;
     }

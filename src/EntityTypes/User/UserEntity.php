@@ -31,6 +31,8 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\DaViEntity\ViewBuilder\CommonViewBuilder;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
 use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
@@ -60,18 +62,21 @@ use App\Services\EntityActionHandler\UrlActionHandler;
   ListProviderDefinition(listProviderClass: CommonListProvider::class),
   OverviewBuilderDefinition(overviewBuilderClass: CommonOverviewBuilder::class),
   ViewBuilderDefinition(viewBuilderClass: CommonViewBuilder::class),
+  SqlAggregatedDataProviderDefinition(aggregatedDataProviderClass: SqlAggregatedDataProvider::class),
 ]
 #[AdditionalDataProviderDefinition(additionalDataProviderClass: AdditionalDataProviderFromTableReferences::class)]
 #[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
   baseTable: 'usr_data'),
 ]
+
 #[CommonTableReferenceDefinition(
   name: 'roleMapping',
   handlerClass: CommonTableReferenceHandler::class,
   toEntityClass: RoleUserMapEntity::class,
   propertyConditions: ['usr_id' => 'usr_id'])
 ]
+
 #[UrlActionDefinitionAttr(
   handler: UrlActionHandler::class,
   urlTemplate: 'www.example.com/user/{user}',

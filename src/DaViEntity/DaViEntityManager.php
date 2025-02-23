@@ -2,7 +2,7 @@
 
 namespace App\DaViEntity;
 
-use App\Database\Aggregation\AggregationConfiguration;
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
@@ -15,9 +15,7 @@ use App\DaViEntity\Schema\EntityTypesRegister;
 use App\DaViEntity\ViewBuilder\ViewBuilderLocator;
 use App\EntityServices\AggregatedData\AggregatedDataProviderLocator;
 use App\EntityTypes\NullEntity\NullEntity;
-use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemInterface;
-use App\Services\ClientService;
 
 class DaViEntityManager {
 
@@ -44,7 +42,7 @@ class DaViEntityManager {
     return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->loadMultipleEntities($filterContainer, $options);
   }
 
-  public function loadAggregatedData(string $entityClass, string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL, array $options = []): TableData {
+  public function loadAggregatedData(string $entityClass, string $client, AggregationDefinitionInterface $aggregation, FilterContainer $filterContainer = NULL, array $options = []): TableData {
     $provider = $this->aggregatedDataProviderLocator->getAggregatedDataProvider($entityClass, $client);
     return $provider->fetchAggregatedData($entityClass, $client, $aggregation, $filterContainer, $options);
   }

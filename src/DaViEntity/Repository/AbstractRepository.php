@@ -49,7 +49,7 @@ abstract class AbstractRepository implements RepositoryInterface {
   }
 
   public function loadEntityByEntityKey(EntityKey $entityKey): EntityInterface {
-    $definition = new SqlFilterDefinitionAttr(EntityKeyFilterHandler::class, 'EntityKeyFilterHandler');
+    $definition = new SqlFilterDefinitionAttr(EntityKeyFilterHandler::class, '', 'EntityKeyFilterHandler');
     $filter = new SqlFilter($definition, [$entityKey], 'entityKeyFilter');
     $filterContainer = new FilterContainer($entityKey->getClient(), [$filter]);
 

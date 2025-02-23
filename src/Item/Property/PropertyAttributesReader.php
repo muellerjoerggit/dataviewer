@@ -5,7 +5,7 @@ namespace App\Item\Property;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReference\TableReferencePropertyDefinition;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
-use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
@@ -99,7 +99,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
       $propertyContainer->setFormatterItemHandlerDefinition($instance);
     } elseif ($instance instanceof EntityReferenceItemHandlerDefinitionInterface) {
       $propertyContainer->setReferenceItemHandlerDefinition($instance);
-    } elseif ($instance instanceof AdditionalDataItemHandlerDefinitionInterface) {
+    } elseif ($instance instanceof AdditionalDataHandlerDefinitionInterface) {
       $propertyContainer->setAdditionalDataItemHandlerDefinition($instance);
     } elseif ($instance instanceof SqlFilterDefinitionInterface) {
       $instance->setProperty($name);

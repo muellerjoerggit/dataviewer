@@ -3,7 +3,7 @@
 namespace App\Item\Property;
 
 use App\Database\TableReference\TableReferencePropertyDefinition;
-use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
@@ -36,7 +36,7 @@ class PropertyAttributesContainer {
 
   private EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition;
 
-  private AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition;
+  private AdditionalDataHandlerDefinitionInterface $additionalDataItemHandlerDefinition;
 
   private DatabaseColumnDefinition $databasePropertyDefinition;
 
@@ -92,7 +92,7 @@ class PropertyAttributesContainer {
     return $this;
   }
 
-  public function setAdditionalDataItemHandlerDefinition(AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition): PropertyAttributesContainer {
+  public function setAdditionalDataItemHandlerDefinition(AdditionalDataHandlerDefinitionInterface $additionalDataItemHandlerDefinition): PropertyAttributesContainer {
     $this->additionalDataItemHandlerDefinition = $additionalDataItemHandlerDefinition;
     return $this;
   }

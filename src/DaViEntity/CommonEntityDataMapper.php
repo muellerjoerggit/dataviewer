@@ -2,14 +2,10 @@
 
 namespace App\DaViEntity;
 
-use App\Database\Aggregation\AggregationBuilder;
-use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\DatabaseLocator;
 use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilterBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
-use App\DataCollections\EntityList;
 use App\DaViEntity\Schema\EntitySchema;
 
 class CommonEntityDataMapper implements EntityDataMapperInterface {
@@ -19,7 +15,6 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
   public function __construct(
     private readonly DatabaseLocator $databaseLocator,
     private readonly SqlFilterBuilder $sqlFilterBuilder,
-    private readonly AggregationBuilder $aggregationBuilder,
   ) {}
 
   protected function getQueryBuilder(EntitySchema $schema, string $client): DaViQueryBuilder {

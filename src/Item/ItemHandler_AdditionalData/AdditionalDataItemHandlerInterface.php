@@ -11,6 +11,6 @@ interface AdditionalDataItemHandlerInterface {
 
   public const string YAML_PARAM_OPTIONS = 'options';
 
-  public function getValues(EntityInterface $entity, string $property): TableData|array;
+  public function getValues(EntityInterface $entity, string $property): TableData | array;
 
 }

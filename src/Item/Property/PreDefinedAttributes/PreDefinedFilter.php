@@ -13,6 +13,7 @@ class PreDefinedFilter {
     return [
       new SqlFilterDefinitionAttr(
         CommonTextFilterHandler::class,
+        '',
         'Textfilter'
       ),
     ];
@@ -22,6 +23,7 @@ class PreDefinedFilter {
     return [
       new SqlFilterDefinitionAttr(
         DateTimeFilterHandler::class,
+        '',
         'Datumsfilter'
       ),
     ];
@@ -31,6 +33,7 @@ class PreDefinedFilter {
     return [
       new SqlFilterDefinitionAttr(
         NullCheckFilterHandler::class,
+        '',
         'Nullfilter'
       ),
     ];

@@ -2,8 +2,9 @@
 
 namespace App\Database\AggregationHandler;
 
-use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\Aggregation\AggregationHandlerInterface;
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
+use App\Database\AggregationHandler\Attribute\CountGroupAggregationHandlerDefinition;
 use App\Database\DaViQueryBuilder;
 use App\Database\TableReference\TableJoinBuilder;
 use App\DataCollections\TableData;
@@ -16,22 +17,27 @@ use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 
 class CountGroupAggregationHandler extends AbstractAggregationHandler {
 
+  protected const string COUNT_COLUMN = 'count_column';
 
   public function __construct(
-    private readonly EntityTypeSchemaRegister $schemaRegister,
-    private readonly FormatterItemHandlerLocator $formatterHandlerLocator,
-    private readonly EntityReferenceItemHandlerLocator $entityReferenceItemHandlerLocator,
-    private readonly TableJoinBuilder $tableJoinBuilder,
+    protected readonly EntityTypeSchemaRegister $schemaRegister,
+    protected readonly FormatterItemHandlerLocator $formatterHandlerLocator,
+    protected readonly EntityReferenceItemHandlerLocator $entityReferenceItemHandlerLocator,
+    protected readonly TableJoinBuilder $tableJoinBuilder,
   ) {}
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
-    $properties = $aggregationConfiguration->getProperties();
-    $blackList = $options[AggregationHandlerInterface::YAML_PARAM_PROPERTY_BLACKLIST] ?? [];
-    $queryBuilder->select('COUNT(*) as ' . AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN);
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationDefinitionInterface $aggregationDefinition, array $options = []): void {
+    if(!$this->isValidAggregationDefinition($aggregationDefinition)) {
+      return;
+    }
+
+    $options = $this->mergeDefaultOptions($options);
+    $properties = $aggregationDefinition->getProperties();
+    $queryBuilder->select('COUNT(*) as ' . self::COUNT_COLUMN);
 
     $queryBuilder->resetGroupBy();
     foreach ($properties as $property => $expressionName) {
-      if(in_array($property, $blackList, true)) {
+      if(in_array($property, $options[AggregationHandlerInterface::OPTION_PROPERTY_BLACKLIST])) {
         continue;
       }
 
@@ -51,16 +57,21 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
       $queryBuilder->addSelect($column . ' AS ' . $expressionName);
       $queryBuilder->addGroupBy($column);
     }
-
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): TableData {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData {
+    if(!$this->isValidAggregationDefinition($aggregationDefinition)) {
+      return $this->createEmptyTableData();
+    }
+
+    /** @var $aggregationDefinition CountGroupAggregationHandlerDefinition */
+
     $data = $this->executeQueryBuilder($queryBuilder);
 
-    $headerColumns = $aggregationConfiguration->getSetting('header');
-    $headerColumns[AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN] = $headerColumns[AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN] ?? 'Anzahl';
+    $headerColumns = $aggregationDefinition->getHeader();
+    $headerColumns[self::COUNT_COLUMN] = $aggregationDefinition->getLabelCountColumn();
 
-    $aggregatedColumns = $aggregationConfiguration->getProperties();
+    $aggregatedColumns = $aggregationDefinition->getProperties();
     $items = [];
     foreach ($aggregatedColumns as $property => $propertyKey) {
       if(str_contains($property, '.')) {
@@ -102,6 +113,10 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
     }
 
     return new TableData($header, $tableRows);
+  }
+
+  protected function isValidAggregationDefinition(AggregationDefinitionInterface $aggregationDefinition): bool {
+    return $aggregationDefinition instanceof CountGroupAggregationHandlerDefinition;
   }
 
 }

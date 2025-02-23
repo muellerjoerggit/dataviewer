@@ -5,6 +5,7 @@ namespace App\Database\AggregationHandler;
 use App\Database\Aggregation\AggregationHandlerInterface;
 use App\Database\DaViQueryBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
+use App\DataCollections\TableData;
 use Exception;
 
 abstract class AbstractAggregationHandler implements AggregationHandlerInterface {
@@ -17,6 +18,18 @@ abstract class AbstractAggregationHandler implements AggregationHandlerInterface
     } catch (Exception $exception) {
       return $default;
     }
+  }
+
+  protected function createEmptyTableData(): TableData {
+    return TableData::createEmptyTableData();
+  }
+
+  protected function mergeDefaultOptions(array $options): array {
+    return array_merge([
+        AggregationHandlerInterface::OPTION_PROPERTY_BLACKLIST => [],
+      ],
+      $options
+    );
   }
 
 }

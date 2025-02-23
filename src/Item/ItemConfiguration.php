@@ -3,7 +3,7 @@
 namespace App\Item;
 
 use App\Item\ItemHandler\ItemHandlerInterface;
-use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
@@ -47,7 +47,7 @@ class ItemConfiguration implements ItemConfigurationInterface {
 
   private EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition;
 
-  private AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition;
+  private AdditionalDataHandlerDefinitionInterface $additionalDataHandlerDefinition;
 
   protected VersionInformation $version;
 
@@ -166,9 +166,18 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this->referenceItemHandlerDefinition;
   }
 
-  public function setAdditionalDataItemHandlerDefinition(AdditionalDataItemHandlerDefinitionInterface $additionalDataItemHandlerDefinition): ItemConfigurationInterface {
-    $this->additionalDataItemHandlerDefinition = $additionalDataItemHandlerDefinition;
+  // additional data item handler ####################################
+  public function setAdditionalDataHandlerDefinition(AdditionalDataHandlerDefinitionInterface $additionalDataHandlerDefinition): ItemConfigurationInterface {
+    $this->additionalDataHandlerDefinition = $additionalDataHandlerDefinition;
     return $this;
+  }
+
+  public function getAdditionalDataHandlerDefinition(): AdditionalDataHandlerDefinitionInterface {
+    return $this->additionalDataHandlerDefinition;
+  }
+
+  public function hasAdditionalDataHandlerHandler(): bool {
+    return isset($this->additionalDataHandlerDefinition) && $this->additionalDataHandlerDefinition->isValid();
   }
 
   public function getPreRenderingItemHandlerDefinition(): PreRenderingItemHandlerDefinitionInterface {
@@ -187,10 +196,6 @@ class ItemConfiguration implements ItemConfigurationInterface {
 
   public function getFormatterItemHandlerDefinition(): FormatterItemHandlerDefinitionInterface {
     return $this->formatterItemHandlerDefinition;
-  }
-
-  public function getAdditionalDataItemHandlerDefinition(): AdditionalDataItemHandlerDefinitionInterface {
-    return $this->additionalDataItemHandlerDefinition;
   }
 
   public function getHandlerByType(string $handlerType): string|array|bool {

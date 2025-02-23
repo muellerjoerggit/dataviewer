@@ -2,6 +2,7 @@
 
 namespace App\Database\Aggregation;
 
+use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\DaViQueryBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
@@ -10,11 +11,10 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag('aggregation_handler')]
 interface AggregationHandlerInterface {
 
-  public const string YAML_PARAM_COUNT_COLUMN = 'count_column';
-  public const string YAML_PARAM_PROPERTY_BLACKLIST = 'propertyBlacklist';
+  public const string OPTION_PROPERTY_BLACKLIST = 'blacklist';
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): TableData;
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData;
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void;
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationDefinitionInterface $aggregationDefinition, array $options = []): void;
 
 }

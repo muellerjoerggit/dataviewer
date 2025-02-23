@@ -4,7 +4,7 @@ namespace App\Item\Property;
 
 use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\DaViEntity\Schema\EntitySchema;
-use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataItemHandlerDefinitionInterface;
+use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
@@ -116,8 +116,8 @@ class PropertyConfigurationBuilder {
       $propertyConfiguration->setFormatterItemHandlerDefinition($handlerDefinition);
     } elseif($handlerDefinition instanceof EntityReferenceItemHandlerDefinitionInterface) {
       $propertyConfiguration->setReferenceItemHandlerDefinition($handlerDefinition);
-    } elseif($handlerDefinition instanceof AdditionalDataItemHandlerDefinitionInterface) {
-      $propertyConfiguration->setAdditionalDataItemHandlerDefinition($handlerDefinition);
+    } elseif($handlerDefinition instanceof AdditionalDataHandlerDefinitionInterface) {
+      $propertyConfiguration->setAdditionalDataHandlerDefinition($handlerDefinition);
     } elseif($handlerDefinition instanceof ValidatorItemHandlerDefinitionInterface) {
       $propertyConfiguration->addValidatorItemHandlerDefinition($handlerDefinition);
     }

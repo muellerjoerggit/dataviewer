@@ -2,6 +2,10 @@
 
 namespace App\EntityTypes\RoleUserMap;
 
+use App\Database\AggregationHandler\Attribute\CountAggregationHandlerDefinition;
+use App\Database\AggregationHandler\Attribute\CountGroupAggregationHandlerDefinition;
+use App\Database\AggregationHandler\CountAggregationHandler;
+use App\Database\AggregationHandler\CountGroupAggregationHandler;
 use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
@@ -28,6 +32,8 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\DaViEntity\ViewBuilder\CommonViewBuilder;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
 use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\User\UserEntity;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
@@ -55,10 +61,35 @@ use App\Item\Property\PropertyItemInterface;
   ListProviderDefinition(listProviderClass: CommonListProvider::class),
   OverviewBuilderDefinition(overviewBuilderClass: CommonOverviewBuilder::class),
   ViewBuilderDefinition(viewBuilderClass: CommonViewBuilder::class),
+  SqlAggregatedDataProviderDefinition(aggregatedDataProviderClass: SqlAggregatedDataProvider::class),
 ]
 #[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,
   baseTable: 'role_user_map'),
+]
+
+#[CountAggregationHandlerDefinition(
+    name: 'count_users',
+    aggregationHandlerClass: CountAggregationHandler::class,
+    title: 'Anzahl Benutzer nach Rollen',
+    description: 'Anzahl Benutzer mit der Rolle',
+    labelCountColumn: 'Anzahl Benutzer',
+  ),
+  CountGroupAggregationHandlerDefinition(
+    name: 'count_users_status',
+    aggregationHandlerClass: CountGroupAggregationHandler::class,
+    header: [
+      'role' => 'Rolle',
+      'active' => 'Benutzer Status',
+    ],
+    properties: [
+      'usr_id.active' => 'active',
+      'rol_id' => 'role',
+    ],
+    labelCountColumn: 'Anzahl Benutzer mit Rollen',
+    title: 'Anzahl Benutzer mit der Rolle / Status',
+    description: 'Anzahl Benutzer mit der Rolle und Status'
+  )
 ]
 class RoleUserMapEntity extends AbstractEntity {
 
@@ -79,6 +110,7 @@ class RoleUserMapEntity extends AbstractEntity {
   ])]
   #[SqlFilterDefinitionAttr(
     filterHandler: EntityReferenceFilterHandler::class,
+    key: 'usr_id',
     title: 'Benutzer suchen',
     description: 'Alle Rollen des Nutzers anzeigen',
     group: false
@@ -107,6 +139,7 @@ class RoleUserMapEntity extends AbstractEntity {
   ])]
   #[SqlFilterDefinitionAttr(
     filterHandler: EntityReferenceFilterHandler::class,
+    key: 'rol_id',
     title: 'Rollen suchen',
     description: 'Alle Benutzer der Rolle anzeigen',
     group: false

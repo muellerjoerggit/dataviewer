@@ -43,8 +43,6 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
         continue;
       }
 
-      dump(!$validationHandler->validateValueFromItemConfiguration($targetItemConfiguration, $value, $client));
-
       if(!$validationHandler->validateValueFromItemConfiguration($targetItemConfiguration, $value, $client)) {
         return false;
       }
@@ -109,9 +107,9 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
   public function buildTableReferenceDefinition(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
     $property = $itemConfiguration->getItemName();
     $key = 'ref_' . $property;
-    [$entityClass, $property] = $this->getTargetSetting($itemConfiguration);
+    [$targetClass, $targetProperty] = $this->getTargetSetting($itemConfiguration);
 
-    $definition = CommonTableReferenceDefinition::create($key, CommonTableReferenceHandler::class, $entityClass, $property);
+    $definition = CommonTableReferenceDefinition::create($key, CommonTableReferenceHandler::class, $targetClass, [$property => $targetProperty]);
 
     $definition
       ->setExternalName($key)

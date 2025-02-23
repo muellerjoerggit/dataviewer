@@ -2,13 +2,9 @@
 
 namespace App\DaViEntity;
 
-use App\Database\Aggregation\AggregationConfiguration;
-use App\Database\SqlFilter\FilterContainer;
-use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesReader;
-use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 
 abstract class AbstractEntityController implements EntityControllerInterface{
 

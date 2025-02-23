@@ -2,6 +2,7 @@
 
 namespace App\Item\ItemHandler_AdditionalData;
 
+use App\Database\Aggregation\AggregationHandlerInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilter;
 use App\Database\SqlFilter\SqlFilterBuilder;
@@ -10,37 +11,47 @@ use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\Item\ItemConfigurationInterface;
+use App\Item\ItemHandler_AdditionalData\Attribute\AggregationAdditionalDataHandlerDefinition;
 
 class AggregationFilterAdditionalDataItemHandler implements AdditionalDataItemHandlerInterface {
 
   public function __construct(
-    private readonly DaViEntityManager $daViEntityManager,
+    private readonly DaViEntityManager $entityManager,
     private readonly EntityTypeSchemaRegister $schemaRegister,
   ) {}
 
-  public function getValues(EntityInterface $entity, string $property): TableData|array {
+  public function getValues(EntityInterface $entity, string $property): TableData | array {
     $itemConfiguration = $entity->getPropertyItem($property)->getConfiguration();
-    $additionalDataSetting = $itemConfiguration->getAdditionalDataSetting();
-    $targetEntityType = $additionalDataSetting['target_entity'];
-    $aggregationSettings = $additionalDataSetting['aggregation'] ?? [];
-    $aggregationKey = $aggregationSettings['key'] ?? '';
-    $options = $additionalDataSetting[AdditionalDataItemHandlerInterface::YAML_PARAM_OPTIONS] ?? [];
-    if (empty($aggregationKey) || empty($targetEntityType)) {
+    $definition = $itemConfiguration->getAdditionalDataHandlerDefinition();
+
+    if(!$definition instanceof AggregationAdditionalDataHandlerDefinition) {
       return [];
     }
-    $schema = $this->schemaRegister->getEntityTypeSchema($targetEntityType);
-    $filterContainer = $this->prepareFilterContainer($schema, $itemConfiguration, $entity);
-    $aggregationDefinition = $schema->getAggregation($aggregationKey);
-    return $this->daViEntityManager->loadAggregatedData($targetEntityType, $entity->getClient(), $aggregationDefinition, $filterContainer, $options);
+
+    $targetEntityClass = $definition->getTargetEntityClass();
+    $targetSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);
+    $options = [];
+
+    if($definition->hasPropertyBlacklist()) {
+      $options[AggregationHandlerInterface::OPTION_PROPERTY_BLACKLIST] = $definition->getPropertyBlacklist();
+    }
+
+    $filterContainer = $this->prepareFilterContainer($targetSchema, $definition, $entity);
+    $aggregationDefinition = $targetSchema->getAggregation($definition->getAggregationKey());
+    return $this->entityManager->loadAggregatedData($targetEntityClass, $entity->getClient(), $aggregationDefinition, $filterContainer, $options);
   }
 
-  protected function prepareFilterContainer(EntitySchema $schema, ItemConfigurationInterface $itemConfiguration, EntityInterface $entity): FilterContainer {
-    $filterSettings = $itemConfiguration->getAdditionalDataSetting()['filters'] ?? [];
-    $filterContainer = SqlFilterBuilder::buildDefaultFilterContainerAndAppend($entity->getClient(), $schema);
-    foreach ($filterSettings as $key => $filterSetting) {
-      $filterDefinition = $schema->getFilterDefinition($filterSetting['filter']);
-      $sourceValues = $entity->getPropertyItem($filterSetting['filter_mapping'])->getValuesAsOneDimensionalArray();
+  protected function prepareFilterContainer(EntitySchema $targetSchema, AggregationAdditionalDataHandlerDefinition $definition, EntityInterface $entity): FilterContainer {
+    $filterSettings = $definition->getFilters();
+    $filterContainer = SqlFilterBuilder::buildDefaultFilterContainerAndAppend($entity->getClient(), $targetSchema);
+    foreach ($filterSettings as $filterSetting) {
+      $filterDefinition = $targetSchema->getFilterDefinition($filterSetting['filter']);
+
+      if(!$filterDefinition) {
+        continue;
+      }
+
+      $sourceValues = $entity->getPropertyItem($filterSetting['filterMapping'])->getValuesAsArray();
       $filter = new SqlFilter($filterDefinition, $sourceValues, 'AggregationFilterAdditionalDataItemHandler');
       $filterContainer->addFilters($filter);
     }
