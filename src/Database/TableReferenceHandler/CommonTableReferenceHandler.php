@@ -20,25 +20,4 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
     parent::__construct($schemaRegister, $baseQueryLocator);
   }
 
-  public function getJoinCondition(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null {
-    if(!$tableReferenceConfiguration instanceof CommonTableReferenceDefinition) {
-      return null;
-    }
-
-    $toEntityType = $tableReferenceConfiguration->getToEntityClass();
-    $toColumn = $this->getColumn($toEntityType, $tableReferenceConfiguration->getToPropertyCondition());
-    $fromColumn = $this->getColumn($tableReferenceConfiguration->getFromEntityClass(), $tableReferenceConfiguration->getFromPropertyCondition());
-
-    if(empty($fromColumn) || empty($toColumn)) {
-      return null;
-    }
-
-    return $queryBuilder->expr()->eq($toColumn, $fromColumn);
-  }
-
-  protected function getColumn(string $entityClass, string $property): string {
-    $schema = $this->schemaRegister->getSchemaFromEntityClass($entityClass);
-    return !empty($property) ? $schema->getColumn($property) : '';
-  }
-
 }

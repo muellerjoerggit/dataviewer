@@ -13,9 +13,5 @@ interface TableReferenceHandlerInterface {
 
   public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity): DaViQueryBuilder;
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void;
-
-  public function getFromSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema;
-
   public function getToSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema;
 }

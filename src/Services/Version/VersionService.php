@@ -2,6 +2,9 @@
 
 namespace App\Services\Version;
 
+use App\Services\Version\VersionLists\AllVersionList;
+use App\Services\Version\VersionLists\NullVersionList;
+use App\Services\Version\VersionLists\VersionList;
 use App\SymfonyRepository\VersionRepository;
 
 class VersionService {
@@ -12,13 +15,14 @@ class VersionService {
   private array $versionKeys = [];
   private array $versions = [];
   private array $versionsLists = [];
-  private NullVersionList $nullVersionList;
-  private VersionList $allVersionList;
+  private VersionListInterface $nullVersionList;
+  private VersionListInterface $allVersionList;
 
   public function __construct(
     private readonly VersionRepository $versionRepository,
   ) {
     $this->nullVersionList = new NullVersionList();
+    $this->allVersionList = new AllVersionList();
     $this->init();
   }
 
@@ -47,7 +51,6 @@ class VersionService {
     } while (true);
 
     $this->versions = $list;
-    $this->allVersionList = new VersionList('all', array_keys($list));
     $this->versionKeys = array_keys($list);
   }
 

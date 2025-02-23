@@ -6,7 +6,8 @@ use App\Database\Aggregation\AggregationHandlerInterface;
 use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\AggregationHandler\Attribute\CountGroupAggregationHandlerDefinition;
 use App\Database\DaViQueryBuilder;
-use App\Database\TableReference\TableJoinBuilder;
+use App\Database\Exceptions\NotJoinableException;
+use App\Database\TableJoinBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -42,8 +43,12 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
       }
 
       if(str_contains($property, '.')) {
-        $this->tableJoinBuilder->joinFromPropertyPath($queryBuilder, $schema, $property);
-        $propertyItem = $this->schemaRegister->getPropertyConfigurationFromPath($property, $schema->getEntityType());
+        try {
+          $this->tableJoinBuilder->joinFromPropertyPath($queryBuilder, $schema, $property);
+          $propertyItem = $this->schemaRegister->getPropertyConfigurationFromPath($property, $schema->getEntityType());
+        } catch (NotJoinableException $exception) {
+          continue;
+        }
       } else {
         $propertyItem = $schema->getProperty($property);
       }

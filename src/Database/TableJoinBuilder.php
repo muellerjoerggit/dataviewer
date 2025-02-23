@@ -1,27 +1,23 @@
 <?php
 
-namespace App\Database\TableReference;
+namespace App\Database;
 
-use App\Database\DaViQueryBuilder;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
+use App\Database\Exceptions\NotJoinableException;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
+use App\Item\ItemHandler_EntityReference\SimpleEntityReferenceJoinInterface;
 
 class TableJoinBuilder {
 
   public function __construct(
-    private readonly TableReferenceHandlerLocator $locator,
     private readonly EntityTypeSchemaRegister $schemaRegister,
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): void {
-    $handler = $this->locator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
-    $handler->joinTable($queryBuilder, $tableReferenceConfiguration);
-  }
-
+  /**
+   * @throws NotJoinableException
+   */
   public function joinFromPropertyPath(DaViQueryBuilder $queryBuilder, EntitySchema $schema, string $path): void {
     $pathParts = explode('.', $path);
     $currentSchema = $schema;
@@ -30,16 +26,18 @@ class TableJoinBuilder {
       $propertyConfig = $currentSchema->getProperty($property);
       if($propertyConfig->hasEntityReferenceHandler()) {
         $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($propertyConfig);
-        $tableReferenceConfig = $handler->buildTableReferenceDefinition($propertyConfig, $currentSchema);
+
+        if(!$handler instanceof SimpleEntityReferenceJoinInterface) {
+          $handlerClass = get_class($handler);
+          throw new NotJoinableException("Handler $handlerClass does not implement SimpleEntityReferenceJoinInterface");
+        }
+
+        $handler->joinTable($queryBuilder, $propertyConfig, $schema);
         [$targetEntityClass, $property] = $handler->getTargetSetting($propertyConfig);
-      } elseif($propertyConfig->hasTableReference()) {
-        $tableReferenceConfig = $propertyConfig->getTableReference();
-        $targetEntityClass = $tableReferenceConfig->getToEntityClass();
       } else {
         break;
       }
 
-      $this->joinTable($queryBuilder, $tableReferenceConfig);
       $currentSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);
     }
   }

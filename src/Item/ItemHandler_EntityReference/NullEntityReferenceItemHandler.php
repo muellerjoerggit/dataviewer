@@ -32,10 +32,6 @@ class NullEntityReferenceItemHandler implements EntityReferenceItemHandlerInterf
     return 'Null Entity';
   }
 
-  public function buildTableReferenceDefinition(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
-    return TableReferenceDefinition::createNullTableReference('null', 'NullEntity_null');
-  }
-
   public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection|null {
     return null;
   }

@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Services\Version;
+namespace App\Services\Version\VersionLists;
 
-class VersionList implements VersionListInterface{
+use App\Services\Version\VersionListInterface;
+
+class VersionList implements VersionListInterface {
 
   public function __construct(
     private readonly string $key,

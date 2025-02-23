@@ -2,8 +2,7 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
-use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
+use App\Database\DaViQueryBuilder;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
@@ -12,17 +11,14 @@ use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\DaViEntity\UniqueKey;
 use App\EntityTypes\NullEntity\NullEntity;
-use App\Item\ItemConfiguration;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\DaViEntity\EntityInterface;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
-use App\Item\NullItem;
 
-class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface {
+class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface, SimpleEntityReferenceJoinInterface {
 
 	public function __construct(
 		protected readonly DaViEntityManager $entityManager,
@@ -104,20 +100,6 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     return $this->entityManager->getEntityLabel($entityKey) ?? '';
   }
 
-  public function buildTableReferenceDefinition(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface {
-    $property = $itemConfiguration->getItemName();
-    $key = 'ref_' . $property;
-    [$targetClass, $targetProperty] = $this->getTargetSetting($itemConfiguration);
-
-    $definition = CommonTableReferenceDefinition::create($key, CommonTableReferenceHandler::class, $targetClass, [$property => $targetProperty]);
-
-    $definition
-      ->setExternalName($key)
-      ->setFromEntityClass($schema->getEntityClass());
-
-    return $definition;
-  }
-
   protected function getReferenceDefinition(ItemConfigurationInterface $itemConfiguration): EntityReferenceItemHandlerDefinitionInterface | null {
     if($itemConfiguration->hasEntityReferenceHandler() && $this->isDefinitionValid($itemConfiguration->getReferenceItemHandlerDefinition())) {
       return $itemConfiguration->getReferenceItemHandlerDefinition();
@@ -153,6 +135,42 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
     }
 
     return $collection->hasValues() ? $collection : null;
+  }
+
+  public function joinTable(DaViQueryBuilder $queryBuilder, ItemConfigurationInterface $itemConfiguration, EntitySchema $fromSchema, bool $innerJoin = false): void {
+    [$targetClass, $targetProperty] = $this->getTargetSetting($itemConfiguration);
+    $toSchema = $this->schemaRegister->getSchemaFromEntityClass($targetClass);
+
+    $condition = $this->getJoinCondition($queryBuilder, $fromSchema, $itemConfiguration->getItemName(), $toSchema, $targetProperty);
+
+    $fromTable = $fromSchema->getBaseTable();
+    $toTable = $toSchema->getBaseTable();
+
+    if(empty($toTable) || empty($fromTable) || !$condition) {
+      return;
+    }
+
+    if($innerJoin) {
+      $queryBuilder->innerJoin($fromTable, $toTable, $toTable, $condition);
+    } else {
+      $queryBuilder->leftJoin($fromTable, $toTable, $toTable, $condition);
+    }
+  }
+
+  protected function getJoinCondition(DaViQueryBuilder $queryBuilder, EntitySchema $fromSchema, string $fromProperty, EntitySchema $toSchema, string $toProperty): string | null {
+
+    $fromColumn = $this->getColumn($fromSchema, $fromProperty);
+    $toColumn = $this->getColumn($toSchema, $toProperty);
+
+    if(empty($fromColumn) || empty($toColumn)) {
+      return null;
+    }
+
+    return $queryBuilder->expr()->eq($toColumn, $fromColumn);
+  }
+
+  protected function getColumn(EntitySchema $schema, string $property): string {
+    return !empty($property) ? $schema->getColumn($property) : '';
   }
 
 }

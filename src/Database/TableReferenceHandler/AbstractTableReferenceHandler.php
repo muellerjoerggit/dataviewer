@@ -19,32 +19,6 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     protected readonly BaseQueryLocator $baseQueryLocator,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void {
-    $toSchema = $this->getToSchema($tableReferenceConfiguration);
-    $fromSchema = $this->getFromSchema($tableReferenceConfiguration);
-
-    $condition = $this->getJoinCondition($queryBuilder, $tableReferenceConfiguration);
-
-    $toTable = $toSchema->getBaseTable();
-    $fromTable = $fromSchema->getBaseTable();
-
-    if(empty($toTable) || empty($fromTable) || !$condition) {
-      return;
-    }
-
-    if($innerJoin) {
-      $queryBuilder->innerJoin($fromTable, $toTable, $toTable, $condition);
-    } else {
-      $queryBuilder->leftJoin($fromTable, $toTable, $toTable, $condition);
-    }
-  }
-
-  abstract public function getJoinCondition(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null;
-
-  public function getFromSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema {
-    return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getFromEntityClass());
-  }
-
   public function getToSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema {
     return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getToEntityClass());
   }

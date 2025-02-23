@@ -14,15 +14,11 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag('entity_reference_item_handler')]
 interface EntityReferenceItemHandlerInterface {
 
-  public const string YAML_PARAM_TARGET_ENTITY_TYPE = 'targetEntityType';
-
 	public function getEntityLabel($entityKey): string;
 
 	public function getEntityOverview($entityKey, array $options = []): array;
 
   public function buildEntityKey($value, EntityReferenceItemHandlerDefinitionInterface $referenceDefinition, string $client): ?EntityKey;
-
-  public function buildTableReferenceDefinition(ItemConfigurationInterface $itemConfiguration, EntitySchema $schema): TableReferenceDefinitionInterface;
 
   public function getTargetSetting(EntityReferenceItemHandlerDefinitionInterface | ItemConfigurationInterface $referenceDefinition): array;
 
