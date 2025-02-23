@@ -8,6 +8,7 @@ use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesReader;
+use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 
 abstract class AbstractEntityController implements EntityControllerInterface{
 
@@ -16,7 +17,6 @@ abstract class AbstractEntityController implements EntityControllerInterface{
   public function __construct(
     protected readonly EntityDataMapperInterface $dataMapper,
     protected readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
-    protected readonly EntityViewBuilderInterface $entityViewBuilder,
   ) {
     $this->schema = $this->getEntitySchema();
   }
@@ -29,18 +29,6 @@ abstract class AbstractEntityController implements EntityControllerInterface{
 
   public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = null, array $options = []): array | TableData {
     return $this->dataMapper->fetchAggregatedData($client, $this->schema, $aggregation, $filterContainer, $options);
-  }
-
-  public function preRenderEntity(EntityInterface $entity): array {
-    return $this->entityViewBuilder->preRenderEntity($entity);
-  }
-
-  public function getExtendedEntityOverview(EntityInterface $entity, $options): array {
-    return $this->entityViewBuilder->buildExtendedEntityOverview($entity, $options);
-  }
-
-  public function getEntityOverview(EntityInterface $entity, array $options = []): array {
-    return $this->entityViewBuilder->buildEntityOverview($entity, $options);
   }
 
   public function getEntityLabel(EntityInterface $entity): string {

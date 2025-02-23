@@ -14,6 +14,8 @@ use App\DaViEntity\DataProvider\CommonSqlDataProvider;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\ListProvider\CommonListProvider;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
+use App\DaViEntity\OverviewBuilder\CommonOverviewBuilder;
+use App\DaViEntity\OverviewBuilder\OverviewBuilderDefinition;
 use App\DaViEntity\SimpleSearch\CommonSimpleSearch;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\CommonRefiner;
@@ -22,6 +24,8 @@ use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Traits\EntityPropertyTrait;
+use App\DaViEntity\ViewBuilder\CommonViewBuilder;
+use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
@@ -43,6 +47,8 @@ use App\Item\Property\PropertyItemInterface;
   SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
   ListProviderDefinition(listProviderClass: CommonListProvider::class),
+  OverviewBuilderDefinition(overviewBuilderClass: CommonOverviewBuilder::class),
+  ViewBuilderDefinition(viewBuilderClass: CommonViewBuilder::class),
 ]
 #[DatabaseDefinition(
   databaseClass: DaViDatabaseOne::class,

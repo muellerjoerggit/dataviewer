@@ -1,62 +1,21 @@
 <?php
 
-namespace App\DaViEntity;
+namespace App\DaViEntity\OverviewBuilder;
 
-use App\Item\ItemHandler_PreRendering\PreRenderingItemHandlerLocator;
+use App\DaViEntity\DaViEntityManager;
+use App\DaViEntity\EntityInterface;
+use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
+use App\Item\ItemHandler_PreRendering\PreRenderingItemHandlerLocator;
 use App\Item\ItemInterface;
-use App\Logger\LogItemPreRendering\LogItemPreRenderingHandlerLocator;
-use App\Logger\LogItems\LogItemInterface;
-use App\Services\EntityAction\EntityActionPreRenderingBuilder;
 
-class CommonEntityViewBuilder implements EntityViewBuilderInterface {
+class CommonOverviewBuilder implements OverviewBuilderInterface {
 
   public function __construct(
     private readonly PreRenderingItemHandlerLocator $preRenderingItemHandlerLocator,
     private readonly DaViEntityManager $entityManager,
     private readonly FormatterItemHandlerLocator $valueFormatterItemHandlerLocator,
-    private readonly LogItemPreRenderingHandlerLocator $logItemPreRenderingLocator,
-    private readonly EntityActionPreRenderingBuilder $actionPreRenderingBuilder,
   ) {}
-
-  public function preRenderEntity(EntityInterface $entity): array {
-    $propertiesRenderArray = [];
-
-    foreach ($entity->getSchema()->iterateProperties() as $property => $config) {
-      $item = $entity->getPropertyItem($property);
-      $handler = $this->preRenderingItemHandlerLocator->getPreRenderingHandlerFromItem($item->getConfiguration());
-      $propertiesRenderArray[] = $handler->getComponentPreRenderArray($entity, $property);
-    }
-
-    $logsByLevel = [
-      'critical' => [],
-      'warning' => [],
-      'notice' => [],
-      'info' => [],
-      'error' => [],
-      'debug' => [],
-    ];
-
-    foreach ($entity->getAllLogsByLogLevels() as $logLevel => $logItems) {
-      foreach ($logItems as $logItem) {
-        if (!($logItem instanceof LogItemInterface)) {
-          continue;
-        }
-        $preRenderingHandler = $this->logItemPreRenderingLocator->getLogItemPreRenderingHandlerFromLogItem($logItem);
-        $logsByLevel[$logLevel][] = $preRenderingHandler->preRenderLogItemComponent($logItem);
-      }
-    }
-
-    return [
-      'entityKey' => $entity->getEntityKeyAsObj()->getFirstEntityKeyAsString(),
-      'label' => $this->entityManager->getEntityLabel($entity),
-      'entityOverview' => $this->buildEntityOverview($entity),
-      'extEntityOverview' => $this->buildExtendedEntityOverview($entity),
-      'properties' => $propertiesRenderArray,
-      'logsByLevel' => $logsByLevel,
-      'entityActions' => $this->actionPreRenderingBuilder->buildEntityActions($entity),
-    ];
-  }
 
   public function buildEntityOverview(EntityInterface $entity, array $options = []): array {
     $defaultOverview = $entity->getSchema()->getEntityOverviewProperties();
@@ -65,7 +24,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
     $header = [];
     $data = [];
 
-    foreach ($options[EntityViewBuilderInterface::PROPERTIES] as $property => $title) {
+    foreach ($options[ViewBuilderInterface::PROPERTIES] as $property => $title) {
       $items = $this->entityManager->getItemsFromPath($property, $entity);
       $item = reset($items);
       if (!($item instanceof ItemInterface)) {
@@ -74,7 +33,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
       $itemConfiguration = $item->getConfiguration();
       $header[$property] = empty($title) ? $itemConfiguration->getLabel() : $title;
       $firstValue = $item->getFirstValueAsString();
-      if ($options[EntityViewBuilderInterface::FORMAT] && $itemConfiguration->hasFormatterHandler()) {
+      if ($options[ViewBuilderInterface::FORMAT] && $itemConfiguration->hasFormatterHandler()) {
         $handler = $this->valueFormatterItemHandlerLocator->getFormatterHandlerFromItem($itemConfiguration);
         $firstValue = $handler->getValueFormatted($itemConfiguration, $firstValue);
       }
@@ -93,15 +52,15 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
 
   protected function getDefaultOverviewOptions(array $options, EntityInterface $entity, array $defaultOverview): array {
     $options = array_merge([
-      EntityViewBuilderInterface::FORMAT => TRUE,
-      EntityViewBuilderInterface::PROPERTIES => [],
-      EntityViewBuilderInterface::ENTITY_LABEL => FALSE,
+      ViewBuilderInterface::FORMAT => TRUE,
+      ViewBuilderInterface::PROPERTIES => [],
+      ViewBuilderInterface::ENTITY_LABEL => FALSE,
     ],
       $options
     );
 
-    if (empty($options[EntityViewBuilderInterface::PROPERTIES])) {
-      $options[EntityViewBuilderInterface::PROPERTIES] = !empty($defaultOverview) ? $defaultOverview : $this->getOverviewFallback($entity);
+    if (empty($options[ViewBuilderInterface::PROPERTIES])) {
+      $options[ViewBuilderInterface::PROPERTIES] = !empty($defaultOverview) ? $defaultOverview : $this->getOverviewFallback($entity);
     }
 
     return $options;
@@ -121,7 +80,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
     $header = [];
     $data = [];
 
-    foreach ($options[EntityViewBuilderInterface::PROPERTIES] as $property => $title) {
+    foreach ($options[ViewBuilderInterface::PROPERTIES] as $property => $title) {
       if (!is_string($property)) {
         continue;
       }
@@ -142,7 +101,7 @@ class CommonEntityViewBuilder implements EntityViewBuilderInterface {
 
     $header['validationData'] = 'Logs';
     $data['validationData'] = [
-      'type' => EntityViewBuilderInterface::EXT_OVERVIEW_VALIDATION,
+      'type' => ViewBuilderInterface::EXT_OVERVIEW_VALIDATION,
       'data' => [
         'red' => $entity->countRedLogs(),
         'yellow' => $entity->countYellowLogs(),

@@ -11,12 +11,14 @@ use App\DaViEntity\Creator\CreatorDefinition;
 use App\DaViEntity\DataProvider\DataProviderDefinition;
 use App\DaViEntity\EntityLabel\LabelCrafter;
 use App\DaViEntity\ListProvider\ListProviderDefinition;
+use App\DaViEntity\OverviewBuilder\OverviewBuilderDefinition;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinition;
 use App\DaViEntity\Refiner\RefinerDefinition;
 use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
+use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Services\AbstractAttributesReader;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -88,6 +90,12 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
         break;
       case AdditionalDataProviderDefinition::class:
         $container->addAdditionalDataProviderDefinition($attribute);
+        break;
+      case ViewBuilderDefinition::class:
+        $container->addViewBuilderDefinition($attribute);
+        break;
+      case OverviewBuilderDefinition::class:
+        $container->addAddOverviewBuilderDefinition($attribute);
         break;
     }
   }

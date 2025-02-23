@@ -6,8 +6,8 @@ use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilterBuilder;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\EntityViewBuilderInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class Entities extends AbstractController {
@@ -47,7 +47,7 @@ class Entities extends AbstractController {
 
     foreach ($entityList->iterateEntityList() as $entityKeyString => $entityData) {
       $entityKey = EntityKey::createFromString($entityKeyString);
-      $overView['entityOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [EntityViewBuilderInterface::FORMAT => FALSE]);
+      $overView['entityOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [ViewBuilderInterface::FORMAT => FALSE]);
       $overView['entityKey'] = $entityKeyString;
       $overView['entityLabel'] = $entityData['entityLabel'];
       $entities[] = $overView;

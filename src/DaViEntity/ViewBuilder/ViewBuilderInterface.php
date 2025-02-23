@@ -1,8 +1,12 @@
 <?php
 
-namespace App\DaViEntity;
+namespace App\DaViEntity\ViewBuilder;
 
-interface EntityViewBuilderInterface {
+use App\DaViEntity\EntityInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag('entity_management.view_builder')]
+interface ViewBuilderInterface {
 
   // extended entity overview types
   public const EXT_OVERVIEW_SCALAR = 1;
@@ -25,9 +29,5 @@ interface EntityViewBuilderInterface {
   public const ENTITY_LABEL = 'entityLabel';
 
   public function preRenderEntity(EntityInterface $entity): array;
-
-  public function buildEntityOverview(EntityInterface $entity, array $options = []): array;
-
-  public function buildExtendedEntityOverview(EntityInterface $entity, array $options = []): array;
 
 }

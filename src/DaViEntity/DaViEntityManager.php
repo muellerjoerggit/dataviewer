@@ -6,11 +6,13 @@ use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\SqlFilter\FilterContainer;
 use App\DataCollections\EntityList;
 use App\DataCollections\TableData;
+use App\DaViEntity\OverviewBuilder\OverviewBuilderLocator;
 use App\DaViEntity\SimpleSearch\SimpleSearchLocator;
 use App\DaViEntity\Repository\RepositoryInterface;
 use App\DaViEntity\Repository\RepositoryLocator;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
+use App\DaViEntity\ViewBuilder\ViewBuilderLocator;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemInterface;
@@ -21,10 +23,11 @@ class DaViEntityManager {
   public function __construct(
     private readonly EntityTypesRegister $entityTypesRegister,
     private readonly EntityTypeSchemaRegister $schemaRegister,
-    private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
     private readonly MainRepository $mainRepository,
     private readonly SimpleSearchLocator $entityListSearchLocator,
     private readonly RepositoryLocator $entityRepositoryLocator,
+    private readonly ViewBuilderLocator $viewBuilderLocator,
+    private readonly OverviewBuilderLocator $overviewBuilderLocator,
   ) {}
 
   public function loadEntityData(string $entityType, FilterContainer $filterContainer, array $options = []): array {
@@ -91,20 +94,20 @@ class DaViEntityManager {
 
   public function preRenderEntity(mixed $entityKey): array {
     $entity = $this->evaluateEntity($entityKey);
-    $controller = $this->getEntityController($entity);
-    return $controller->preRenderEntity($entity);
+    $viewBuilder = $this->viewBuilderLocator->getViewBuilder($entity::class, $entity->getClient());
+    return $viewBuilder->preRenderEntity($entity);
   }
 
   public function getEntityOverview(mixed $entityKey, array $options = []): array {
     $entity = $this->evaluateEntity($entityKey);
-    $controller = $this->getEntityController($entity);
-    return $controller->getEntityOverview($entity, $options);
+    $overviewBuilder = $this->overviewBuilderLocator->getOverviewBuilder($entity->getSchema(), $entity->getClient());
+    return $overviewBuilder->buildEntityOverview($entity, $options);
   }
 
   public function getExtendedEntityOverview(mixed $entity, $options = []): array {
     $entity = $this->evaluateEntity($entity);
-    $controller = $this->getEntityController($entity);
-    return $controller->getExtendedEntityOverview($entity, $options);
+    $overviewBuilder = $this->overviewBuilderLocator->getOverviewBuilder($entity->getSchema(), $entity->getClient());
+    return $overviewBuilder->buildExtendedEntityOverview($entity, $options);
   }
 
   public function getItemsFromPath(string $path, $baseEntity): array {

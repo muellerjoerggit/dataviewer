@@ -11,11 +11,13 @@ use App\DaViEntity\Creator\CreatorDefinitionInterface;
 use App\DaViEntity\DataProvider\DataProviderDefinitionInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
 use App\DaViEntity\ListProvider\ListProviderDefinitionInterface;
+use App\DaViEntity\OverviewBuilder\OverviewBuilderDefinitionInterface;
 use App\DaViEntity\Refiner\RefinerDefinitionInterface;
 use App\DaViEntity\Repository\RepositoryDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
+use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
 use App\Item\Property\PropertyAttributesReader;
 use App\Item\Property\PropertyConfigurationBuilder;
 use App\Services\Version\VersionListInterface;
@@ -314,6 +316,24 @@ class EntitySchemaBuilder {
       $list = $this->getVersionList($additionalDataProviderDefinition);
       $additionalDataProviderDefinition->setVersionList($list);
       $schema->addAdditionalDataProviderDefinition($additionalDataProviderDefinition);
+    }
+
+    foreach ($container->iterateViewBuilderDefinitions() as $viewBuilderDefinition) {
+      if(!$viewBuilderDefinition instanceof ViewBuilderDefinitionInterface || !$viewBuilderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($viewBuilderDefinition);
+      $viewBuilderDefinition->setVersionList($list);
+      $schema->addViewBuilderDefinition($viewBuilderDefinition);
+    }
+
+    foreach ($container->iterateOverviewBuilderDefinitions() as $overviewBuilderDefinition) {
+      if(!$overviewBuilderDefinition instanceof OverviewBuilderDefinitionInterface || !$overviewBuilderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($overviewBuilderDefinition);
+      $overviewBuilderDefinition->setVersionList($list);
+      $schema->addOverviewBuilderDefinition($overviewBuilderDefinition);
     }
   }
 

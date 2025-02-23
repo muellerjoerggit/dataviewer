@@ -5,7 +5,7 @@ namespace App\Item\ItemHandler_PreRendering;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\EntityViewBuilderInterface;
+use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
@@ -75,9 +75,9 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
   protected function getEntityOverviewOptions(ItemConfigurationInterface $itemConfiguration): array {
     $config = $itemConfiguration->getPreRenderingHandlerDefinition();
     return [
-      EntityViewBuilderInterface::FORMAT => FALSE,
-//      EntityViewBuilderInterface::PROPERTIES => $config['entityOverview'] ?? [],
-      EntityViewBuilderInterface::PROPERTIES => [],
+      ViewBuilderInterface::FORMAT => FALSE,
+//      ViewBuilderInterface::PROPERTIES => $config['entityOverview'] ?? [],
+      ViewBuilderInterface::PROPERTIES => [],
     ];
   }
 
@@ -107,10 +107,10 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
     $overview = $referenceHandler->getEntityOverview($entityKey);
 
     return [
-      'type' => EntityViewBuilderInterface::EXT_OVERVIEW_REFERENCE,
+      'type' => ViewBuilderInterface::EXT_OVERVIEW_REFERENCE,
       'data' => [
         'entityKey' => $entityKey->getFirstEntityKeyAsString(),
-        'label' => $options[EntityViewBuilderInterface::ENTITY_LABEL] ? $referenceHandler->getEntityLabel($entityKey) : $entityKey->getFirstUniqueIdentifierAsString(),
+        'label' => $options[ViewBuilderInterface::ENTITY_LABEL] ? $referenceHandler->getEntityLabel($entityKey) : $entityKey->getFirstUniqueIdentifierAsString(),
         'entityOverview' => $overview,
       ],
     ];

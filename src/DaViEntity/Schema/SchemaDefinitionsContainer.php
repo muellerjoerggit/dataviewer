@@ -11,6 +11,7 @@ use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinitionInterface;
 use App\DaViEntity\Creator\CreatorDefinitionInterface;
 use App\DaViEntity\DataProvider\DataProviderDefinitionInterface;
 use App\DaViEntity\ListProvider\ListProviderDefinitionInterface;
+use App\DaViEntity\OverviewBuilder\OverviewBuilderDefinitionInterface;
 use App\DaViEntity\Refiner\RefinerDefinitionInterface;
 use App\DaViEntity\Repository\RepositoryDefinitionInterface;
 use App\DaViEntity\Repository\RepositoryDefinition;
@@ -20,6 +21,7 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\Attribute\ExtEntityOverviewDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
+use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyAttributesContainer;
@@ -120,6 +122,16 @@ class SchemaDefinitionsContainer {
    * @var ExtEntityOverviewDefinitionInterface[]
    */
   private array $extendedEntityOverviewDefinitions = [];
+
+  /**
+   * @var ViewBuilderDefinitionInterface[]
+   */
+  private array $viewBuilderDefinitions = [];
+
+  /**
+   * @var OverviewBuilderDefinitionInterface[]
+   */
+  private array $overviewBuilderDefinitions = [];
 
   public function getEntityTypeAttr(): EntityTypeAttr | null {
     return $this->entityTypeAttr ?? null;
@@ -400,6 +412,34 @@ class SchemaDefinitionsContainer {
   public function iterateExtendedEntityOverviewDefinitions(): Generator {
     foreach ($this->extendedEntityOverviewDefinitions as $extendedEntityOverviewDefinition) {
       yield $extendedEntityOverviewDefinition;
+    }
+  }
+
+  public function addViewBuilderDefinition(ViewBuilderDefinitionInterface $definition): SchemaDefinitionsContainer {
+    $this->viewBuilderDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<ViewBuilderDefinitionInterface>
+   */
+  public function iterateViewBuilderDefinitions(): Generator {
+    foreach ($this->viewBuilderDefinitions as $definition) {
+      yield $definition;
+    }
+  }
+
+  public function addAddOverviewBuilderDefinition(OverviewBuilderDefinitionInterface $definition): SchemaDefinitionsContainer {
+    $this->overviewBuilderDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<OverviewBuilderDefinitionInterface>
+   */
+  public function iterateOverviewBuilderDefinitions(): Generator {
+    foreach ($this->overviewBuilderDefinitions as $definition) {
+      yield $definition;
     }
   }
 

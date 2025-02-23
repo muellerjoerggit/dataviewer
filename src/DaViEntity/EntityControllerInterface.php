@@ -13,12 +13,6 @@ interface EntityControllerInterface {
 
   public function loadAggregatedData(string $client, AggregationConfiguration $aggregation, FilterContainer $filterContainer = NULL): array|TableData;
 
-  public function preRenderEntity(EntityInterface $entity): array;
-
-  public function getExtendedEntityOverview(EntityInterface $entity, $options): array;
-
-  public function getEntityOverview(EntityInterface $entity, array $options = []): array;
-
   public function getEntityLabel(EntityInterface $entity): string;
 
 }

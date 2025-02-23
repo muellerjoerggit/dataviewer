@@ -14,10 +14,12 @@ use App\DaViEntity\ColumnBuilder\ColumnBuilderDefinitionInterface;
 use App\DaViEntity\Creator\CreatorDefinitionInterface;
 use App\DaViEntity\DataProvider\DataProviderDefinitionInterface;
 use App\DaViEntity\ListProvider\ListProviderDefinitionInterface;
+use App\DaViEntity\OverviewBuilder\OverviewBuilderDefinitionInterface;
 use App\DaViEntity\Refiner\RefinerDefinitionInterface;
 use App\DaViEntity\Repository\RepositoryDefinitionInterface;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\Validator\ValidatorDefinitionInterface;
+use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -105,6 +107,16 @@ class EntitySchema implements EntitySchemaInterface {
    * @var BaseQueryDefinitionInterface[]
    */
   private array $baseQueryDefinitions = [];
+
+  /**
+   * @var ViewBuilderDefinitionInterface[]
+   */
+  private array $viewBuilderDefinitions = [];
+
+  /**
+   * @var OverviewBuilderDefinitionInterface[]
+   */
+  private array $overviewBuilderDefinitions = [];
 
   public function __construct(
     private readonly string $entityClass,
@@ -577,6 +589,38 @@ class EntitySchema implements EntitySchemaInterface {
         continue;
       }
       return $definition->getValidatorClass();
+    }
+
+    return '';
+  }
+
+  public function addViewBuilderDefinition(ViewBuilderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->viewBuilderDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getViewBuilderClass(string $version): string {
+    foreach ($this->viewBuilderDefinitions as $definition) {
+      if(!$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition->getViewBuilderClass();
+    }
+
+    return '';
+  }
+
+  public function addOverviewBuilderDefinition(OverviewBuilderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->overviewBuilderDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getOverviewBuilderClass(string $version): string {
+    foreach ($this->overviewBuilderDefinitions as $definition) {
+      if(!$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition->getOverviewBuilderClass();
     }
 
     return '';

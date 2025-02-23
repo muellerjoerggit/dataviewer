@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Database\SqlFilter\SqlFilterBuilder;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\EntityViewBuilderInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +36,7 @@ class RestApiEntities extends AbstractController {
 
     foreach ($entityList->iterateEntityList() as $entityKeyString => $entityData) {
       $entityKey = EntityKey::createFromString($entityKeyString);
-      $overView['extOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [EntityViewBuilderInterface::FORMAT => FALSE]);
+      $overView['extOverview'] = $entityManager->getExtendedEntityOverview($entityKey, [ViewBuilderInterface::FORMAT => FALSE]);
       $overView['entityKey'] = $entityKeyString;
       $overView['entityLabel'] = $entityData['entityLabel'];
       $entities[$entityKeyString] = $overView;
