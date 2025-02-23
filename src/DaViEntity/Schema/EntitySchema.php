@@ -20,6 +20,7 @@ use App\DaViEntity\Repository\RepositoryDefinitionInterface;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\Validator\ValidatorDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
+use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -117,6 +118,11 @@ class EntitySchema implements EntitySchemaInterface {
    * @var OverviewBuilderDefinitionInterface[]
    */
   private array $overviewBuilderDefinitions = [];
+
+  /**
+   * @var AggregatedDataProviderDefinitionInterface[]
+   */
+  private array $aggregatedDataProviderDefinitions = [];
 
   public function __construct(
     private readonly string $entityClass,
@@ -621,6 +627,22 @@ class EntitySchema implements EntitySchemaInterface {
         continue;
       }
       return $definition->getOverviewBuilderClass();
+    }
+
+    return '';
+  }
+
+  public function addAggregatedDataProviderDefinition(AggregatedDataProviderDefinitionInterface $definition): EntitySchemaInterface {
+    $this->aggregatedDataProviderDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function getAggregatedDataProviderClass(string $version): string {
+    foreach ($this->aggregatedDataProviderDefinitions as $definition) {
+      if(!$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition->getAggregatedDataProviderClass();
     }
 
     return '';

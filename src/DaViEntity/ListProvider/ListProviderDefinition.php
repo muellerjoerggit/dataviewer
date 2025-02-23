@@ -7,7 +7,7 @@ use App\Services\Version\VersionListInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class ListProviderDefinition implements ListProviderDefinitionInterface {
+class ListProviderDefinition implements ListProviderDefinitionInterface {
 
   use DefinitionVersionTrait;
 

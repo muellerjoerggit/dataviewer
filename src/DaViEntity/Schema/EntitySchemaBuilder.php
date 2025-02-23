@@ -18,6 +18,7 @@ use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
+use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
 use App\Item\Property\PropertyAttributesReader;
 use App\Item\Property\PropertyConfigurationBuilder;
 use App\Services\Version\VersionListInterface;
@@ -334,6 +335,15 @@ class EntitySchemaBuilder {
       $list = $this->getVersionList($overviewBuilderDefinition);
       $overviewBuilderDefinition->setVersionList($list);
       $schema->addOverviewBuilderDefinition($overviewBuilderDefinition);
+    }
+
+    foreach ($container->iterateAggregatedDataProviderDefinitions() as $aggregatedDataProviderDefinition) {
+      if(!$aggregatedDataProviderDefinition instanceof AggregatedDataProviderDefinitionInterface || !$aggregatedDataProviderDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($aggregatedDataProviderDefinition);
+      $aggregatedDataProviderDefinition->setVersionList($list);
+      $schema->addAggregatedDataProviderDefinition($aggregatedDataProviderDefinition);
     }
   }
 

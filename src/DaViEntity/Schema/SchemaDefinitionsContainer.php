@@ -22,6 +22,7 @@ use App\DaViEntity\Schema\Attribute\ExtEntityOverviewDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use App\DaViEntity\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinitionInterface;
+use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyAttributesContainer;
@@ -132,6 +133,11 @@ class SchemaDefinitionsContainer {
    * @var OverviewBuilderDefinitionInterface[]
    */
   private array $overviewBuilderDefinitions = [];
+
+  /**
+   * @var AggregatedDataProviderDefinitionInterface[]
+   */
+  private array $aggregatedDataProviderDefinitions = [];
 
   public function getEntityTypeAttr(): EntityTypeAttr | null {
     return $this->entityTypeAttr ?? null;
@@ -429,7 +435,7 @@ class SchemaDefinitionsContainer {
     }
   }
 
-  public function addAddOverviewBuilderDefinition(OverviewBuilderDefinitionInterface $definition): SchemaDefinitionsContainer {
+  public function addOverviewBuilderDefinition(OverviewBuilderDefinitionInterface $definition): SchemaDefinitionsContainer {
     $this->overviewBuilderDefinitions[] = $definition;
     return $this;
   }
@@ -439,6 +445,20 @@ class SchemaDefinitionsContainer {
    */
   public function iterateOverviewBuilderDefinitions(): Generator {
     foreach ($this->overviewBuilderDefinitions as $definition) {
+      yield $definition;
+    }
+  }
+
+  public function addAggregatedDataProviderDefinition(AggregatedDataProviderDefinitionInterface $definition): SchemaDefinitionsContainer {
+    $this->aggregatedDataProviderDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<AggregatedDataProviderDefinitionInterface>
+   */
+  public function iterateAggregatedDataProviderDefinitions(): Generator {
+    foreach ($this->aggregatedDataProviderDefinitions as $definition) {
       yield $definition;
     }
   }

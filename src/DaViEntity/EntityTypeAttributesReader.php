@@ -19,6 +19,7 @@ use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
 use App\DaViEntity\ViewBuilder\ViewBuilderDefinition;
+use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Services\AbstractAttributesReader;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -95,7 +96,10 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
         $container->addViewBuilderDefinition($attribute);
         break;
       case OverviewBuilderDefinition::class:
-        $container->addAddOverviewBuilderDefinition($attribute);
+        $container->addOverviewBuilderDefinition($attribute);
+        break;
+      case SqlAggregatedDataProviderDefinition::class:
+        $container->addAggregatedDataProviderDefinition($attribute);
         break;
     }
   }
