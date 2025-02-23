@@ -86,7 +86,7 @@ use App\Item\Property\PropertyItemInterface;
       'usr_id.active' => 'active',
       'rol_id' => 'role',
     ],
-    labelCountColumn: 'Anzahl Benutzer mit Rollen',
+    labelCountColumn: 'Anzahl Benutzer',
     title: 'Anzahl Benutzer mit der Rolle / Status',
     description: 'Anzahl Benutzer mit der Rolle und Status'
   )

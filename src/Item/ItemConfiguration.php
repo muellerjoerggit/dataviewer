@@ -107,7 +107,7 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this;
   }
 
-
+  // pre rendering item handler ####################################
   public function setPreRenderingItemHandlerDefinition(PreRenderingItemHandlerDefinitionInterface $preRenderingItemHandlerDefinition): ItemConfigurationInterface {
     $this->preRenderingItemHandlerDefinition = $preRenderingItemHandlerDefinition;
     return $this;
@@ -116,7 +116,6 @@ class ItemConfiguration implements ItemConfigurationInterface {
   public function getPreRenderingHandlerDefinition(): PreRenderingItemHandlerDefinitionInterface {
     return $this->preRenderingItemHandlerDefinition;
   }
-
 
   // Validator item handler ####################################
   public function addValidatorItemHandlerDefinition(ValidatorItemHandlerDefinitionInterface $handler): ItemConfigurationInterface {
@@ -180,10 +179,6 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return isset($this->additionalDataHandlerDefinition) && $this->additionalDataHandlerDefinition->isValid();
   }
 
-  public function getPreRenderingItemHandlerDefinition(): PreRenderingItemHandlerDefinitionInterface {
-    return $this->preRenderingItemHandlerDefinition;
-  }
-
   // Formatter item handler ####################################
   public function setFormatterItemHandlerDefinition(FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition): ItemConfigurationInterface {
     $this->formatterItemHandlerDefinition = $formatterItemHandlerDefinition;
@@ -196,14 +191,6 @@ class ItemConfiguration implements ItemConfigurationInterface {
 
   public function getFormatterItemHandlerDefinition(): FormatterItemHandlerDefinitionInterface {
     return $this->formatterItemHandlerDefinition;
-  }
-
-  public function getHandlerByType(string $handlerType): string|array|bool {
-    if (!$this->hasHandlerByType($handlerType)) {
-      return FALSE;
-    }
-
-    return $this->handler[$handlerType];
   }
 
   public function hasHandlerByType($handlerType): bool {

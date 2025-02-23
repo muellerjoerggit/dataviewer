@@ -37,12 +37,15 @@ use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
 use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
+use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionAttr;
+use App\Item\ItemHandler_Formatter\OptionsFormatterItemHandler;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
 use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\LabelPropertyAttr;
+use App\Item\Property\Attribute\OptionItemSettingDefinition;
 use App\Item\Property\Attribute\PropertyAttr;
 use App\Item\Property\Attribute\PropertyPreDefinedAttr;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
@@ -158,9 +161,16 @@ class UserEntity extends AbstractEntity {
   ]
   #[EntityOverviewPropertyAttr(rank: 40)
   ]
+  #[OptionItemSettingDefinition(
+    options: [
+      0 => ['label' => 'inactive'],
+      1 => ['label' => 'active']
+    ]
+  )]
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'integer'],
   ])]
+  #[FormatterItemHandlerDefinitionAttr(handlerClass: OptionsFormatterItemHandler::class)]
   private $active;
 
 

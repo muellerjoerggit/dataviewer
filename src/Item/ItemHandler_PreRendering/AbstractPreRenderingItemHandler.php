@@ -4,8 +4,10 @@ namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\OverviewBuilder\ExtEntityOverviewEnum;
+use App\Item\ItemHandler\PreRenderingOptions;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerInterface;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
+use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemInterface;
 
 abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandlerInterface {
@@ -39,21 +41,22 @@ abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandle
 
   protected function buildValues(ItemInterface $item): array {
     $itemConfiguration = $item->getConfiguration();
-    $handlerSettings = $itemConfiguration->getPreRenderingHandlerDefinition();
+    $handlerDefinition = $itemConfiguration->getPreRenderingHandlerDefinition();
     $values = $item->getValuesAsArray();
+
+    /** @var $handlerDefinition PreRenderingItemHandlerDefinitionInterface */
 
     if ($itemConfiguration->hasFormatterHandler()) {
       $handler = $this->formatterLocator->getFormatterHandlerFromItem($item->getConfiguration());
-      $values = $handler->getArrayRawFormatted($item);
 
-      if (!isset($handlerSettings['default_formatter_output'])) {
-        return $values;
-      } elseif ($handlerSettings['default_formatter_output'] === FormatterItemHandlerInterface::OUTPUT_FORMATTED) {
-        $values = $handler->getArrayFormatted($item);
-      } elseif ($handlerSettings['default_formatter_output'] === FormatterItemHandlerInterface::OUTPUT_RAW) {
-        $values = $item->getValuesAsOneDimensionalArray();
-      } elseif ($handlerSettings['default_formatter_output'] === FormatterItemHandlerInterface::OUTPUT_RAW_FORMATTED) {
-        $values = $handler->getArrayRawFormatted($item);
+      switch($handlerDefinition->getFormatterOutput()) {
+        case PreRenderingOptions::OUTPUT_FORMATTED:
+          return $handler->getArrayFormatted($item);
+        case PreRenderingOptions::OUTPUT_RAW:
+          return $item->getValuesAsArray();
+        case PreRenderingOptions::OUTPUT_RAW_FORMATTED:
+        default:
+          return $handler->getArrayRawFormatted($item);
       }
     }
 

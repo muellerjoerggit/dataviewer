@@ -20,7 +20,7 @@ class OptionItemSettingDefinition extends AbstractItemSetting {
   }
 
   public function getLabel($option): string {
-    return $this->options[$option] ?? $option;
+    return $this->options[$option]['label'] ?? $option;
   }
 
 }
