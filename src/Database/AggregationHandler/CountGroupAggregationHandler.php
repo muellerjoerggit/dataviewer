@@ -59,7 +59,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
     }
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData | int {
     if(!$this->isValidAggregationDefinition($aggregationDefinition)) {
       return $this->createEmptyTableData();
     }

@@ -16,6 +16,6 @@ interface AggregatedDataProviderInterface {
     AggregationDefinitionInterface $aggregationDefinition,
     FilterContainer $filterContainer = null,
     array $options = []
-  ): TableData;
+  ): TableData | int;
 
 }

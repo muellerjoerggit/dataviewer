@@ -20,7 +20,7 @@ class CommonBaseQuery implements BaseQueryInterface {
   ) {}
 
   public function buildQueryFromSchema(string | EntityInterface $entityTypeClass, string $client, array $options = []): DaViQueryBuilder {
-    $options = $this->getDefaultQueryOptions($options);
+    $options = $this->mergeDefaultQueryOptions($options);
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityTypeClass);
 
     $queryBuilder = $this->getQueryBuilder($schema, $client);
@@ -42,9 +42,8 @@ class CommonBaseQuery implements BaseQueryInterface {
     return $queryBuilder;
   }
 
-  protected function getDefaultQueryOptions(array $options): array {
-    return array_merge(
-      [
+  protected function mergeDefaultQueryOptions(array $options): array {
+    return array_merge([
         EntityDataMapperInterface::OPTION_WITH_COLUMNS => true,
         EntityDataMapperInterface::OPTION_WITH_JOINS => true,
         EntityDataMapperInterface::OPTION_LIMIT => 50

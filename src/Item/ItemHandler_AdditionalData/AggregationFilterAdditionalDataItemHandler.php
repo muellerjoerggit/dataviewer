@@ -20,7 +20,7 @@ class AggregationFilterAdditionalDataItemHandler implements AdditionalDataItemHa
     private readonly EntityTypeSchemaRegister $schemaRegister,
   ) {}
 
-  public function getValues(EntityInterface $entity, string $property): TableData | array {
+  public function getValues(EntityInterface $entity, string $property): TableData | array | int {
     $itemConfiguration = $entity->getPropertyItem($property)->getConfiguration();
     $definition = $itemConfiguration->getAdditionalDataHandlerDefinition();
 

@@ -14,7 +14,7 @@ class ExtractPlaceholderAdditionalDataItemHandler implements AdditionalDataItemH
 
   private const MODE_TEXT = 'text';
 
-  public function getValues(EntityInterface $entity, string $property): TableData | array {
+  public function getValues(EntityInterface $entity, string $property): TableData | array | int  {
     $item = $entity->getPropertyItem($property);
     $itemConfiguration = $item->getConfiguration();
     $handlerSetting = $itemConfiguration->getAdditionalDataSetting();

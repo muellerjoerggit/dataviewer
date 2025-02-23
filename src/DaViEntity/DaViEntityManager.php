@@ -40,7 +40,13 @@ class DaViEntityManager {
     return $this->getEntityRepositoryFromEntityType($entityType, $filterContainer->getClient())->loadMultipleEntities($filterContainer, $options);
   }
 
-  public function loadAggregatedData(string $entityClass, string $client, AggregationDefinitionInterface $aggregation, FilterContainer $filterContainer = NULL, array $options = []): TableData {
+  public function loadAggregatedData(
+    string $entityClass,
+    string $client,
+    AggregationDefinitionInterface $aggregation,
+    FilterContainer $filterContainer = NULL,
+    array $options = []
+  ): TableData | int {
     $provider = $this->aggregatedDataProviderLocator->getAggregatedDataProvider($entityClass, $client);
     return $provider->fetchAggregatedData($entityClass, $client, $aggregation, $filterContainer, $options);
   }

@@ -34,14 +34,16 @@ class ExportEntityTypeConfiguration {
     }
 
     $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
-    [$referenceEntityType, $property] = $handler->getTargetSetting($itemConfiguration);
+    [$referenceEntityClass, $property] = $handler->getTargetSetting($itemConfiguration);
 
-      $schema = $this->schemaRegister->getEntityTypeSchema($referenceEntityType);
-      return [
-        'entityType' => $referenceEntityType,
-        'entityLabel' => $schema->getEntityLabel(),
-        'property' => $itemConfiguration->getItemName()
-      ];
+    $schema = $this->schemaRegister->getSchemaFromEntityClass($referenceEntityClass);
+    $referencedEntityType = $this->typesRegister->getEntityTypeByEntityClass($referenceEntityClass);
+
+    return [
+      'entityType' => $referencedEntityType,
+      'entityLabel' => $schema->getEntityLabel(),
+      'property' => $itemConfiguration->getItemName()
+    ];
   }
 
   private function getProperties(EntitySchema $schema): array {

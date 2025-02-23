@@ -10,7 +10,7 @@ use App\DaViEntity\Schema\EntitySchema;
 
 class NullAggregationHandler implements AggregationHandlerInterface {
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData | int {
     return TableData::createEmptyTableData();
   }
 

@@ -7,7 +7,7 @@ use App\DaViEntity\EntityInterface;
 
 class NullAdditionalDataItemHandler implements AdditionalDataItemHandlerInterface {
 
-  public function getValues(EntityInterface $entity, string $property): TableData|array {
+  public function getValues(EntityInterface $entity, string $property): TableData | array | int {
     return [];
   }
 

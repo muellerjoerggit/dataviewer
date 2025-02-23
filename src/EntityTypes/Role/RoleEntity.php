@@ -71,80 +71,90 @@ class RoleEntity extends AbstractEntity {
 
   use EntityPropertyTrait;
 
-  #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
-    EntityOverviewPropertyAttr(rank: 10),
-    DatabaseColumnDefinition,
-    UniquePropertyDefinition
-  ]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'integer'],
-  ])]
-  private PropertyItemInterface $rol_id;
+  /** ########################################################## rol_id */
+    #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
+      EntityOverviewPropertyAttr(rank: 10),
+      DatabaseColumnDefinition,
+      UniquePropertyDefinition
+    ]
+    #[PropertyPreDefinedAttr([
+      [PreDefined::class, 'integer'],
+    ])]
+    private PropertyItemInterface $rol_id;
+  /** ########################################################## */
 
-  #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_STRING
-  ),
-    LabelPropertyAttr,
-    SearchPropertyDefinition,
-    EntityOverviewPropertyAttr,
-    DatabaseColumnDefinition,
-  ]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'string'],
-  ])]
-  private PropertyItemInterface $title;
+  /** ########################################################## title */
+    #[PropertyAttr(
+      dataType: ItemInterface::DATA_TYPE_STRING
+    ),
+      LabelPropertyAttr,
+      SearchPropertyDefinition,
+      EntityOverviewPropertyAttr,
+      DatabaseColumnDefinition,
+    ]
+    #[PropertyPreDefinedAttr([
+      [PreDefined::class, 'string'],
+    ])]
+    private PropertyItemInterface $title;
+  /** ########################################################## */
 
-  #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_STRING
-  ),
-    SearchPropertyDefinition,
-    EntityOverviewPropertyAttr,
-    DatabaseColumnDefinition,
-  ]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'string'],
-  ])]
-  private PropertyItemInterface $description;
+  /** ########################################################## description */
+    #[PropertyAttr(
+      dataType: ItemInterface::DATA_TYPE_STRING
+    ),
+      SearchPropertyDefinition,
+      EntityOverviewPropertyAttr,
+      DatabaseColumnDefinition,
+    ]
+    #[PropertyPreDefinedAttr([
+      [PreDefined::class, 'string'],
+    ])]
+    private PropertyItemInterface $description;
+  /** ########################################################## */
 
-  #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_TABLE,
-    label: 'Anzahl Benutzer'
-  )]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'table'],
-  ])]
-  #[AggregationAdditionalDataHandlerDefinition(
-    handlerClass: AggregationFilterAdditionalDataItemHandler::class,
-    targetEntityClass: RoleUserMapEntity::class,
-    aggregationKey: 'count_users',
-    filters: [
-      'role' => [
+  /** ########################################################## count_users */
+    #[PropertyAttr(
+      dataType: ItemInterface::DATA_TYPE_INTEGER,
+      label: 'Anzahl Benutzer'
+    )]
+    #[PropertyPreDefinedAttr([
+      [PreDefined::class, 'simpleInteger'],
+    ])]
+    #[AggregationAdditionalDataHandlerDefinition(
+      handlerClass: AggregationFilterAdditionalDataItemHandler::class,
+      targetEntityClass: RoleUserMapEntity::class,
+      aggregationKey: 'count_users',
+      filters: [
+        'role' => [
+            'filter' => 'rol_id',
+            'filterMapping' => 'rol_id',
+          ]
+      ],
+    )]
+    private PropertyItemInterface $count_user;
+  /** ########################################################## */
+
+  /** ########################################################## count_user_status */
+    #[PropertyAttr(
+      dataType: ItemInterface::DATA_TYPE_TABLE,
+      label: 'Anzahl Benutzer nach Status'
+    )]
+    #[PropertyPreDefinedAttr([
+      [PreDefined::class, 'table'],
+    ])]
+    #[AggregationAdditionalDataHandlerDefinition(
+      handlerClass: AggregationFilterAdditionalDataItemHandler::class,
+      targetEntityClass: RoleUserMapEntity::class,
+      aggregationKey: 'count_users_status',
+      filters: [
+        'role' => [
           'filter' => 'rol_id',
           'filterMapping' => 'rol_id',
         ]
-    ],
-  )]
-  private PropertyItemInterface $count_user;
-
-  #[PropertyAttr(
-    dataType: ItemInterface::DATA_TYPE_TABLE,
-    label: 'Anzahl Benutzer nach Status'
-  )]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'table'],
-  ])]
-  #[AggregationAdditionalDataHandlerDefinition(
-    handlerClass: AggregationFilterAdditionalDataItemHandler::class,
-    targetEntityClass: RoleUserMapEntity::class,
-    aggregationKey: 'count_users_status',
-    filters: [
-      'role' => [
-        'filter' => 'rol_id',
-        'filterMapping' => 'rol_id',
-      ]
-    ],
-    propertyBlacklist: ['rol_id']
-  )]
-  private PropertyItemInterface $count_user_status;
+      ],
+      propertyBlacklist: ['rol_id']
+    )]
+    private PropertyItemInterface $count_user_status;
+  /** ########################################################## */
 
 }

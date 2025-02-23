@@ -19,7 +19,7 @@ class SqlAggregatedDataProvider implements AggregatedDataProviderInterface {
     private readonly AggregationHandlerLocator $aggregationHandlerLocator,
   ) {}
 
-  public function fetchAggregatedData(string $entityClass, string $client, AggregationDefinitionInterface $aggregationDefinition, FilterContainer $filterContainer = null, array $options = []): TableData {
+  public function fetchAggregatedData(string $entityClass, string $client, AggregationDefinitionInterface $aggregationDefinition, FilterContainer $filterContainer = null, array $options = []): TableData | int {
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityClass);
     $queryBuilder = $this->queryLocator->getBaseQuery($schema, $client)->buildQueryFromSchema($schema->getEntityClass(), $client, $options);
     $queryBuilder->setMaxResults(null);

@@ -17,17 +17,12 @@ class CountAggregationHandler extends AbstractAggregationHandler {
     $queryBuilder->select('COUNT(*) AS ' . self::COUNT_COLUMN);
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData {
+  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData | int {
     if(!$aggregationDefinition instanceof CountAggregationHandlerDefinition) {
       return $this->createEmptyTableData();
     }
 
-    $count = $this->executeQueryBuilder($queryBuilder, [EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ONE], 0);
-
-    return TableData::create(
-      [self::COUNT_COLUMN => $aggregationDefinition->getLabelCountColumn()],
-      [[self::COUNT_COLUMN =>  $count]],
-    );
+    return $this->executeQueryBuilder($queryBuilder, [EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ONE], 0);
   }
 
 }

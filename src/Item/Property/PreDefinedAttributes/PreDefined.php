@@ -19,6 +19,12 @@ class PreDefined {
     );
   }
 
+  public static function simpleInteger(): array {
+    return array_merge(
+      PreDefinedPreRenderingItemHandler::commonPreRenderingHandler(),
+    );
+  }
+
   public static function dateTime(): array {
     return array_merge(
       PreDefinedFilter::dateTimeFilter(),
