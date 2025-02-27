@@ -4,7 +4,8 @@ namespace App\Database\AggregationHandler;
 
 use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\Aggregation\AggregationHandlerInterface;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
@@ -19,7 +20,7 @@ class OptionsCountGroupAggregationHandler extends AbstractAggregationHandler {
     $this->formatterHandlerLocator = $formatterHandlerLocator;
   }
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, QueryBuilderInterface $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
     $properties = $aggregationConfiguration->getProperties();
     $blackList = $options[AggregationHandlerInterface::YAML_PARAM_PROPERTY_BLACKLIST] ?? [];
 
@@ -34,7 +35,7 @@ class OptionsCountGroupAggregationHandler extends AbstractAggregationHandler {
     }
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
+  public function processingAggregatedData(QueryBuilderInterface $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
     $data = $this->executeQueryBuilder($queryBuilder);
 
     $headerColumns = $aggregationConfiguration->getSetting('header');

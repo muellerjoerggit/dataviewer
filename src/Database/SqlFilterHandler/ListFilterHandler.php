@@ -2,7 +2,8 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
@@ -14,7 +15,7 @@ class ListFilterHandler extends InFilterHandler {
 
   protected const string COMPONENT_NAME = 'ListFilter';
 
-	public function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, $values, int $dataType): void {
+	public function setWhereIn(QueryBuilderInterface $queryBuilder, string $column, $values, int $dataType): void {
 		$values = $this->processValues($values);
 
 		if($values === false) {

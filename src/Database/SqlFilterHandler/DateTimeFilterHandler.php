@@ -3,10 +3,11 @@
 namespace App\Database\SqlFilterHandler;
 
 use App\Database\DatabaseInterface;
-use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use DateTime;
 use Exception;
@@ -15,7 +16,7 @@ class DateTimeFilterHandler extends AbstractFilterHandler implements SqlFilterHa
 
   protected const string COMPONENT_NAME = 'DateTimeFilter';
 
-	protected function buildWhere(DaViQueryBuilder $queryBuilder, array $filterData, string $column): bool {
+	protected function buildWhere(QueryBuilderInterface $queryBuilder, array $filterData, string $column): bool {
 		$parameterFrom = 'values_' . str_replace('.', '_', $column) . '_from';
 		$fromDateTime = $filterData['fromDateTime'];
 
@@ -60,7 +61,7 @@ class DateTimeFilterHandler extends AbstractFilterHandler implements SqlFilterHa
 		return true;
 	}
 
-	public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
+	public function extendQueryWithFilter(QueryBuilderInterface $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
 		$filterData = $this->getDateTime($filter);
 
 		if(!$filterData) {

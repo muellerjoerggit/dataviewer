@@ -2,17 +2,18 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\Database\SqlFilter\TextFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 class CommonTextFilterHandler extends AbstractFilterHandler {
 
   protected const string COMPONENT_NAME = 'CommonTextFilter';
 
-  public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
+  public function extendQueryWithFilter(QueryBuilderInterface $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $value = $filter->getValue();
     $column = $this->getColumn($filter, $schema);
     $filterType = $value['filterType'] ?? TextFilterInterface::FILTER_TYPE_CONTAINS;
@@ -25,7 +26,7 @@ class CommonTextFilterHandler extends AbstractFilterHandler {
     $this->setWhereTextFilter($queryBuilder, $column, $filterType, $value);
   }
 
-	private function setWhereTextFilter(DaViQueryBuilder $queryBuilder, string $column, string $filterType, $values): void {
+	private function setWhereTextFilter(QueryBuilderInterface $queryBuilder, string $column, string $filterType, $values): void {
 		$parameter = 'values_' . str_replace('.', '_', $column);
 
 		switch ($filterType) {

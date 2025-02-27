@@ -5,11 +5,11 @@ namespace App\DaViEntity;
 use App\Database\Aggregation\AggregationBuilder;
 use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\DatabaseLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\FilterContainer;
 use App\Database\SqlFilter\SqlFilterBuilder;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
-use App\DataCollections\EntityList;
 use App\DaViEntity\Schema\EntitySchema;
 
 class CommonEntityDataMapper implements EntityDataMapperInterface {
@@ -22,11 +22,11 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     private readonly AggregationBuilder $aggregationBuilder,
   ) {}
 
-  protected function getQueryBuilder(EntitySchema $schema, string $client): DaViQueryBuilder {
+  protected function getQueryBuilder(EntitySchema $schema, string $client): QueryBuilderInterface {
     return $this->databaseLocator->getDatabaseBySchema($schema)->createQueryBuilder($client);
   }
 
-  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder {
+  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): QueryBuilderInterface {
     $options = $this->getDefaultQueryOptions($options);
 
     $baseTable = $schema->getBaseTable();
@@ -68,7 +68,7 @@ class CommonEntityDataMapper implements EntityDataMapperInterface {
     );
   }
 
-  protected function executeQueryBuilder(DaViQueryBuilder $queryBuilder, array $options = []): mixed {
+  protected function executeQueryBuilder(QueryBuilderInterface $queryBuilder, array $options = []): mixed {
     return $this->executeQueryBuilderInternal($queryBuilder, $options, []);
   }
 

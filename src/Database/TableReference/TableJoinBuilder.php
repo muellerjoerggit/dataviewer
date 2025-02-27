@@ -2,11 +2,11 @@
 
 namespace App\Database\TableReference;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 
 class TableJoinBuilder {
@@ -17,12 +17,12 @@ class TableJoinBuilder {
     private readonly EntityReferenceItemHandlerLocator $referenceItemHandlerLocator,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): void {
+  public function joinTable(QueryBuilderInterface $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): void {
     $handler = $this->locator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
     $handler->joinTable($queryBuilder, $tableReferenceConfiguration);
   }
 
-  public function joinFromPropertyPath(DaViQueryBuilder $queryBuilder, EntitySchema $schema, string $path): void {
+  public function joinFromPropertyPath(QueryBuilderInterface $queryBuilder, EntitySchema $schema, string $path): void {
     $pathParts = explode('.', $path);
     $currentSchema = $schema;
 

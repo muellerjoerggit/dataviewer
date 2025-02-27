@@ -3,9 +3,9 @@
 namespace App\DaViEntity;
 
 use App\Database\Aggregation\AggregationConfiguration;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\FilterContainer;
-use App\DataCollections\EntityList;
 use App\DaViEntity\Schema\EntitySchema;
 
 interface EntityDataMapperInterface {
@@ -24,7 +24,7 @@ interface EntityDataMapperInterface {
 
   public const string OPTION_FETCH_TYPE = 'fetchType';
 
-  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): DaViQueryBuilder;
+  public function buildQueryFromSchema(EntitySchema $schema, string $client, array $options = []): QueryBuilderInterface;
 
   public function fetchAggregatedData(string $client, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration, FilterContainer $filterContainer = NULL): mixed;
 

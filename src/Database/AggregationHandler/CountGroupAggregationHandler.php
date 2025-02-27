@@ -4,7 +4,8 @@ namespace App\Database\AggregationHandler;
 
 use App\Database\Aggregation\AggregationConfiguration;
 use App\Database\Aggregation\AggregationHandlerInterface;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableReference\TableJoinBuilder;
 use App\DataCollections\TableData;
 use App\DaViEntity\Schema\EntitySchema;
@@ -34,7 +35,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
     private readonly TableJoinBuilder $tableJoinBuilder,
   ) {}
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, QueryBuilderInterface $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): void {
     $properties = $aggregationConfiguration->getProperties();
     $blackList = $options[AggregationHandlerInterface::YAML_PARAM_PROPERTY_BLACKLIST] ?? [];
     $queryBuilder->select('COUNT(*) as ' . AggregationHandlerInterface::YAML_PARAM_COUNT_COLUMN);
@@ -64,7 +65,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
 
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
+  public function processingAggregatedData(QueryBuilderInterface $queryBuilder, EntitySchema $schema, AggregationConfiguration $aggregationConfiguration): mixed {
     $data = $this->executeQueryBuilder($queryBuilder);
 
     $headerColumns = $aggregationConfiguration->getSetting('header');

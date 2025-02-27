@@ -2,7 +2,8 @@
 
 namespace App\Database\Aggregation;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 class AggregationBuilder {
@@ -11,7 +12,7 @@ class AggregationBuilder {
     private readonly AggregationHandlerLocator $aggregationHandlerLocator
   ) {}
 
-  public function fetchAggregatedData(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): mixed {
+  public function fetchAggregatedData(EntitySchema $schema, QueryBuilderInterface $queryBuilder, AggregationConfiguration $aggregationConfiguration, array $options = []): mixed {
     $handler = $this->aggregationHandlerLocator->getAggregationHandler($aggregationConfiguration);
     $handler->buildAggregatedQueryBuilder($schema, $queryBuilder, $aggregationConfiguration, $options);
     return $handler->processingAggregatedData($queryBuilder, $schema, $aggregationConfiguration);

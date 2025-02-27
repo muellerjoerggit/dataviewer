@@ -2,7 +2,8 @@
 
 namespace App\DaViEntity\ColumnBuilder;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -13,7 +14,7 @@ class CommonColumnBuilder implements ColumnBuilderInterface {
     private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
   ) {}
 
-  public function buildLabelColumn(DaViQueryBuilder $queryBuilder, string | EntityInterface $entityClass, bool $withEntityLabel = false): void {
+  public function buildLabelColumn(QueryBuilderInterface $queryBuilder, string | EntityInterface $entityClass, bool $withEntityLabel = false): void {
     $concat = '';
     $schema = $this->getSchema($entityClass);
     $entityLabelProperties = $schema->getEntityLabelProperties();
@@ -30,7 +31,7 @@ class CommonColumnBuilder implements ColumnBuilderInterface {
     $queryBuilder->addSelect('SUBSTRING(CONCAT_WS(" ", ' . $concat . '), 1, 50) AS entityLabel');
   }
 
-  public function buildEntityKeyColumn(DaViQueryBuilder $queryBuilder, string | EntityInterface $entityClass): void {
+  public function buildEntityKeyColumn(QueryBuilderInterface $queryBuilder, string | EntityInterface $entityClass): void {
     $concat = '';
     $client = $queryBuilder->getClient();
 

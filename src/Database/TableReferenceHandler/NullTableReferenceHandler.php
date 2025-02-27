@@ -2,13 +2,14 @@
 
 namespace App\Database\TableReferenceHandler;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableReference\TableReferenceHandlerInterface;
+use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\EntityTypes\NullEntity\NullEntity;
-use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 
 class NullTableReferenceHandler implements TableReferenceHandlerInterface {
 
@@ -16,9 +17,9 @@ class NullTableReferenceHandler implements TableReferenceHandlerInterface {
     private readonly EntityTypeSchemaRegister $entityTypeSchemaRegister,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void {}
+  public function joinTable(QueryBuilderInterface $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void {}
 
-  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity): DaViQueryBuilder {
+  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity): QueryBuilderInterface {
     // TODO: Implement getReferencedTableQuery() method.
   }
 

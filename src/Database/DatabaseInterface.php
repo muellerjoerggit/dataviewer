@@ -2,6 +2,8 @@
 
 namespace App\Database;
 
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
@@ -17,7 +19,7 @@ interface DatabaseInterface {
 
   public function getConnection(string $client): Connection;
 
-  public function createQueryBuilder(string $client): DaViQueryBuilder;
+  public function createQueryBuilder(string $client): QueryBuilderInterface;
 
   public function tableExists(string $client, string $tableName): bool;
 
@@ -25,8 +27,8 @@ interface DatabaseInterface {
 
   public function fetchAssociativeFromSql(string $client, string $sql): array;
 
-  public function fetchAssociativeFromQueryBuilder(DaViQueryBuilder $queryBuilder): array;
+  public function fetchAssociativeFromQueryBuilder(QueryBuilderInterface $queryBuilder): array;
 
-  public function getCountResultFromQueryBuilder(DaViQueryBuilder $queryBuilder): mixed;
+  public function getCountResultFromQueryBuilder(QueryBuilderInterface $queryBuilder): mixed;
 
 }

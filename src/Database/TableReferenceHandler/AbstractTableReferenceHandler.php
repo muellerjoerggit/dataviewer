@@ -3,7 +3,8 @@
 namespace App\Database\TableReferenceHandler;
 
 use App\Database\BaseQuery\BaseQueryLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableReference\TableReferenceHandlerInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\EntityInterface;
@@ -19,7 +20,7 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     protected readonly BaseQueryLocator $baseQueryLocator,
   ) {}
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void {
+  public function joinTable(QueryBuilderInterface $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration, bool $innerJoin = false): void {
     $toSchema = $this->getToSchema($tableReferenceConfiguration);
     $fromSchema = $this->getFromSchema($tableReferenceConfiguration);
 
@@ -39,7 +40,7 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     }
   }
 
-  abstract public function getJoinCondition(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null;
+  abstract public function getJoinCondition(QueryBuilderInterface $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null;
 
   public function getFromSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema {
     return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getFromEntityClass());
@@ -49,7 +50,7 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getToEntityClass());
   }
 
-  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity, array $options = []): DaViQueryBuilder {
+  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity, array $options = []): QueryBuilderInterface {
     // ToDo: implement NullQueryBuilder
     $referencedEntityClass = $this->getReferencedEntityClass($tableReferenceConfiguration);
     $baseQuery = $this->baseQueryLocator->getBaseQueryFromEntityClass($referencedEntityClass, $fromEntity->getClient());

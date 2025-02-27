@@ -2,9 +2,10 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 class NullCheckFilterHandler extends AbstractFilterHandler {
@@ -14,7 +15,7 @@ class NullCheckFilterHandler extends AbstractFilterHandler {
 
   public const string COMPONENT_NAME = 'SelectSingleFilter';
 
-  public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
+  public function extendQueryWithFilter(QueryBuilderInterface $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $value = $filter->getValue();
     $column = $this->getColumn($filter, $schema);
     $value = is_array($value) ? reset($value) : $value;

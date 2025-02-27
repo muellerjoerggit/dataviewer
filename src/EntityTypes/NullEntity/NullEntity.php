@@ -9,6 +9,9 @@ use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueKey;
 use App\Item\ItemInterface;
+use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
+use App\Item\Property\Attribute\PropertyAttr;
+use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyItemInterface;
 use App\Logger\LogItems\LogItemInterface;
 use Generator;
@@ -18,6 +21,12 @@ use Generator;
 class NullEntity implements EntityInterface {
 
   public const string ENTITY_TYPE = 'NullEntity';
+
+  #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
+    EntityOverviewPropertyAttr,
+    UniquePropertyDefinition
+  ]
+  private int $id;
 
   public function __construct(
     protected readonly EntitySchema $schema,

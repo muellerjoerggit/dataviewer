@@ -5,7 +5,8 @@ namespace App\Database\TableReferenceHandler;
 
 use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\DatabaseLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -20,7 +21,7 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
     parent::__construct($schemaRegister, $baseQueryLocator);
   }
 
-  public function getJoinCondition(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null {
+  public function getJoinCondition(QueryBuilderInterface $queryBuilder, TableReferenceDefinitionInterface $tableReferenceConfiguration): string | null {
     if(!$tableReferenceConfiguration instanceof CommonTableReferenceDefinition) {
       return null;
     }

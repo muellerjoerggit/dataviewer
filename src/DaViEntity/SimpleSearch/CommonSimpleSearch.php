@@ -3,7 +3,8 @@
 namespace App\DaViEntity\SimpleSearch;
 
 use App\Database\BaseQuery\BaseQueryLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderLocator;
 use App\DaViEntity\EntityDataMapperInterface;
@@ -51,7 +52,7 @@ class CommonSimpleSearch implements SimpleSearchInterface {
     return $this->executeQueryBuilderInternal($queryBuilder);
   }
 
-  protected function buildWhere(DaViQueryBuilder $queryBuilder, EntitySchema $schema, string $searchString): void {
+  protected function buildWhere(QueryBuilderInterface $queryBuilder, EntitySchema $schema, string $searchString): void {
     $searchProperties = $schema->getSearchProperties();
     $queryBuilder->setMaxResults(15);
 

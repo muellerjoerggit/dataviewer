@@ -3,7 +3,8 @@
 namespace App\Database\BaseQuery;
 
 use App\Database\DatabaseLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\EntityDataMapperInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
@@ -19,7 +20,7 @@ class CommonBaseQuery implements BaseQueryInterface {
     private readonly VersionProperties $versionsProperties,
   ) {}
 
-  public function buildQueryFromSchema(string | EntityInterface $entityTypeClass, string $client, array $options = []): DaViQueryBuilder {
+  public function buildQueryFromSchema(string | EntityInterface $entityTypeClass, string $client, array $options = []): QueryBuilderInterface {
     $options = $this->getDefaultQueryOptions($options);
     $schema = $this->entityTypeSchemaRegister->getSchemaFromEntityClass($entityTypeClass);
 
@@ -53,7 +54,7 @@ class CommonBaseQuery implements BaseQueryInterface {
     );
   }
 
-  protected function getQueryBuilder(EntitySchema $schema, string $client): DaViQueryBuilder {
+  protected function getQueryBuilder(EntitySchema $schema, string $client): QueryBuilderInterface {
     return $this->databaseLocator->getDatabaseBySchema($schema)->createQueryBuilder($client);
   }
 

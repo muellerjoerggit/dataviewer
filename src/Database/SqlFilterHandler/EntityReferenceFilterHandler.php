@@ -2,9 +2,10 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinitionAttr;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
@@ -19,7 +20,7 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
 		protected readonly EntityTypeSchemaRegister $schemaRegister,
 	) {}
 
-	public function setWhereIn(DaViQueryBuilder $queryBuilder, string $column, mixed $values, int $dataType): bool {
+	public function setWhereIn(QueryBuilderInterface $queryBuilder, string $column, mixed $values, int $dataType): bool {
 		$parameter = 'values_' . str_replace('.', '_', $column);
 
 		$queryBuilder->andWhere(
@@ -30,7 +31,7 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
 		return true;
 	}
 
-	public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
+	public function extendQueryWithFilter(QueryBuilderInterface $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
 		$value = $filter->getValue();
     $property = $filter->getFilterDefinition()->getProperty();
 		$column = $this->getColumn($filter, $schema);
