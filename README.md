@@ -1,51 +1,92 @@
-# Symfony Docker
+# DaVi
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+DaVi or Data Viewer is a web application to view raw data from a database. In contrast to classic database administration, such as adminer or PHPMyAdmin, it's not all about tables, but about entities.
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+In order to use DaVi you must first create an entity. Then you specify which columns/properties this entity should have. With this information, DaVi can then read the data from the database. So just like in any database management software.
 
-## Getting Started
+But DaVi can do even more. You can add different handlers to each column that can refine the data, create links to other data, or format data. For example, different date formats can be used in the database - such as Unixtime - which is then converted into a readable date using the appropriate handler. Another example are JSON data. These can be validated using the appropriate handler. 
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --no-cache` to build fresh images
-3. Run `docker compose up --pull always -d --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+So you don't need another external software to check the data. You have all in one app and you can develop for specific use cases new handlers.
 
-## Features
+## Configuration
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+Entities are configured with yaml files. In this example this user entity has four properties.
+<pre>
+properties:
+  usr_id:
+    preDefined: "Integer"
+    column: "usr_id"
+    label: "User ID"
+  name:
+    preDefined: "String"
+    column: "name"
+    label: "Name"
+  active:
+    preDefined: "Integer"
+    column: "active"
+    label: "Active"
+    settings:
+      options:
+        0:
+          label: 'inactive'
+        1:
+          label: 'active'
+    handler:
+      valueFormatterItemHandler: "OptionsValueFormatterItemHandler"
+  inactivation_date:
+    preDefined: "Date"
+    column: "inactivation_date"
+    label: "Inactivation date"
+    handler:
+      valueFormatterItemHandler: "DateTimeValueFormatterItemHandler"
+</pre>
+The active and inactivation date columns have each an item handler, which formats the raw data. In the first case this shows what the raw values 0 and 1 mean and in the second case the date is converted from the standard database format to an easier to read format.
 
-**Enjoy!**
+Another example with two columns. One contains HTML and the other JSON. The JSON column must contain a valid JSON object, otherwise an error will occur.
+<pre>
+properties:
+  description:
+    preDefined: "HtmlItem"
+    label: "Description"
+    column: "description"
+    length: 65535
+    handler:
+      preRenderingItemHandler: "HtmlPreRenderingItemHandler"
+  parameter:
+    preDefined: "JsonItem"
+    label: "parameter"
+    column: "parameter"
+    length: 65535
+    handler:
+      preRenderingItemHandler: "JsonPreRenderingItemHandler"
+      validatorItemHandler
+        JsonValidatorItemHandler: 
+          jsonType: "jsonObject" 
+          jsonMandatory: true 
+          logCode: "INT-2000"
+</pre>
 
-## Docs
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+## Frontend
+There is a frontend developed with React. You can find it here: https://github.com/muellerjoerggit/dataviewer_frontend
 
-## License
+Here are two example pictures. The first image shows a list of all users found. And the second image shows a specific user.
+![img.png](docs/frontend1.png)
 
-Symfony Docker is available under the MIT License.
+![img.png](docs/frontend2.png)
+
+## Getting started
+The data viewer is aimed more at technically savvy users and therefore there is no login area. Access control can be done via HTTP authentication.
+
+You have to configure your entity types. You can find some examples under src/DaViEntity/EntityTypes. 
+
+Then clients also have to be created. If you for example have five customers, you have to create for every customer a client.
+
+With the command <code>php bin/console make davi:generate:example-data:user</code> you can create some example data.
 
 ## Credits
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+DaVi builds on top of Symfony, Symfony skeleton and FrankenPHP. Symfony Docker and Symfony skeleton are available under the MIT License.
+
+https://github.com/dunglas/symfony-docker
+https://github.com/symfony/skeleton
