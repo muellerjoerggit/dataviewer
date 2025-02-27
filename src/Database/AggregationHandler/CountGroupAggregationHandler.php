@@ -5,7 +5,7 @@ namespace App\Database\AggregationHandler;
 use App\Database\Aggregation\AggregationHandlerInterface;
 use App\Database\AggregationHandler\Attribute\AggregationDefinitionInterface;
 use App\Database\AggregationHandler\Attribute\CountGroupAggregationHandlerDefinition;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\Exceptions\NotJoinableException;
 use App\Database\TableJoinBuilder;
 use App\DataCollections\TableData;
@@ -27,7 +27,7 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
     protected readonly TableJoinBuilder $tableJoinBuilder,
   ) {}
 
-  public function buildAggregatedQueryBuilder(EntitySchema $schema, DaViQueryBuilder $queryBuilder, AggregationDefinitionInterface $aggregationDefinition, array $options = []): void {
+  public function buildAggregatedQueryBuilder(EntitySchema $schema, QueryBuilderInterface $queryBuilder, AggregationDefinitionInterface $aggregationDefinition, array $options = []): void {
     if(!$this->isValidAggregationDefinition($aggregationDefinition)) {
       return;
     }
@@ -64,13 +64,12 @@ class CountGroupAggregationHandler extends AbstractAggregationHandler {
     }
   }
 
-  public function processingAggregatedData(DaViQueryBuilder $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData | int {
+  public function processingAggregatedData(QueryBuilderInterface $queryBuilder, EntitySchema $schema, AggregationDefinitionInterface $aggregationDefinition): TableData | int {
     if(!$this->isValidAggregationDefinition($aggregationDefinition)) {
       return $this->createEmptyTableData();
     }
 
     /** @var $aggregationDefinition CountGroupAggregationHandlerDefinition */
-
     $data = $this->executeQueryBuilder($queryBuilder);
 
     $headerColumns = $aggregationDefinition->getHeader();

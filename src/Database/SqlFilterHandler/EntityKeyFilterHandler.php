@@ -2,17 +2,18 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\DaViQueryBuilder;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntitySchema;
 use Doctrine\DBAL\ArrayParameterType;
 
 class EntityKeyFilterHandler extends AbstractFilterHandler implements SqlFilterHandlerInterface {
 
-  public function extendQueryWithFilter(DaViQueryBuilder $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
+  public function extendQueryWithFilter(QueryBuilderInterface $queryBuilder, SqlFilterInterface $filter, EntitySchema $schema): void {
     $entityKeys = $filter->getValue();
     $options = $filter->getOptions();
 
@@ -20,7 +21,7 @@ class EntityKeyFilterHandler extends AbstractFilterHandler implements SqlFilterH
     $this->setWhereIn($queryBuilder, $schema, $entityKeys, $notOperator);
   }
 
-  private function setWhereIn(DaViQueryBuilder $queryBuilder, EntitySchema $schema, array $entityKeys, bool $notOperator = FALSE): void {
+  private function setWhereIn(QueryBuilderInterface $queryBuilder, EntitySchema $schema, array $entityKeys, bool $notOperator = FALSE): void {
     $entityTypes = [];
     $uniqueIdentifiers = [];
     $outerExpressions = [];

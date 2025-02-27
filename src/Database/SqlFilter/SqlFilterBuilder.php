@@ -2,10 +2,11 @@
 
 namespace App\Database\SqlFilter;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilterHandler\Attribute\FilterDefaultValueInterface;
-use App\DaViEntity\Schema\EntitySchema;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
+use App\DaViEntity\Schema\EntitySchema;
 
 class SqlFilterBuilder {
 
@@ -31,7 +32,7 @@ class SqlFilterBuilder {
     return $mandatoryFilters;
   }
 
-  public function buildFilteredQueryMultipleFilters(DaViQueryBuilder $queryBuilder, FilterContainer $filters, EntitySchema $schema): void {
+  public function buildFilteredQueryMultipleFilters(QueryBuilderInterface $queryBuilder, FilterContainer $filters, EntitySchema $schema): void {
     foreach ($filters->iterateFilters() as $filter) {
       if($filter instanceof SqlFilterDefinitionInterface
         && $filter instanceof FilterDefaultValueInterface
@@ -46,7 +47,7 @@ class SqlFilterBuilder {
     }
   }
 
-  public function buildFilteredQuery(DaViQueryBuilder $queryBuilder, SqlFilter $filter, EntitySchema $schema): void {
+  public function buildFilteredQuery(QueryBuilderInterface $queryBuilder, SqlFilter $filter, EntitySchema $schema): void {
     $handler = $this->filterHandlerLocator->getFilterHandlerFromFilterDefinition($filter->getFilterDefinition());
 
     $handler->extendQueryWithFilter($queryBuilder, $filter, $schema);

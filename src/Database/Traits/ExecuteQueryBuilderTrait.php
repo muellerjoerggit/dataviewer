@@ -2,13 +2,14 @@
 
 namespace App\Database\Traits;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\EntityDataMapperInterface;
 use Doctrine\DBAL\Exception;
 
 trait ExecuteQueryBuilderTrait {
 
-  protected function executeQueryBuilderInternal(DaViQueryBuilder $queryBuilder, array $options = [], $default = null): mixed {
+  protected function executeQueryBuilderInternal(QueryBuilderInterface $queryBuilder, array $options = [], $default = null): mixed {
     $options = array_merge([
       EntityDataMapperInterface::OPTION_FETCH_TYPE => EntityDataMapperInterface::FETCH_TYPE_ALL_ASSOCIATIVE,
     ],
@@ -26,7 +27,7 @@ trait ExecuteQueryBuilderTrait {
         default => $queryBuilder->fetchAllAssociative(),
       };
     } catch (Exception $exception) {
-
+      dd($queryBuilder, $exception);
     }
 
     return $ret;

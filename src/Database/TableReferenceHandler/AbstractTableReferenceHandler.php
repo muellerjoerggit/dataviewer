@@ -3,14 +3,14 @@
 namespace App\Database\TableReferenceHandler;
 
 use App\Database\BaseQuery\BaseQueryLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\NullQueryBuilder;
 use App\Database\TableReference\TableReferenceHandlerInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\EntityInterface;
-use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\EntityTypes\NullEntity\NullEntity;
 use Doctrine\DBAL\ArrayParameterType;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 
 abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInterface {
 
@@ -19,8 +19,11 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     protected readonly BaseQueryLocator $baseQueryLocator,
   ) {}
 
-  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity, array $options = []): DaViQueryBuilder {
-    // ToDo: implement NullQueryBuilder
+  public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity, array $options = []): QueryBuilderInterface {
+    if(!$tableReferenceConfiguration->isValid()) {
+      return NullQueryBuilder::create();
+    }
+
     $referencedEntityClass = $this->getReferencedEntityClass($tableReferenceConfiguration);
     $baseQuery = $this->baseQueryLocator->getBaseQueryFromEntityClass($referencedEntityClass, $fromEntity->getClient());
     $toSchema = $this->schemaRegister->getSchemaFromEntityClass($referencedEntityClass);

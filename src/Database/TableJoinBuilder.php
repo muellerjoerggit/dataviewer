@@ -3,6 +3,7 @@
 namespace App\Database;
 
 use App\Database\Exceptions\NotJoinableException;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Item\ItemConfigurationInterface;
@@ -19,7 +20,7 @@ class TableJoinBuilder {
   /**
    * @throws NotJoinableException
    */
-  public function joinFromPropertyPath(DaViQueryBuilder $queryBuilder, EntitySchema $schema, string $path): void {
+  public function joinFromPropertyPath(QueryBuilderInterface $queryBuilder, EntitySchema $schema, string $path): void {
     $pathParts = explode('.', $path);
     $currentSchema = $schema;
 
@@ -44,7 +45,7 @@ class TableJoinBuilder {
   }
 
   public function joinTable(
-      DaViQueryBuilder $queryBuilder,
+      QueryBuilderInterface $queryBuilder,
       EntitySchema $fromSchema,
       string $fromProperty,
       EntitySchema $toSchema,
@@ -68,7 +69,7 @@ class TableJoinBuilder {
     return true;
   }
 
-  protected function getJoinCondition(DaViQueryBuilder $queryBuilder, EntitySchema $fromSchema, string $fromProperty, EntitySchema $toSchema, string $toProperty): string | null {
+  protected function getJoinCondition(QueryBuilderInterface $queryBuilder, EntitySchema $fromSchema, string $fromProperty, EntitySchema $toSchema, string $toProperty): string | null {
 
     $fromColumn = $this->getColumn($fromSchema, $fromProperty);
     $toColumn = $this->getColumn($toSchema, $toProperty);

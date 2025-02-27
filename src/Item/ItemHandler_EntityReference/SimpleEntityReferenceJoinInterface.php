@@ -2,7 +2,7 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
@@ -13,7 +13,7 @@ use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDef
  */
 interface SimpleEntityReferenceJoinInterface extends EntityReferenceItemHandlerInterface {
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, ItemConfigurationInterface $itemConfiguration, EntitySchema $fromSchema, bool $innerJoin = false): void;
+  public function joinTable(QueryBuilderInterface $queryBuilder, ItemConfigurationInterface $itemConfiguration, EntitySchema $fromSchema, bool $innerJoin = false): void;
 
   public function getTargetSetting(EntityReferenceItemHandlerDefinitionInterface | ItemConfigurationInterface $referenceDefinition): array;
 

@@ -4,18 +4,15 @@ namespace App\Database\TableReferenceHandler;
 
 
 use App\Database\BaseQuery\BaseQueryLocator;
-use App\Database\DatabaseLocator;
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableJoinBuilder;
-use App\Database\TableReference\SimpleTableReferenceHandlerInterface;
-use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonTableReferenceHandler extends AbstractTableReferenceHandler implements SimpleTableReferenceHandlerInterface {
+class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
 
-	public function __construct(
+  public function __construct(
     protected readonly TableJoinBuilder $joinBuilder,
     EntityTypeSchemaRegister $schemaRegister,
     BaseQueryLocator $baseQueryLocator,
@@ -27,7 +24,7 @@ class CommonTableReferenceHandler extends AbstractTableReferenceHandler implemen
     return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getToEntityClass());
   }
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, TableReferenceDefinitionInterface $tableReferenceDefinition, EntitySchema $fromSchema, bool $innerJoin = true): void {
+  public function joinTable(QueryBuilderInterface $queryBuilder, TableReferenceDefinitionInterface $tableReferenceDefinition, EntitySchema $fromSchema, bool $innerJoin = true): void {
     $toSchema = $this->getToSchema($tableReferenceDefinition);
     $targetProperty = $tableReferenceDefinition->getToPropertyCondition();
     $fromProperty = $tableReferenceDefinition->getFromPropertyCondition();

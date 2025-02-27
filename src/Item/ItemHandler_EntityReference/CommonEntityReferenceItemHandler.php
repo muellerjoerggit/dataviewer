@@ -2,7 +2,7 @@
 
 namespace App\Item\ItemHandler_EntityReference;
 
-use App\Database\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableJoinBuilder;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
@@ -139,7 +139,7 @@ class CommonEntityReferenceItemHandler implements SimpleEntityReferenceJoinInter
     return $collection->hasValues() ? $collection : null;
   }
 
-  public function joinTable(DaViQueryBuilder $queryBuilder, ItemConfigurationInterface $itemConfiguration, EntitySchema $fromSchema, bool $innerJoin = false): void {
+  public function joinTable(QueryBuilderInterface $queryBuilder, ItemConfigurationInterface $itemConfiguration, EntitySchema $fromSchema, bool $innerJoin = false): void {
     [$targetClass, $targetProperty] = $this->getTargetSetting($itemConfiguration);
     $toSchema = $this->schemaRegister->getSchemaFromEntityClass($targetClass);
     $fromProperty = $itemConfiguration->getItemName();

@@ -2,6 +2,8 @@
 
 namespace App\Database;
 
+use App\Database\QueryBuilder\DaViQueryBuilder;
+use App\Database\QueryBuilder\QueryBuilderInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryException;
@@ -49,7 +51,7 @@ abstract class AbstractDaViDatabase implements DatabaseInterface {
     return $this->connectionCreator->createConnectionWithoutDbName();
   }
 
-  public function createQueryBuilder(string $client): DaViQueryBuilder {
+  public function createQueryBuilder(string $client): QueryBuilderInterface {
     return new DaViQueryBuilder($this->getConnection($client), $client);
   }
 
@@ -85,7 +87,7 @@ abstract class AbstractDaViDatabase implements DatabaseInterface {
     }
   }
 
-  public function fetchAssociativeFromQueryBuilder(DaViQueryBuilder $queryBuilder): array {
+  public function fetchAssociativeFromQueryBuilder(QueryBuilderInterface $queryBuilder): array {
     try {
       return $queryBuilder->fetchAllAssociative();
     } catch (Exception $exception) {
@@ -94,7 +96,7 @@ abstract class AbstractDaViDatabase implements DatabaseInterface {
     }
   }
 
-  public function getCountResultFromQueryBuilder(DaViQueryBuilder $queryBuilder): int {
+  public function getCountResultFromQueryBuilder(QueryBuilderInterface $queryBuilder): int {
     $queryBuilder
       ->select('1')
       ->setMaxResults(NULL);
