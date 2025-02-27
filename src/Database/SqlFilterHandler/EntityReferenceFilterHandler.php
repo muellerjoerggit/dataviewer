@@ -9,6 +9,7 @@ use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinitionAt
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
+use App\Item\ItemHandler_EntityReference\SimpleEntityReferenceJoinInterface;
 
 class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFilterInterface {
 
@@ -46,12 +47,14 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
 
 		$property = $filterDefinition->getProperty();
 		$config = $schema->getProperty($property);
+    $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($config);
 
 		if($filterDefinition->hasTargetEntity()) {
       $targetEntityClass = $filterDefinition->getTargetEntityClass();
-		} else {
-      $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($config);
+		} elseif($handler instanceof SimpleEntityReferenceJoinInterface) {
       [$targetEntityClass, $property] = $handler->getTargetSetting($config);
+    } else {
+      return [];
     }
 
 		$targetSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);

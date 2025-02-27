@@ -19,10 +19,6 @@ abstract class AbstractTableReferenceHandler implements TableReferenceHandlerInt
     protected readonly BaseQueryLocator $baseQueryLocator,
   ) {}
 
-  public function getToSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema {
-    return $this->schemaRegister->getSchemaFromEntityClass($tableReferenceConfiguration->getToEntityClass());
-  }
-
   public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity, array $options = []): DaViQueryBuilder {
     // ToDo: implement NullQueryBuilder
     $referencedEntityClass = $this->getReferencedEntityClass($tableReferenceConfiguration);

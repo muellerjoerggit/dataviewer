@@ -5,6 +5,7 @@ namespace App\Database;
 use App\Database\Exceptions\NotJoinableException;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
+use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemHandler_EntityReference\SimpleEntityReferenceJoinInterface;
 
@@ -40,6 +41,47 @@ class TableJoinBuilder {
 
       $currentSchema = $this->schemaRegister->getSchemaFromEntityClass($targetEntityClass);
     }
+  }
+
+  public function joinTable(
+      DaViQueryBuilder $queryBuilder,
+      EntitySchema $fromSchema,
+      string $fromProperty,
+      EntitySchema $toSchema,
+      string $toProperty,
+      bool $innerJoin = false
+    ): bool {
+
+    $condition = $this->getJoinCondition($queryBuilder, $fromSchema, $fromProperty, $toSchema, $toProperty);
+    $fromTable = $fromSchema->getBaseTable();
+    $toTable = $toSchema->getBaseTable();
+
+    if(empty($toTable) || empty($fromTable) || !$condition) {
+      return false;
+    }
+
+    if($innerJoin) {
+      $queryBuilder->innerJoin($fromTable, $toTable, $toTable, $condition);
+    } else {
+      $queryBuilder->leftJoin($fromTable, $toTable, $toTable, $condition);
+    }
+    return true;
+  }
+
+  protected function getJoinCondition(DaViQueryBuilder $queryBuilder, EntitySchema $fromSchema, string $fromProperty, EntitySchema $toSchema, string $toProperty): string | null {
+
+    $fromColumn = $this->getColumn($fromSchema, $fromProperty);
+    $toColumn = $this->getColumn($toSchema, $toProperty);
+
+    if(empty($fromColumn) || empty($toColumn)) {
+      return null;
+    }
+
+    return $queryBuilder->expr()->eq($toColumn, $fromColumn);
+  }
+
+  protected function getColumn(EntitySchema $schema, string $property): string {
+    return !empty($property) ? $schema->getColumn($property) : '';
   }
 
 }

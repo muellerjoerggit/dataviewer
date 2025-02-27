@@ -20,8 +20,6 @@ interface EntityReferenceItemHandlerInterface {
 
   public function buildEntityKey($value, EntityReferenceItemHandlerDefinitionInterface $referenceDefinition, string $client): ?EntityKey;
 
-  public function getTargetSetting(EntityReferenceItemHandlerDefinitionInterface | ItemConfigurationInterface $referenceDefinition): array;
-
   public function buildEntityKeyCollection(EntityInterface $entity, string $property): EntityKeyCollection | null;
 
 }

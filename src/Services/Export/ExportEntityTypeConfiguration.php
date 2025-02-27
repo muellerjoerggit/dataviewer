@@ -7,6 +7,7 @@ use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
+use App\Item\ItemHandler_EntityReference\SimpleEntityReferenceJoinInterface;
 
 class ExportEntityTypeConfiguration {
 
@@ -34,6 +35,11 @@ class ExportEntityTypeConfiguration {
     }
 
     $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
+
+    if(!$handler instanceof SimpleEntityReferenceJoinInterface) {
+      return [];
+    }
+
     [$referenceEntityClass, $property] = $handler->getTargetSetting($itemConfiguration);
 
     $schema = $this->schemaRegister->getSchemaFromEntityClass($referenceEntityClass);

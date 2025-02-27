@@ -2,6 +2,7 @@
 
 namespace App\Item\Property;
 
+use App\Database\TableReference\SimpleTableReferenceHandlerInterface;
 use App\Database\TableReference\TableReferenceHandlerLocator;
 use App\DaViEntity\Schema\EntitySchema;
 use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
@@ -91,6 +92,10 @@ class PropertyConfigurationBuilder {
 
     $tableReferenceConfiguration = $schema->getTableReference($name);
     $handler = $this->tableReferenceHandlersLocator->getTableHandlerFromConfiguration($tableReferenceConfiguration);
+    if(!$handler instanceof SimpleTableReferenceHandlerInterface) {
+      return;
+    }
+
     $toSchema = $handler->getToSchema($tableReferenceConfiguration);
     $property = $tableReferencePropertyDefinition->getProperty();
 

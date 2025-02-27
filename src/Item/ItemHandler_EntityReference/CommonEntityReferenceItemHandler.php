@@ -3,6 +3,7 @@
 namespace App\Item\ItemHandler_EntityReference;
 
 use App\Database\DaViQueryBuilder;
+use App\Database\TableJoinBuilder;
 use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
@@ -18,13 +19,14 @@ use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\DaViEntity\EntityInterface;
 
-class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInterface, SimpleEntityReferenceJoinInterface {
+class CommonEntityReferenceItemHandler implements SimpleEntityReferenceJoinInterface {
 
 	public function __construct(
 		protected readonly DaViEntityManager $entityManager,
 		protected readonly ValidatorItemHandlerLocator $validatorHandlerLocator,
 		protected readonly EntityTypeSchemaRegister $schemaRegister,
     protected readonly EntityTypesRegister $entityTypesRegister,
+    protected readonly TableJoinBuilder $joinBuilder,
 	) {}
 
   protected function isDefinitionValid($referenceDefinition): bool {
@@ -140,37 +142,9 @@ class CommonEntityReferenceItemHandler implements EntityReferenceItemHandlerInte
   public function joinTable(DaViQueryBuilder $queryBuilder, ItemConfigurationInterface $itemConfiguration, EntitySchema $fromSchema, bool $innerJoin = false): void {
     [$targetClass, $targetProperty] = $this->getTargetSetting($itemConfiguration);
     $toSchema = $this->schemaRegister->getSchemaFromEntityClass($targetClass);
+    $fromProperty = $itemConfiguration->getItemName();
 
-    $condition = $this->getJoinCondition($queryBuilder, $fromSchema, $itemConfiguration->getItemName(), $toSchema, $targetProperty);
-
-    $fromTable = $fromSchema->getBaseTable();
-    $toTable = $toSchema->getBaseTable();
-
-    if(empty($toTable) || empty($fromTable) || !$condition) {
-      return;
-    }
-
-    if($innerJoin) {
-      $queryBuilder->innerJoin($fromTable, $toTable, $toTable, $condition);
-    } else {
-      $queryBuilder->leftJoin($fromTable, $toTable, $toTable, $condition);
-    }
-  }
-
-  protected function getJoinCondition(DaViQueryBuilder $queryBuilder, EntitySchema $fromSchema, string $fromProperty, EntitySchema $toSchema, string $toProperty): string | null {
-
-    $fromColumn = $this->getColumn($fromSchema, $fromProperty);
-    $toColumn = $this->getColumn($toSchema, $toProperty);
-
-    if(empty($fromColumn) || empty($toColumn)) {
-      return null;
-    }
-
-    return $queryBuilder->expr()->eq($toColumn, $fromColumn);
-  }
-
-  protected function getColumn(EntitySchema $schema, string $property): string {
-    return !empty($property) ? $schema->getColumn($property) : '';
+    $this->joinBuilder->joinTable($queryBuilder, $fromSchema, $fromProperty, $toSchema, $targetProperty, $innerJoin);
   }
 
 }

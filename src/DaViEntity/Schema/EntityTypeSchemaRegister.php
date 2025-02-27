@@ -6,6 +6,7 @@ use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
 use App\EntityTypes\NullEntity\NullEntity;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
+use App\Item\ItemHandler_EntityReference\SimpleEntityReferenceJoinInterface;
 use App\Item\Property\PropertyConfiguration;
 
 class EntityTypeSchemaRegister {
@@ -56,6 +57,11 @@ class EntityTypeSchemaRegister {
     $itemConfiguration = $schema->getProperty($pathSection);
     if ($itemConfiguration->hasEntityReferenceHandler() && !empty($path)) {
       $handler = $this->referenceItemHandlerLocator->getEntityReferenceHandlerFromItem($itemConfiguration);
+
+      if(!$handler instanceof SimpleEntityReferenceJoinInterface) {
+        return [NullEntity::class, 'id'];
+      }
+
       [$targetEntityClass, $targetProperty] = $handler->getTargetSetting($itemConfiguration);
 
       if (!empty($targetEntityClass) && !empty($targetProperty)) {

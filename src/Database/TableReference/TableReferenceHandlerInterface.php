@@ -13,5 +13,4 @@ interface TableReferenceHandlerInterface {
 
   public function getReferencedTableQuery(TableReferenceDefinitionInterface $tableReferenceConfiguration, EntityInterface $fromEntity): DaViQueryBuilder;
 
-  public function getToSchema(TableReferenceDefinitionInterface $tableReferenceConfiguration): EntitySchema;
 }
