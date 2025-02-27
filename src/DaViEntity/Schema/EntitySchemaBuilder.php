@@ -45,8 +45,6 @@ class EntitySchemaBuilder {
       return null;
     }
 
-
-
     if(!$this->fillSchemaBasics($schema, $attributesContainer)) {
       return null;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Database\BaseQuery;
 
-use App\Database\QueryBuilder\DaViQueryBuilder;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\EntityInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;

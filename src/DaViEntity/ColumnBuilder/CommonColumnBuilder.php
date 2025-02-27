@@ -2,7 +2,6 @@
 
 namespace App\DaViEntity\ColumnBuilder;
 
-use App\Database\QueryBuilder\DaViQueryBuilder;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\Schema\EntitySchema;
@@ -48,7 +47,7 @@ class CommonColumnBuilder implements ColumnBuilderInterface {
 
     $queryBuilder->addSelect('CONCAT_WS("", "' . $client . '", "::","' . $entityType . '", "::","' . $uniqueProperty . '", "::",' . $concat . ') AS entityKey');
     $queryBuilder->addSelect($uniqueKey . ' AS uniqueKey');
-    $queryBuilder->orderBy($uniqueKey);
+    $queryBuilder->addOrderBy($uniqueKey);
   }
 
   protected function getSchema(string | EntityInterface $entityClass): EntitySchema {

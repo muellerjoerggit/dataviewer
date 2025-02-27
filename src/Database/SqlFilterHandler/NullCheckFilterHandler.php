@@ -2,7 +2,6 @@
 
 namespace App\Database\SqlFilterHandler;
 
-use App\Database\QueryBuilder\DaViQueryBuilder;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;

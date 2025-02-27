@@ -3,7 +3,6 @@
 namespace App\DaViEntity\SimpleSearch;
 
 use App\Database\BaseQuery\BaseQueryLocator;
-use App\Database\QueryBuilder\DaViQueryBuilder;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\Traits\ExecuteQueryBuilderTrait;
 use App\DaViEntity\ColumnBuilder\ColumnBuilderLocator;

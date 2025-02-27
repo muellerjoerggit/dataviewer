@@ -2,7 +2,6 @@
 
 namespace App\Database;
 
-use App\Database\QueryBuilder\DaViQueryBuilder;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;

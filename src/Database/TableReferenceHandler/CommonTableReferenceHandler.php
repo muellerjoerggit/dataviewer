@@ -6,11 +6,12 @@ namespace App\Database\TableReferenceHandler;
 use App\Database\BaseQuery\BaseQueryLocator;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\TableJoinBuilder;
+use App\Database\TableReference\SimpleTableReferenceHandlerInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 
-class CommonTableReferenceHandler extends AbstractTableReferenceHandler {
+class CommonTableReferenceHandler extends AbstractTableReferenceHandler implements SimpleTableReferenceHandlerInterface {
 
   public function __construct(
     protected readonly TableJoinBuilder $joinBuilder,

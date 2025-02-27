@@ -86,6 +86,8 @@ class PropertyConfigurationBuilder {
     $tableReferencePropertyDefinition = $container->getTableReferencePropertyDefinition();
     $name = $tableReferencePropertyDefinition->getTableReferenceName();
 
+
+
     if(!$tableReferencePropertyDefinition->isValid() || !$schema->hasTableReference($name)) {
       return;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Database\Traits;
 
-use App\Database\QueryBuilder\DaViQueryBuilder;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\DaViEntity\EntityDataMapperInterface;
 use Doctrine\DBAL\Exception;
@@ -27,7 +26,6 @@ trait ExecuteQueryBuilderTrait {
         default => $queryBuilder->fetchAllAssociative(),
       };
     } catch (Exception $exception) {
-      dd($queryBuilder, $exception);
     }
 
     return $ret;

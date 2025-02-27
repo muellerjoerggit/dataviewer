@@ -139,9 +139,16 @@ class GenerateExampleUserData extends AbstractMaker {
 
     try {
 
-    if($this->symfonyDatabase->tableExists('client') && $this->symfonyDatabase->tableExists('version')) {
-      $this->symfonyDatabase->getConnection()->executeQuery('TRUNCATE client, version;');
-    }
+//    if($this->symfonyDatabase->tableExists('client') && $this->symfonyDatabase->tableExists('version')) {
+//      $connection = $this->symfonyDatabase->getConnection();
+//      $connection->setAutoCommit(false);
+//      $connection->beginTransaction();
+//      $connection->prepare('SET FOREIGN_KEY_CHECKS = 0;');
+//      $connection->prepare('TRUNCATE version;');
+//      $connection->prepare('TRUNCATE client;');
+//      $connection->prepare('SET FOREIGN_KEY_CHECKS = 1;');
+//      $connection->commit();
+//    }
 
     $predecessor = null;
     foreach (self::VERSIONS as $versionString) {
@@ -198,11 +205,10 @@ class GenerateExampleUserData extends AbstractMaker {
       }
 
       try {
-        $stmt = $connectionDDL->prepare("DROP DATABASE IF EXISTS $clientId;");
-        $stmt->executeStatement();
+        $connectionDDL->executeQuery("DROP DATABASE IF EXISTS $clientId;");
 
         $stmt = $connectionDDL->prepare("CREATE DATABASE IF NOT EXISTS $clientId;");
-        $stmt->executeStatement();
+        $stmt->executeQuery();
 
         $connection = $this->database->getConnection($clientId);
 

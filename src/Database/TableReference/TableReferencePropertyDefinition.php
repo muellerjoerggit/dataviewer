@@ -5,7 +5,7 @@ namespace App\Database\TableReference;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class TableReferencePropertyDefinition {
+class TableReferencePropertyDefinition  {
 
   public function __construct(
     public readonly string $tableReferenceName,

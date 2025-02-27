@@ -59,10 +59,19 @@ when@dev:
       controller: App\Development\Controller\BackgroundTasks::create
 
     # versions
-    dev_version_list:
-        path: /dev/version/list
-        controller: App\Development\Controller\Version::getVersionList
+    dev_version_service:
+        path: /dev/version/service
+        controller: App\Development\Controller\Version::getVersionService
 
-    dev_version_since:
-        path: /dev/version/since
-        controller: App\Development\Controller\Version::getVersionSince
+    dev_versions_get:
+        path: /dev/version/getAll
+        controller: App\Development\Controller\Version::getVersions
+
+  # clients
+    dev_clients_get:
+      path: /dev/clients/getAll
+      controller: App\Development\Controller\Client::getAllClients
+
+    dev_fetch_clients:
+      path: /dev/clients/fetch
+      controller: App\Development\Controller\Client::getFetchClients

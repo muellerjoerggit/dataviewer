@@ -2,9 +2,6 @@
 
 namespace App\DaViEntity;
 
-use App\Database\DaViQueryBuilder;
-use App\DaViEntity\Schema\EntitySchema;
-
 interface EntityDataMapperInterface {
 
   public const string OPTION_WITH_COLUMNS = 'withColumns';

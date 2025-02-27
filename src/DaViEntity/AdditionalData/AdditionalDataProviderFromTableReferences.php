@@ -26,6 +26,9 @@ class AdditionalDataProviderFromTableReferences implements AdditionalDataProvide
     foreach ($schema->iterateTableReferences() as $internalName => $tableReference) {
       $handler = $this->tableReferenceHandlerLocator->getTableHandlerFromConfiguration($tableReference);
       $columns = $schema->getTableReferenceColumns($internalName);
+      if(empty($columns)) {
+        continue;
+      }
       $options = [EntityDataMapperInterface::OPTION_COLUMNS => $columns];
       $queryBuilder = $handler->getReferencedTableQuery($tableReference, $entity, $options);
       $result = $this->executeQueryBuilderInternal($queryBuilder, [], []);

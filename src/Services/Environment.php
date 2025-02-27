@@ -5,19 +5,19 @@ namespace App\Services;
 class Environment {
 
   public function getDatabaseUser(): string {
-    return getenv('DATABASE_USER');
+    return $_ENV['DATABASE_USER'];
   }
 
   public function getDatabasePassword(): string {
-    return getenv('DATABASE_PASSWORD');
+    return $_ENV['DATABASE_PASSWORD'];
   }
 
   public function getDatabaseHost(): string {
-    return getenv('DATABASE_HOST');
+    return $_ENV['DATABASE_HOST'];
   }
 
   public function getDatabasePort(): string {
-    return getenv('DATABASE_PORT');
+    return $_ENV['DATABASE_PORT'];
   }
 
 }
