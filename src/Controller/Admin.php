@@ -26,6 +26,14 @@ class Admin extends AbstractController {
 				'label' => 'PHP Info',
 				'description' => 'PHP Info'
 			],
+      'app_clients' => [
+        'label' => 'Clients',
+        'description' => 'Clients anlegen und verwalten'
+      ],
+      'app_versions' => [
+        'label' => 'Versionen',
+        'description' => 'Versionen anlegen und verwalten'
+      ],
 		];
 		foreach ($routes as $route => $routeData) {
 			$urls[] = [

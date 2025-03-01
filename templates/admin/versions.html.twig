@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Version hinzufügen/updaten{% endblock %}
+
+{% block body %}
+	<div class="mt-4">
+		<a href={{ versionAddUrl }}>Version hinzufügen</a>
+		<h2 class="mt-4">Versionen</h2>
+		<ul class="ml-2">
+			{% for version in versionsData %}
+				<li class="mt-1">{{ version.name }} | <a href={{ version.updateUrl }}>bearbeiten</a> | <a href={{ version.deleteUrl }}>löschen</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}

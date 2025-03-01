@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Client hinzufügen/updaten{% endblock %}
+
+{% block body %}
+	<div class="mt-4">
+		<a href={{ clientAddUrl }}>Client hinzufügen</a>
+		<h2 class="mt-4">Clients</h2>
+		<ul class="ml-2">
+			{% for client in clientsData %}
+				<li class="mt-1">{{ client.name }} | <a href={{ client.updateUrl }}>bearbeiten</a> | <a href={{ client.deleteUrl }}>löschen</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}
