@@ -22,14 +22,6 @@ class RestApiExport extends AbstractController{
     return $this->json($config);
   }
 
-  #[Route(path: '/api/export/start', name: 'app_api_export_start', methods: ['POST'])]
-  public function getStartExport(Request $request, CsvExport $csvExport, ExportConfigurationBuilder $configurationBuilder): Response {
-    $requestArray = $request->toArray();
-    $configuration = $configurationBuilder->build($requestArray);
-
-    dd($csvExport->export($configuration));
-  }
-
   #[Route(path: '/api/export/task/start', name: 'app_api_export_task_start', methods: ['POST'])]
   public function generateExport(Request $request, BackgroundTaskManager $backgroundTaskManager, LoggerInterface $logger): Response {
     $exportRequest = $request->toArray();

@@ -49,9 +49,9 @@ class ExportBackgroundTask extends AbstractBackgroundTask {
 
     $configuration = $task->getTaskConfiguration()->getConfiguration();
     $configuration = json_decode($configuration, true);
-    $configuration = $this->configurationBuilder->build($configuration);
+    $exportData = $this->configurationBuilder->build($configuration);
 
-    if(!$configuration->isValid()) {
+    if(!$exportData->isValid()) {
       return Command::FAILURE;
     }
 
@@ -62,9 +62,9 @@ class ExportBackgroundTask extends AbstractBackgroundTask {
     $result = false;
     $file = null;
     try {
-      $csv = $this->csvExport->export($configuration, $tracker);
+      $csv = $this->csvExport->export($exportData, $tracker);
       $file = $this->fileService->dumpTempFile(
-        $configuration->getFileName(),
+        $exportData->getFileName(),
         FileService::FILE_TYPE_EXPORT,
         FileService::EXTENSION_CSV,
         $csv

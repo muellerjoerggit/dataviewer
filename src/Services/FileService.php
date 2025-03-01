@@ -46,7 +46,7 @@ class FileService {
     }
 
     $file
-      ->setFilename($fileName)
+      ->setFilename($this->clearFileName($fileName))
       ->setPath($fullPath)
       ->setType($fileType)
       ->setMimeType(self::getMimeType($extension));
@@ -55,6 +55,10 @@ class FileService {
     $this->entityManager->flush();
 
     return $file;
+  }
+
+  public function clearFileName(string $fileName): string {
+    return str_replace('/', ' ', $fileName);
   }
 
 }

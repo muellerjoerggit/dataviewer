@@ -43,4 +43,9 @@ class BackgroundTaskTracker implements TrackerInterface {
     }
     return true;
   }
+
+  public function shouldProgressBeRecorded(int $count): bool {
+    return $count % 50 === 0;
+  }
+
 }

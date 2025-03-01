@@ -8,4 +8,6 @@ interface TrackerInterface {
 
   public function isTerminated(): bool;
 
+  public function shouldProgressBeRecorded(int $count): bool;
+
 }

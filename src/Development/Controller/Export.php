@@ -2,48 +2,23 @@
 
 namespace App\Development\Controller;
 
-use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\EntityTypes\User\UserEntity;
 use App\Services\DirectoryFileRegister;
 use App\Services\Export\CsvExport;
-use App\Services\Export\ExportConfiguration\ExportConfiguration;
-use App\Services\Export\ExportConfiguration\ExportEntityPathConfiguration;
-use App\Services\Export\ExportConfiguration\ExportPropertyConfig;
+use App\Services\Export\ExportConfigurationBuilder;
+use App\SymfonyRepository\BackgroundTaskRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 
 class Export extends AbstractController {
 
-  public function export(CsvExport $csvExport, EntityTypeSchemaRegister $schemaRegister, DirectoryFileRegister $fileRegister): Response {
-    $schema = $schemaRegister->getEntityTypeSchema('User');
-    $pathConfigUser = new ExportEntityPathConfiguration();
+  public function export(CsvExport $csvExport, BackgroundTaskRepository $taskRepository, ExportConfigurationBuilder $configurationBuilder, DirectoryFileRegister $fileRegister): Response {
+    $task = $taskRepository->find(10);
+    $configuration = $task->getTaskConfiguration()->getConfiguration();
+    $configuration = json_decode($configuration, true);
+    $exportData = $configurationBuilder->build($configuration);
 
-    foreach (['usr_id', 'firstname', 'lastname', 'email', 'roles'] as $property) {
-      $config = new ExportPropertyConfig(
-        $property,
-        $schema->getProperty($property),
-        []
-      );
-      $pathConfigUser->addPropertyConfig($config);
-    }
-
-    $schemaRole = $schemaRegister->getEntityTypeSchema('Role');
-    $pathConfigRole = new ExportEntityPathConfiguration(['roles']);
-
-    foreach (['rol_id', 'title'] as $property) {
-      $config = new ExportPropertyConfig(
-        $property,
-        $schemaRole->getProperty($property),
-        []
-      );
-      $pathConfigRole->addPropertyConfig($config);
-    }
-
-    $exportConfig = new ExportConfiguration('umbrella', UserEntity::class);
-    $exportConfig->addEntityPath($pathConfigUser)->addEntityPath($pathConfigRole);
-
-    $csv = $csvExport->export($exportConfig);
+    $csv = $csvExport->export($exportData);
 
     $tempDir = $fileRegister->getTempDir();
     $tmpFileName = (new Filesystem())->tempnam($tempDir, 'sb_', '.csv');

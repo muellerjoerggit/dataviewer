@@ -4,7 +4,7 @@ namespace App\Services\Export\ExportConfiguration;
 
 use App\Item\Property\PropertyConfiguration;
 
-class ExportPropertyConfig {
+class ExportPropertyGroupConfiguration implements ExportGroupConfigurationInterface {
 
   private string $label;
   private array $options;
@@ -12,6 +12,7 @@ class ExportPropertyConfig {
 
   public function __construct(
     private readonly string $key,
+    private readonly string $exporterClass,
     private readonly PropertyConfiguration $propertyConfig,
   ) {}
 
@@ -27,14 +28,14 @@ class ExportPropertyConfig {
     return $this->key;
   }
 
-  public function setLabel(string $label): ExportPropertyConfig {
+  public function setLabel(string $label): ExportPropertyGroupConfiguration {
     if(!empty($label)) {
       $this->label = $label;
     }
     return $this;
   }
 
-  public function setOptions(array $options): ExportPropertyConfig {
+  public function setOptions(array $options): ExportPropertyGroupConfiguration {
     $this->options = $options;
     return $this;
   }
@@ -43,11 +44,13 @@ class ExportPropertyConfig {
     return $this->count;
   }
 
-  public function setCount(int $count): ExportPropertyConfig {
+  public function setCount(int $count): ExportPropertyGroupConfiguration {
     $this->count = $count;
     return $this;
   }
 
-
+  public function getExporterClass(): string {
+    return $this->exporterClass;
+  }
 
 }

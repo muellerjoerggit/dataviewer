@@ -8,6 +8,14 @@ But DaVi can do even more. You can add different handlers to each column that ca
 
 So you don't need another external software to check the data. You have all in one app and you can develop for specific use cases new handlers.
 
+## Getting Started
+
+If not already done, install Docker Compose (v2.10+)
+Run docker compose build --no-cache to build fresh images
+Run docker compose up --pull always -d --wait to set up and start a fresh Symfony project
+Open https://localhost in your favorite web browser and accept the auto-generated TLS certificate
+Run docker compose down --remove-orphans to stop the Docker containers.
+
 ## Configuration
 
 Entities are configured with yaml files. In this example this user entity has four properties.
