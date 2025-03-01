@@ -6,7 +6,7 @@ use App\Database\SqlFilter\SqlFilterBuilder;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityKey;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
-use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
+use App\EntityServices\ViewBuilder\ViewBuilderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

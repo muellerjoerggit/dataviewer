@@ -2,8 +2,6 @@
 
 namespace App\EntityServices\AggregatedData;
 
-use App\DaViEntity\ListProvider\ListProviderInterface;
-use App\DaViEntity\ListProvider\NullListProvider;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Services\AbstractLocator;

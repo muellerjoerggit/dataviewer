@@ -7,7 +7,7 @@ use App\DataCollections\EntityList;
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\Repository\RepositoryInterface;
+use App\EntityServices\Repository\RepositoryInterface;
 
 class NullRepository implements RepositoryInterface {
 

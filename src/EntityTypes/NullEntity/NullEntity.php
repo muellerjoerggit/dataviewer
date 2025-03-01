@@ -4,10 +4,10 @@ namespace App\EntityTypes\NullEntity;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\Repository\RepositoryDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueKey;
+use App\EntityServices\Repository\RepositoryDefinition;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
 use App\Item\Property\Attribute\PropertyAttr;

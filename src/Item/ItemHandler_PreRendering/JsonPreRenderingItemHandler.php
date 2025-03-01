@@ -3,8 +3,7 @@
 namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
-use App\DaViEntity\OverviewBuilder\ExtEntityOverviewEnum;
-use App\DaViEntity\ViewBuilder\ViewBuilderInterface;
+use App\EntityServices\OverviewBuilder\ExtEntityOverviewEnum;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
 

@@ -3,7 +3,7 @@
 namespace App\EntityTypes\User;
 
 use App\DaViEntity\EntityInterface;
-use App\DaViEntity\Validator\AbstractValidator;
+use App\EntityServices\Validator\AbstractValidator;
 
 class UserValidator extends AbstractValidator {
 

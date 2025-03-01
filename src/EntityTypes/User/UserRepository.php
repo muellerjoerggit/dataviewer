@@ -2,15 +2,15 @@
 
 namespace App\EntityTypes\User;
 
-use App\DaViEntity\AdditionalData\AdditionalDataProviderLocator;
-use App\DaViEntity\Creator\CreatorLocator;
-use App\DaViEntity\DataProvider\DataProviderLocator;
-use App\DaViEntity\ListProvider\ListProviderLocator;
-use App\DaViEntity\Refiner\RefinerLocator;
-use App\DaViEntity\Repository\AbstractRepository;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
-use App\DaViEntity\Validator\ValidatorLocator;
+use App\EntityServices\AdditionalData\AdditionalDataProviderLocator;
+use App\EntityServices\Creator\CreatorLocator;
+use App\EntityServices\DataProvider\DataProviderLocator;
+use App\EntityServices\ListProvider\ListProviderLocator;
+use App\EntityServices\Refiner\RefinerLocator;
+use App\EntityServices\Repository\AbstractRepository;
+use App\EntityServices\Validator\ValidatorLocator;
 
 class UserRepository extends AbstractRepository {
 
