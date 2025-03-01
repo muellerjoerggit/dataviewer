@@ -66,8 +66,12 @@ sf: ## List all Symfony commands or pass the parameter "c=" to run a given comma
 ms: ## build migration schema files
 	@$(SYMFONY) make:migration
 
-dm: ## migrate database
+md: ## migrate database
 	@$(SYMFONY) doctrine:migrations:migrate
+
+tailwind: ##
+	@$(SYMFONY) tailwind:build --minify
+	@$(SYMFONY) asset-map:compile
 
 cc: c=c:c ## Clear the cache
 cc: sf
