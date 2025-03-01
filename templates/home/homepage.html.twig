@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+	<div class="flex flex-wrap">
+		{% for url in urls %}
+			<a href="{{ url.url }}" class="flex-none h-64 w-64 p-6 border bg-gray-600 border-gray-200 rounded-lg shadow-md hover:bg-gray-500 mr-4 mt-4">
+				<div class="sticky top-0 z-10">
+					<div class="flex items-center gap-1.5">
+						<div class="text-lg text-gray-50">{{ url.label }}</div>
+					</div>
+				</div>
+				<div class="font-medium text-sm text-gray-50 mt-3">{{ url.description }}</div>
+			</a>
+		{% endfor %}
+	</div>
+{% endblock %}
