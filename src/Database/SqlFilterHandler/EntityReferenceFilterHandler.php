@@ -5,7 +5,7 @@ namespace App\Database\SqlFilterHandler;
 use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinitionAttr;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinition;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
@@ -41,7 +41,7 @@ class EntityReferenceFilterHandler extends AbstractFilterHandler implements InFi
 	}
 
 	public function getFilterComponent(SqlFilterDefinitionInterface $filterDefinition, EntitySchema $schema): array {
-    if(!$filterDefinition instanceof SqlFilterEntityReferenceDefinitionAttr) {
+    if(!$filterDefinition instanceof SqlFilterEntityReferenceDefinition) {
       return [];
     }
 

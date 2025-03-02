@@ -10,6 +10,7 @@ use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinition;
 use App\Database\SqlFilterHandler\EntityReferenceFilterHandler;
 use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
@@ -114,7 +115,7 @@ class RoleUserMapEntity extends AbstractEntity {
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'integer'],
   ])]
-  #[SqlFilterDefinitionAttr(
+  #[SqlFilterEntityReferenceDefinition(
     filterHandler: EntityReferenceFilterHandler::class,
     key: 'usr_id',
     title: 'Benutzer suchen',
@@ -143,7 +144,7 @@ class RoleUserMapEntity extends AbstractEntity {
   #[PropertyPreDefinedAttr([
     [PreDefined::class, 'integer'],
   ])]
-  #[SqlFilterDefinitionAttr(
+  #[SqlFilterEntityReferenceDefinition(
     filterHandler: EntityReferenceFilterHandler::class,
     key: 'rol_id',
     title: 'Rollen suchen',

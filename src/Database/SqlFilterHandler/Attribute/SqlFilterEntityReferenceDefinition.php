@@ -7,17 +7,18 @@ use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class SqlFilterEntityReferenceDefinitionAttr extends SqlFilterDefinitionAttr {
+class SqlFilterEntityReferenceDefinition extends SqlFilterDefinitionAttr {
 
   public function __construct(
     string $filterHandler,
+    string $key = '',
     string $title = 'Filter',
     string $description = '',
     bool $group = true,
     string $groupKey = '',
     public string $targetEntityClass = '',
   ) {
-    parent::__construct($filterHandler, $title, $description, $group, $groupKey);
+    parent::__construct($filterHandler, $key, $title, $description, $group, $groupKey);
   }
 
   public function hasTargetEntity(): bool {
