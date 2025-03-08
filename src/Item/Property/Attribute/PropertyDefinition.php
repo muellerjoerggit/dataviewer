@@ -3,18 +3,21 @@
 namespace App\Item\Property\Attribute;
 
 use App\Item\Cardinality;
-use App\Item\ItemConfigurationInterface;
 
+use App\Services\Version\VersionInformation;
+use App\Services\Version\VersionInformationWrapperInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class PropertyDefinition extends AbstractPropertyAttribute  {
+class PropertyDefinition extends AbstractPropertyAttribute implements VersionInformationWrapperInterface {
 
   public function __construct(
     public readonly int $dataType,
     public readonly string $label = '',
     public readonly string $description = '',
     public readonly int $cardinality = Cardinality::SINGLE,
+    public readonly string $sinceVersion = '',
+    public readonly string $untilVersion = '',
   ) {}
 
   public function getDataType(): int {
@@ -37,6 +40,11 @@ class PropertyDefinition extends AbstractPropertyAttribute  {
     return $this->cardinality;
   }
 
-
+  public function getVersionInformation(): array {
+    return [
+      VersionInformation::SINCE_VERSION => $this->sinceVersion,
+      VersionInformation::UNTIL_VERSION => $this->untilVersion,
+    ];
+  }
 
 }

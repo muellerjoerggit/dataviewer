@@ -8,10 +8,10 @@ use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInter
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\ItemSettingInterface;
-use App\Services\Version\VersionInformation;
+use App\Services\Version\VersionListWrapperInterface;
 use Generator;
 
-interface ItemConfigurationInterface {
+interface ItemConfigurationInterface extends VersionListWrapperInterface {
 
   public function getItemName(): string;
 
@@ -68,12 +68,5 @@ interface ItemConfigurationInterface {
   public function hasSetting($definitionClass): bool;
 
   public function addSetting(ItemSettingInterface $definition): ItemConfigurationInterface;
-
-  public function getVersion(): VersionInformation | null;
-
-  public function setVersion(VersionInformation $version): ItemConfiguration;
-
-  public function hasVersion(): bool;
-
 
 }

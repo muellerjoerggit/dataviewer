@@ -2,14 +2,13 @@
 
 namespace App\Item;
 
-use App\Item\ItemHandler\ItemHandlerInterface;
 use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\ItemSettingInterface;
-use App\Services\Version\VersionInformation;
+use App\Services\Version\VersionListInterface;
 use Generator;
 
 class ItemConfiguration implements ItemConfigurationInterface {
@@ -27,17 +26,17 @@ class ItemConfiguration implements ItemConfigurationInterface {
   /**
    * @var ValidatorItemHandlerDefinitionInterface[]
    */
-  private array $validatorItemHandlers = [];
+  protected array $validatorItemHandlers = [];
 
-  private PreRenderingItemHandlerDefinitionInterface $preRenderingItemHandlerDefinition;
+  protected PreRenderingItemHandlerDefinitionInterface $preRenderingItemHandlerDefinition;
 
-  private FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition;
+  protected FormatterItemHandlerDefinitionInterface $formatterItemHandlerDefinition;
 
-  private EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition;
+  protected EntityReferenceItemHandlerDefinitionInterface $referenceItemHandlerDefinition;
 
-  private AdditionalDataHandlerDefinitionInterface $additionalDataHandlerDefinition;
+  protected AdditionalDataHandlerDefinitionInterface $additionalDataHandlerDefinition;
 
-  protected VersionInformation $version;
+  protected VersionListInterface $versionList;
 
   public function __construct(
     protected readonly string $name
@@ -193,18 +192,13 @@ class ItemConfiguration implements ItemConfigurationInterface {
     return $this;
   }
 
-  public function getVersion(): VersionInformation | null {
-    return $this->version ?? null;
+  public function hasVersion(string $version): bool {
+    return $this->versionList->hasVersion($version);
   }
 
-  public function setVersion(VersionInformation $version): ItemConfiguration {
-    $this->version = $version;
+  public function setVersionList(VersionListInterface $versionList): ItemConfigurationInterface {
+    $this->versionList = $versionList;
     return $this;
   }
-
-  public function hasVersion(): bool {
-    return isset($this->version);
-  }
-
 
 }

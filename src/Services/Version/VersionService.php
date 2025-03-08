@@ -9,9 +9,6 @@ use App\SymfonyRepository\VersionRepository;
 
 class VersionService {
 
-  public const string YAML_PARAM_VERSION = 'version';
-  public const string YAML_PARAM_SINCE_VERSION = 'sinceVersion';
-
   private array $versionKeys = [];
   private array $versions = [];
   private array $versionsLists = [];
@@ -58,21 +55,14 @@ class VersionService {
     $index = array_search($version, $this->versionKeys);
     $index = $index ? $index + 1 : null;
 
-    return array_slice($this->versions, 0, $index, true);
-  }
-
-  public function getAllVersionsBetween(string $versionBegin, string $versionEnd): array {
-    $begin = array_search($versionBegin, $this->versionKeys) ?? 0;
-    $end = array_search($versionEnd, $this->versionKeys) ?? null;
-
-    return array_slice($this->versions, $begin, $end + 1, true);
+    return array_slice($this->versionKeys, 0, $index, true);
   }
 
   public function getVersionSince(string $version): array {
     $index = array_search($version, $this->versionKeys);
     $index = $index ? $index : 0;
 
-    return array_slice($this->versions, $index, null, true);
+    return array_slice($this->versionKeys, $index, null, true);
   }
 
   public function getVersionList(VersionInformationWrapperInterface $definition): VersionListInterface {
@@ -94,10 +84,10 @@ class VersionService {
 
       switch ($key) {
         case VersionInformation::SINCE_VERSION:
-          $sinceVersions[] = $this->getVersionSince($version);
+          $sinceVersions = $this->getVersionSince($version);
           break;
         case VersionInformation::UNTIL_VERSION:
-          $untilVersions[] = $this->getAllVersionsUntil($version);
+          $untilVersions = $this->getAllVersionsUntil($version);
       }
     }
 

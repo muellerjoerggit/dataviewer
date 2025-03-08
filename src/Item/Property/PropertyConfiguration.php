@@ -8,7 +8,7 @@ use App\Item\ItemConfiguration;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 
-class PropertyConfiguration extends ItemConfiguration {
+class PropertyConfiguration extends ItemConfiguration  {
 
   private string $column;
   private TableReferenceDefinitionInterface $tableReference;
@@ -67,4 +67,5 @@ class PropertyConfiguration extends ItemConfiguration {
   public function hasTableReference(): bool {
     return isset($this->tableReference);
   }
+
 }

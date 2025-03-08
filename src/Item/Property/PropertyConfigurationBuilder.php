@@ -17,6 +17,7 @@ class PropertyConfigurationBuilder {
 
   public function __construct(
     private readonly TableReferenceHandlerLocator $tableReferenceHandlersLocator,
+    private readonly VersionService $versionService,
   ) {}
 
   public function buildBasicPropertyConfiguration(PropertyAttributesContainer $container, EntitySchema $schema): PropertyConfiguration {
@@ -37,22 +38,18 @@ class PropertyConfigurationBuilder {
 
     $this->fillTableReference($container, $propertyConfiguration, $schema);
     $this->fillHandler($container, $propertyConfiguration);
-
-//    if(isset($config[VersionService::YAML_PARAM_VERSION])) {
-//      $this->fillVersion($container[VersionService::YAML_PARAM_VERSION], $propertyConfiguration);
-//    }
   }
 
   private function fillBasic(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration): void {
-    $propertyAttr = $container->getPropertyDefinition();
+    $propertyDefinition = $container->getPropertyDefinition();
 
     $propertyConfiguration
-      ->setCardinality($propertyAttr->getCardinality())
-      ->setDataType($propertyAttr->getDataType())
-      ->setLabel($propertyAttr->getLabel());
+      ->setCardinality($propertyDefinition->getCardinality())
+      ->setDataType($propertyDefinition->getDataType())
+      ->setLabel($propertyDefinition->getLabel());
 
-    if($propertyAttr->hasDescription()) {
-      $propertyConfiguration->setDescription($propertyAttr->getDescription());
+    if($propertyDefinition->hasDescription()) {
+      $propertyConfiguration->setDescription($propertyDefinition->getDescription());
     }
 
     if($container->hasPropertySetting()) {
@@ -60,6 +57,9 @@ class PropertyConfigurationBuilder {
         $propertyConfiguration->addSetting($propertySetting);
       }
     }
+
+    $versionList = $this->versionService->getVersionList($propertyDefinition);
+    $propertyConfiguration->setVersionList($versionList);
   }
 
   private function fillDatabaseColumn(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration, EntitySchema $schema): void {
@@ -85,8 +85,6 @@ class PropertyConfigurationBuilder {
 
     $tableReferencePropertyDefinition = $container->getTableReferencePropertyDefinition();
     $name = $tableReferencePropertyDefinition->getTableReferenceName();
-
-
 
     if(!$tableReferencePropertyDefinition->isValid() || !$schema->hasTableReference($name)) {
       return;
@@ -127,13 +125,6 @@ class PropertyConfigurationBuilder {
       $propertyConfiguration->setAdditionalDataHandlerDefinition($handlerDefinition);
     } elseif($handlerDefinition instanceof ValidatorItemHandlerDefinitionInterface) {
       $propertyConfiguration->addValidatorItemHandlerDefinition($handlerDefinition);
-    }
-  }
-
-  private function fillVersion(array $yaml, PropertyConfiguration $propertyConfiguration): void {
-    if(isset($yaml[VersionService::YAML_PARAM_SINCE_VERSION])) {
-      $version = new VersionInformation($yaml[VersionService::YAML_PARAM_SINCE_VERSION], VersionInformation::TYPE_SINCE_VERSION);
-      $propertyConfiguration->setVersion($version);
     }
   }
 

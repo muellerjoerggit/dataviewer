@@ -8,6 +8,7 @@ use App\EntityServices\OverviewBuilder\OverviewBuilderLocator;
 use App\Item\ItemHandler_PreRendering\PreRenderingItemHandlerLocator;
 use App\Logger\LogItemPreRendering\LogItemPreRenderingHandlerLocator;
 use App\Logger\LogItems\LogItemInterface;
+use App\Services\ClientService;
 use App\Services\EntityAction\EntityActionPreRenderingBuilder;
 
 class CommonViewBuilder implements ViewBuilderInterface {
@@ -18,12 +19,18 @@ class CommonViewBuilder implements ViewBuilderInterface {
     private readonly LogItemPreRenderingHandlerLocator $logItemPreRenderingLocator,
     private readonly EntityActionPreRenderingBuilder $actionPreRenderingBuilder,
     private readonly OverviewBuilderLocator $overviewBuilderLocator,
+    private readonly ClientService $clientService,
   ) {}
 
   public function preRenderEntity(EntityInterface $entity): array {
     $propertiesRenderArray = [];
+    $version = $this->clientService->getClientVersion($entity->getClient());
 
     foreach ($entity->getSchema()->iterateProperties() as $property => $config) {
+      if(!$config->hasVersion($version)) {
+        continue;
+      }
+
       $item = $entity->getPropertyItem($property);
       $handler = $this->preRenderingItemHandlerLocator->getPreRenderingHandlerFromItem($item->getConfiguration());
       $propertiesRenderArray[] = $handler->getComponentPreRenderArray($entity, $property);

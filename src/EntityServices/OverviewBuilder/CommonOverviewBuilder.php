@@ -8,6 +8,7 @@ use App\EntityServices\ViewBuilder\ViewBuilderInterface;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemHandler_PreRendering\PreRenderingItemHandlerLocator;
 use App\Item\ItemInterface;
+use App\Services\ClientService;
 
 class CommonOverviewBuilder implements OverviewBuilderInterface {
 
@@ -15,11 +16,13 @@ class CommonOverviewBuilder implements OverviewBuilderInterface {
     private readonly PreRenderingItemHandlerLocator $preRenderingItemHandlerLocator,
     private readonly DaViEntityManager $entityManager,
     private readonly FormatterItemHandlerLocator $valueFormatterItemHandlerLocator,
+    private readonly ClientService $clientService,
   ) {}
 
   public function buildEntityOverview(EntityInterface $entity, array $options = []): array {
     $defaultOverview = $entity->getSchema()->getEntityOverviewProperties();
     $options = $this->getDefaultOverviewOptions($options, $entity, $defaultOverview);
+    $version = $this->clientService->getClientVersion($entity->getClient());
 
     $header = [];
     $data = [];
@@ -31,6 +34,11 @@ class CommonOverviewBuilder implements OverviewBuilderInterface {
         continue;
       }
       $itemConfiguration = $item->getConfiguration();
+
+      if(!$itemConfiguration->hasVersion($version)) {
+        continue;
+      }
+
       $header[$property] = empty($title) ? $itemConfiguration->getLabel() : $title;
       $firstValue = $item->getFirstValueAsString();
       if ($options[ViewBuilderInterface::FORMAT] && $itemConfiguration->hasFormatterHandler()) {

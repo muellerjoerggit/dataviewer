@@ -6,7 +6,7 @@ use App\Item\Property\Traits\SchemaMainPropertyTrait;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class LabelDefinitionSchemaAttr implements LabelDefinitionInterface {
+class LabelDefinitionSchemaDefinition implements LabelDefinitionInterface {
 
   use SchemaMainPropertyTrait;
 

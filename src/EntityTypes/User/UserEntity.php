@@ -56,7 +56,7 @@ use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
-use App\Item\Property\PropertyConfiguration;
+use App\Item\Property\PropertyItemInterface;
 use App\Services\EntityActionHandler\UrlActionDefinition;
 use App\Services\EntityActionHandler\UrlActionHandler;
 
@@ -113,7 +113,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'integer'],
   ])]
-  private PropertyConfiguration $usr_id;
+  private PropertyItemInterface $usr_id;
 
 
   #[PropertyDefinition(
@@ -129,7 +129,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
-  private PropertyConfiguration $firstname;
+  private PropertyItemInterface $firstname;
 
 
   #[PropertyDefinition(
@@ -145,7 +145,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
-  private PropertyConfiguration $lastname;
+  private PropertyItemInterface $lastname;
 
 
   #[PropertyDefinition(
@@ -159,7 +159,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
-  private PropertyConfiguration $email;
+  private PropertyItemInterface $email;
 
 
   #[PropertyDefinition(
@@ -180,7 +180,7 @@ class UserEntity extends AbstractEntity {
     [PreDefined::class, 'integer'],
   ])]
   #[FormatterItemHandlerDefinition(handlerClass: OptionsFormatterItemHandler::class)]
-  private PropertyConfiguration $active;
+  private PropertyItemInterface $active;
 
 
   #[PropertyDefinition(
@@ -192,7 +192,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'dateTime'],
   ])]
-  private PropertyConfiguration $inactivation_date;
+  private PropertyItemInterface $inactivation_date;
 
 
   #[PropertyDefinition(
@@ -215,18 +215,19 @@ class UserEntity extends AbstractEntity {
     ),
     PreRenderingItemHandlerDefinition(handlerClass: EntityReferencePreRenderingItemHandler::class)
   ]
-  private PropertyConfiguration $roles;
+  private PropertyItemInterface $roles;
 
 
-//  #[PropertyAttr(
-//      dataType: ItemInterface::DATA_TYPE_STRING,
-//      label: 'zweite E-Mail'
-//    ),
-//    DatabaseColumnAttr
-//  ]
-//  #[PropertyPreDefinedAttr([
-//    [PreDefined::class, 'string'],
-//  ])]
-//  private $second_mail;
+  #[PropertyDefinition(
+      dataType: DataType::STRING,
+      label: 'zweite E-Mail',
+      sinceVersion: '1.3'
+    ),
+    DatabaseColumnDefinition
+  ]
+  #[PropertyPreDefinedDefinition([
+    [PreDefined::class, 'string'],
+  ])]
+  private PropertyItemInterface $second_email;
 
 }

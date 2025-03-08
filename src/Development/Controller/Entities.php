@@ -18,7 +18,7 @@ class Entities extends AbstractController {
   }
 
   public function getEntityByEntityKey(DaViEntityManager $entityManager): void {
-    $entityKey = EntityKey::createFromString('umbrella::Role::rol_id::1');
+    $entityKey = EntityKey::createFromString('locussolus::User::usr_id::1');
     $entity = $entityManager->loadEntityByEntityKey($entityKey);
 //    $item = $entity->getPropertyItem('count_user_status');
 //    dd($item->getRawValues(), $item->getValues());
