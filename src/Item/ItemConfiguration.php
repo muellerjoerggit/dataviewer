@@ -8,10 +8,7 @@ use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDef
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
-use App\Item\ItemHandler_Validator\ValidatorItemHandlerInterface;
 use App\Item\Property\Attribute\ItemSettingInterface;
-use App\Services\AppNamespaces;
-use App\Services\Export\ExportFormatter\ExportFormatterAttributeInterface;
 use App\Services\Version\VersionInformation;
 use Generator;
 
@@ -30,11 +27,6 @@ class ItemConfiguration implements ItemConfigurationInterface {
   protected array $handlerSettings = [];
 
   protected array $settings = [];
-
-  /**
-   * @var ExportFormatterAttributeInterface[]
-   */
-  protected array $exportFormatter = [];
 
   /**
    * @var ValidatorItemHandlerDefinitionInterface[]
@@ -245,21 +237,6 @@ class ItemConfiguration implements ItemConfigurationInterface {
   public function hasVersion(): bool {
     return isset($this->version);
   }
-
-  public function addExportFormatter(ExportFormatterAttributeInterface $exportFormatter): ItemConfiguration {
-    $this->exportFormatter[] = $exportFormatter;
-    return $this;
-  }
-
-  /**
-   * @return Generator<ExportFormatterAttributeInterface>
-   */
-  public function iterateExportFormatters(): Generator {
-    foreach ($this->exportFormatter as $exportFormatter) {
-      yield $exportFormatter;
-    }
-  }
-
 
 
 }
