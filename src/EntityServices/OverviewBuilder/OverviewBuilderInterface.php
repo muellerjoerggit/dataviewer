@@ -9,11 +9,11 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface OverviewBuilderInterface {
 
   // extended entity overview options
-  public const FORMAT = 'format';
+  public const string FORMAT = 'format';
 
-  public const PROPERTIES = 'properties';
+  public const string PROPERTIES = 'properties';
 
-  public const ENTITY_LABEL = 'entityLabel';
+  public const string ENTITY_LABEL = 'entityLabel';
 
   public function buildEntityOverview(EntityInterface $entity, array $options = []): array;
 

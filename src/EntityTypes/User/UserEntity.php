@@ -57,6 +57,7 @@ use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
+use App\Item\Property\PropertyConfiguration;
 use App\Services\EntityActionHandler\UrlActionDefinitionAttr;
 use App\Services\EntityActionHandler\UrlActionHandler;
 
@@ -113,7 +114,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'integer'],
   ])]
-  private $usr_id;
+  private PropertyConfiguration $usr_id;
 
 
   #[PropertyDefinition(
@@ -129,7 +130,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
-  private $firstname;
+  private PropertyConfiguration $firstname;
 
 
   #[PropertyDefinition(
@@ -145,7 +146,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
-  private $lastname;
+  private PropertyConfiguration $lastname;
 
 
   #[PropertyDefinition(
@@ -159,7 +160,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
-  private $email;
+  private PropertyConfiguration $email;
 
 
   #[PropertyDefinition(
@@ -180,7 +181,7 @@ class UserEntity extends AbstractEntity {
     [PreDefined::class, 'integer'],
   ])]
   #[FormatterItemHandlerDefinition(handlerClass: OptionsFormatterItemHandler::class)]
-  private $active;
+  private PropertyConfiguration $active;
 
 
   #[PropertyDefinition(
@@ -192,7 +193,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'dateTime'],
   ])]
-  private $inactivation_date;
+  private PropertyConfiguration $inactivation_date;
 
 
   #[PropertyDefinition(
@@ -215,7 +216,7 @@ class UserEntity extends AbstractEntity {
     ),
     PreRenderingItemHandlerDefinition(handlerClass: EntityReferencePreRenderingItemHandler::class)
   ]
-  private $roles;
+  private PropertyConfiguration $roles;
 
 
 //  #[PropertyAttr(

@@ -13,7 +13,7 @@ interface ExpressionBuilderInterface {
    * @param string|CompositeExpression $expression
    * @param string|CompositeExpression ...$expressions
    */
-  public function and($expression, ...$expressions): CompositeExpression;
+  public function and(string | CompositeExpression $expression, string | CompositeExpression ...$expressions): CompositeExpression;
 
   /**
    * Creates a disjunction of the given expressions.
@@ -21,7 +21,7 @@ interface ExpressionBuilderInterface {
    * @param string|CompositeExpression $expression
    * @param string|CompositeExpression ...$expressions
    */
-  public function or($expression, ...$expressions): CompositeExpression;
+  public function or(string | CompositeExpression $expression, string | CompositeExpression ...$expressions): CompositeExpression;
 
   /**
    * Creates a comparison expression.

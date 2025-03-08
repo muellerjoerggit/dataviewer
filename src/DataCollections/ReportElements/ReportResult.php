@@ -4,9 +4,9 @@ namespace App\DataCollections\ReportElements;
 
 class ReportResult implements ReportElementInterface {
 
-	public const RESULT_ICON_UNKNOWN = 1;
-	public const RESULT_ICON_SUCCESS = 2;
-	public const RESULT_ICON_FAILED = 3;
+	public const int RESULT_ICON_UNKNOWN = 1;
+	public const int RESULT_ICON_SUCCESS = 2;
+	public const int RESULT_ICON_FAILED = 3;
 
 	private string $term = '';
 	private	string $description = '';

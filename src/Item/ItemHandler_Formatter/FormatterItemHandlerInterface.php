@@ -10,11 +10,11 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag('formatter_item_handler')]
 interface FormatterItemHandlerInterface extends ItemHandlerInterface {
 
-  public const OUTPUT_RAW_FORMATTED = 'rawFormatted';
+  public const string OUTPUT_RAW_FORMATTED = 'rawFormatted';
 
-  public const OUTPUT_FORMATTED = 'formatted';
+  public const string OUTPUT_FORMATTED = 'formatted';
 
-  public const OUTPUT_RAW = 'raw';
+  public const string OUTPUT_RAW = 'raw';
 
   /**
    * Return all values as string with raw values and formatted values

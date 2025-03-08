@@ -5,14 +5,13 @@ namespace App\DaViEntity;
 use App\DaViEntity\Schema\EntityTypeSchemaRegister;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\Logger\Logger;
-use App\Logger\LogItems\LogItemInterface;
 use App\Logger\LogItems\ValidationLogItem;
 use App\Logger\LogLevels;
 use App\Services\Validation\ErrorCodes;
 
 class CommonEntityValidator implements EntityValidatorInterface {
 
-  public const VALIDATE_ENTITY_TYPE = 'valType';
+  public const string VALIDATE_ENTITY_TYPE = 'valType';
 
   public function __construct(
     protected readonly DaViEntityManager $entityManager,
