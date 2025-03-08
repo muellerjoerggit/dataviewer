@@ -84,26 +84,26 @@ END;
       ReportTableRow::create(
         ReportTableCell::create('scalar', 1),
         ReportTableCell::create('badge', ReportBadgeItem::createDefault('normales Badge')),
-        ReportTableCell::create('result', ReportResultItem::createFull(ReportResultIcon::Success, 'erfolgreich', '', 'zusätzliche Information', 'zusätzliche Infos zum Ergebnis')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Success)),
+        ReportTableCell::create('result', ReportResultItem::createFull(ReportResultIcon::SUCCESS, 'erfolgreich', '', 'zusätzliche Information', 'zusätzliche Infos zum Ergebnis')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::SUCCESS)),
       ),
       ReportTableRow::create(
         ReportTableCell::create('scalar', 'text'),
         ReportTableCell::create('badge', ReportBadgeItem::createWarningBadge('Warnung')),
-        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::Failure, 'fehlgeschlagen')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Failure)),
+        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::FAILURE, 'fehlgeschlagen')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::FAILURE)),
       ),
       ReportTableRow::create(
         ReportTableCell::create('scalar', 'Lorem ipsum dolor sit amet'),
         ReportTableCell::create('badge', ReportBadgeItem::createOutlineBadge('Outline')),
-        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::Unknown, 'unbekannt')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Unknown)),
+        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::UNKNOWN, 'unbekannt')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::UNKNOWN)),
       ),
       ReportTableRow::create(
         ReportTableCell::create('scalar', 123),
         ReportTableCell::create('badge', ReportBadgeItem::createSecondaryBadge('Secondary')),
-        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::Success, 'erfolg')),
-        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::Success)),
+        ReportTableCell::create('result', ReportResultItem::create(ReportResultIcon::SUCCESS, 'erfolg')),
+        ReportTableCell::create('result2', ReportResultItem::create(ReportResultIcon::SUCCESS)),
       ),
     );
 

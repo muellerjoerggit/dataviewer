@@ -2,10 +2,10 @@
 
 namespace App\DataCollections\Report_Items;
 
-enum ReportResultIcon: int {
+abstract class ReportResultIcon {
 
-  case Unknown = 1;
-  case Success = 2;
-  case Failure = 3;
+  public const int UNKNOWN = 1;
+  public const int SUCCESS = 2;
+  public const int FAILURE = 3;
 
 }

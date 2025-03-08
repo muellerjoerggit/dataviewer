@@ -8,18 +8,18 @@ class ReportResultItem extends AbstractReportItem {
 
   private string $term = '';
   private	string $description = '';
-  private ReportResultIcon $resultIcon = ReportResultIcon::Unknown;
+  private int $resultIcon = ReportResultIcon::UNKNOWN;
   private string $termTooltip = '';
   private string $resultTooltip = '';
 
-  public static function create(ReportResultIcon $resultIcon, string $term = ''): ReportResultItem {
+  public static function create(int $resultIcon, string $term = ''): ReportResultItem {
     $item = new static();
     $item->setResultIcon($resultIcon);
     $item->setTerm($term);
     return $item;
   }
 
-  public static function createFull(ReportResultIcon $resultIcon, string $term, string $description, string $termTooltip, string $resultTooltip): ReportResultItem {
+  public static function createFull(int $resultIcon, string $term, string $description, string $termTooltip, string $resultTooltip): ReportResultItem {
     $item = new static();
     $item
       ->setResultIcon($resultIcon)
@@ -39,16 +39,16 @@ class ReportResultItem extends AbstractReportItem {
     return $this;
   }
 
-  public function getResultIcon(): ReportResultIcon {
+  public function getResultIcon(): int {
     return $this->resultIcon;
   }
 
   public function setSuccessOrFailedIcon(bool $result): ReportResultItem{
-    $this->setResultIcon($result ? ReportResultIcon::Success : ReportResultIcon::Failure);
+    $this->setResultIcon($result ? ReportResultIcon::SUCCESS : ReportResultIcon::FAILURE);
     return $this;
   }
 
-  public function setResultIcon(ReportResultIcon $resultIcon): ReportResultItem {
+  public function setResultIcon(int $resultIcon): ReportResultItem {
     $this->resultIcon = $resultIcon;
     return $this;
   }
