@@ -3,7 +3,7 @@
 namespace App\Services\BackgroundTask;
 
 use App\Services\AppNamespaces;
-use App\Services\DirectoryFileRegister;
+use App\Services\DirectoryFileService;
 use App\SymfonyEntity\BackgroundTask;
 use App\SymfonyEntity\TaskConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,7 +24,7 @@ class BackgroundTaskManager {
 	public function __construct(
     private readonly EntityManagerInterface $entityManager,
     private readonly LoggerInterface $logger,
-    private readonly DirectoryFileRegister $directoryFileRegister,
+    private readonly DirectoryFileService $directoryFileRegister,
   ) {
 		$this->getAllValidCommands($directoryFileRegister->getTaskCommandDir());
     $this->logger->debug('Background task manager started');
@@ -129,7 +129,7 @@ class BackgroundTaskManager {
 			return false;
 		}
 
-		$phpBinaryPath = (new PhpExecutableFinder())->find();
+		$phpBinaryPath = $this->directoryFileRegister->getPhpExecutable();
     $consoleDir = $this->directoryFileRegister->getConsoleDir();
 
 		$result = shell_exec($phpBinaryPath . ' -d max_execution_time=' . self::MAX_EXECUTION_TIME . ' ' . $consoleDir . ' ' . $command . ' ' . $task->getId() . ' 2>/dev/null >/dev/null &');

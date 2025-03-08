@@ -6,12 +6,13 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Yaml\Yaml;
 
 /**
  * central service for all files and directories
  */
-class DirectoryFileRegister {
+class DirectoryFileService {
 
   public function __construct(
     #[Autowire('%kernel.project_dir%')] private $rootDir,
@@ -28,11 +29,6 @@ class DirectoryFileRegister {
 
   public function getRootDir(): string {
     return $this->rootDir;
-  }
-
-  public function getPreDefinedPropertyConfiguration(): array {
-    $file = $this->getSrcDir() . '/Item/Property/preDefinedPropertyConfiguration.yaml';
-    return $this->parseYamlFromFile($file);
   }
 
   public function parseYamlFromFile(string $file): array {
@@ -57,6 +53,10 @@ class DirectoryFileRegister {
 
   public function getFeatureDir(): string {
     return $this->getSrcDir() . '/Feature/Features';
+  }
+
+  public function getPhpExecutable(): string {
+    return (new PhpExecutableFinder())->find();
   }
 
   public function getConsoleDir(): string {

@@ -3,7 +3,7 @@
 namespace App\Services\Validation;
 
 use App\DaViEntity\Schema\EntityTypesRegister;
-use App\Services\DirectoryFileRegister;
+use App\Services\DirectoryFileService;
 use Generator;
 
 class ErrorCodesRegister {
@@ -14,7 +14,7 @@ class ErrorCodesRegister {
 
   public function __construct(
     private readonly EntityTypesRegister $entityTypesRegister,
-    private readonly DirectoryFileRegister $directoryFileRegister
+    private readonly DirectoryFileService $directoryFileRegister
   ) {
     $this->init();
   }

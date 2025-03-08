@@ -2,7 +2,7 @@
 
 namespace App\Development\Controller;
 
-use App\Services\DirectoryFileRegister;
+use App\Services\DirectoryFileService;
 use App\Services\Export\CsvExport;
 use App\Services\Export\ExportConfigurationBuilder;
 use App\SymfonyRepository\BackgroundTaskRepository;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Export extends AbstractController {
 
-  public function export(CsvExport $csvExport, BackgroundTaskRepository $taskRepository, ExportConfigurationBuilder $configurationBuilder, DirectoryFileRegister $fileRegister): Response {
+  public function export(CsvExport $csvExport, BackgroundTaskRepository $taskRepository, ExportConfigurationBuilder $configurationBuilder, DirectoryFileService $fileRegister): Response {
     $task = $taskRepository->find(10);
     $configuration = $task->getTaskConfiguration()->getConfiguration();
     $configuration = json_decode($configuration, true);

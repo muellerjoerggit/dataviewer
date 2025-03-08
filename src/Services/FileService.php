@@ -23,7 +23,7 @@ class FileService {
 
 	public function __construct(
     private readonly FileRepository $fileRepository,
-    private readonly DirectoryFileRegister $directoryFileRegister,
+    private readonly DirectoryFileService $directoryFileRegister,
     private readonly EntityManagerInterface $entityManager,
   ) {}
 
