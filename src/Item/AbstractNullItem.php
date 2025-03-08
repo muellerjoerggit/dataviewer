@@ -2,6 +2,7 @@
 
 namespace App\Item;
 
+use App\DaViEntity\EntityKey;
 use Generator;
 
 abstract class AbstractNullItem implements ItemInterface {
@@ -68,5 +69,33 @@ abstract class AbstractNullItem implements ItemInterface {
 
   public function getValues(): mixed {
     return null;
+  }
+
+  public function iterateEntityKeyCollection(): Generator {
+    yield from [];
+  }
+
+  public function hasEntityKeys(): bool {
+    return false;
+  }
+
+  public function getEntityKey(): array | EntityKey {
+    return EntityKey::createNullEntityKey();
+  }
+
+  public function countEntityKeys(): int {
+    return 0;
+  }
+
+  public function getFirstEntityKey(): EntityKey {
+    return EntityKey::createNullEntityKey();
+  }
+
+  public function setRawValues(mixed $value): ItemInterface {
+    return $this;
+  }
+
+  public function __string(): string {
+    return '';
   }
 }

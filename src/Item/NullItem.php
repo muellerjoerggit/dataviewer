@@ -2,8 +2,6 @@
 
 namespace App\Item;
 
-use Generator;
-
 class NullItem extends AbstractNullItem {
 
   protected ItemConfigurationInterface $itemConfiguration;
