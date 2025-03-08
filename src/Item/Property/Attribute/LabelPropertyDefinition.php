@@ -6,7 +6,7 @@ use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class LabelPropertyAttr extends AbstractPropertyAttribute implements LabelDefinitionInterface {
+class LabelPropertyDefinition extends AbstractPropertyAttribute implements LabelDefinitionInterface {
 
   public function __construct(
     public readonly string $label = '',

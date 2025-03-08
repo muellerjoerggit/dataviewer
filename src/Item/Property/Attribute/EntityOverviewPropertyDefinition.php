@@ -6,7 +6,7 @@ use App\DaViEntity\Schema\Attribute\EntityOverviewDefinitionInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class EntityOverviewPropertyAttr extends AbstractPropertyAttribute implements EntityOverviewDefinitionInterface {
+class EntityOverviewPropertyDefinition extends AbstractPropertyAttribute implements EntityOverviewDefinitionInterface {
 
   public function __construct(
     public readonly string $label = '',

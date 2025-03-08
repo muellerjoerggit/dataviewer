@@ -10,7 +10,7 @@ use App\Database\TableReferenceHandler\Attribute\CommonTableReferenceDefinition;
 use App\Database\TableReferenceHandler\CommonTableReferenceHandler;
 use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinition;
 use App\EntityServices\AdditionalData\AdditionalDataProviderFromTableReferences;
@@ -46,11 +46,11 @@ use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitio
 use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
-use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\LabelPropertyAttr;
+use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
+use App\Item\Property\Attribute\LabelPropertyDefinition;
 use App\Item\Property\Attribute\OptionItemSettingDefinition;
-use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\PropertyDefinition;
+use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
@@ -58,7 +58,7 @@ use App\Services\EntityActionHandler\UrlActionDefinitionAttr;
 use App\Services\EntityActionHandler\UrlActionHandler;
 
 #[RepositoryDefinition(repositoryClass: UserRepository::class)]
-#[EntityTypeAttr(name: 'User', label: 'Benutzer')]
+#[EntityTypeDefinition(name: 'User', label: 'Benutzer')]
 #[BaseQueryDefinition(baseQueryClass: CommonBaseQuery::class),
   SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
@@ -97,54 +97,54 @@ class UserEntity extends AbstractEntity {
 
   use EntityPropertyTrait;
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_INTEGER
     ),
     DatabaseColumnDefinition
   ]
   #[UniquePropertyDefinition,
-    LabelPropertyAttr(rank: 10),
-    EntityOverviewPropertyAttr(rank: 10)
+    LabelPropertyDefinition(rank: 10),
+    EntityOverviewPropertyDefinition(rank: 10)
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'integer'],
   ])]
   private $usr_id;
 
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_STRING,
       label: 'Vorname'
     ),
     DatabaseColumnDefinition
   ]
-  #[LabelPropertyAttr(rank: 20),
-    EntityOverviewPropertyAttr(rank: 20),
+  #[LabelPropertyDefinition(rank: 20),
+    EntityOverviewPropertyDefinition(rank: 20),
     SearchPropertyDefinition
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
   private $firstname;
 
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_STRING,
       label: 'Nachname'
     ),
     DatabaseColumnDefinition
   ]
-  #[LabelPropertyAttr(rank: 30),
-    EntityOverviewPropertyAttr(rank: 30),
+  #[LabelPropertyDefinition(rank: 30),
+    EntityOverviewPropertyDefinition(rank: 30),
     SearchPropertyDefinition
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
   private $lastname;
 
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_STRING,
       label: 'E-Mail'
     ),
@@ -152,19 +152,19 @@ class UserEntity extends AbstractEntity {
   ]
   #[SearchPropertyDefinition
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'string'],
   ])]
   private $email;
 
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_BOOL,
       label: 'Aktiv'
     ),
     DatabaseColumnDefinition
   ]
-  #[EntityOverviewPropertyAttr(rank: 40)
+  #[EntityOverviewPropertyDefinition(rank: 40)
   ]
   #[OptionItemSettingDefinition(
     options: [
@@ -172,26 +172,26 @@ class UserEntity extends AbstractEntity {
       1 => ['label' => 'active']
     ]
   )]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'integer'],
   ])]
   #[FormatterItemHandlerDefinition(handlerClass: OptionsFormatterItemHandler::class)]
   private $active;
 
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_DATE_TIME,
       label: 'Inaktivierungsdatum'
     ),
     DatabaseColumnDefinition
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'dateTime'],
   ])]
   private $inactivation_date;
 
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_INTEGER,
       label: 'Rollen',
       cardinality: ItemInterface::CARDINALITY_MULTIPLE
@@ -201,8 +201,8 @@ class UserEntity extends AbstractEntity {
     tableReferenceName: 'roleMapping',
     property: 'rol_id',
   )]
-  #[PropertyPreDefinedAttr([
-    [PreDefined::class, 'integer'],
+  #[PropertyPreDefinedDefinition([
+    [PreDefined::class, 'simpleInteger'],
   ])]
   #[EntityReferenceItemHandlerDefinition(
       handlerClass: CommonEntityReferenceItemHandler::class,

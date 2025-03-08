@@ -7,7 +7,7 @@ use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinition;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
@@ -67,7 +67,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
     }
 
     switch(get_class($attribute)) {
-      case EntityTypeAttr::class:
+      case EntityTypeDefinition::class:
         $container->setEntityTypeAttr($attribute);
         break;
       case DatabaseDefinition::class:
@@ -134,7 +134,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
 
   public function getEntityType(string | EntityInterface $classname): ?string {
     $classname = $this->resolveEntityClass($classname);
-    return $this->getAttributeKey($classname, EntityTypeAttr::class, EntityTypeAttr::NAME_PROPERTY, NullEntity::ENTITY_TYPE);
+    return $this->getAttributeKey($classname, EntityTypeDefinition::class, EntityTypeDefinition::NAME_PROPERTY, NullEntity::ENTITY_TYPE);
   }
 
   private function resolveEntityClass(string | EntityInterface $classname): string {

@@ -9,12 +9,12 @@ use App\Database\AggregationHandler\CountGroupAggregationHandler;
 use App\Database\BaseQuery\BaseQueryDefinition;
 use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterEntityReferenceDefinition;
 use App\Database\SqlFilterHandler\EntityReferenceFilterHandler;
 use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
@@ -47,16 +47,16 @@ use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitio
 use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
-use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\LabelPropertyAttr;
-use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
+use App\Item\Property\Attribute\LabelPropertyDefinition;
+use App\Item\Property\Attribute\PropertyDefinition;
+use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Item\Property\PropertyItemInterface;
 
 #[RepositoryDefinition(repositoryClass: RoleUserMapRepository::class)]
-#[EntityTypeAttr(name: 'RoleUserMap', label: 'Rolle/User Map')]
+#[EntityTypeDefinition(name: 'RoleUserMap', label: 'Rolle/User Map')]
 #[BaseQueryDefinition(baseQueryClass: CommonBaseQuery::class),
   SimpleSearchDefinition(simpleSearchClass: CommonSimpleSearch::class),
   DataProviderDefinition(dataProviderClass: CommonSqlDataProvider::class),
@@ -102,17 +102,17 @@ class RoleUserMapEntity extends AbstractEntity {
 
   use EntityPropertyTrait;
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
     dataType: ItemInterface::DATA_TYPE_INTEGER,
     label: 'Benutzer ID',
   ),
     DatabaseColumnDefinition
   ]
   #[UniquePropertyDefinition,
-    LabelPropertyAttr,
-    EntityOverviewPropertyAttr
+    LabelPropertyDefinition,
+    EntityOverviewPropertyDefinition
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'integer'],
   ])]
   #[SqlFilterEntityReferenceDefinition(
@@ -131,17 +131,17 @@ class RoleUserMapEntity extends AbstractEntity {
   ]
   private PropertyItemInterface $usr_id;
 
-  #[PropertyAttr(
+  #[PropertyDefinition(
     dataType: ItemInterface::DATA_TYPE_INTEGER,
     label: 'Rollen ID'
   ),
     DatabaseColumnDefinition
   ]
   #[UniquePropertyDefinition,
-    LabelPropertyAttr,
-    EntityOverviewPropertyAttr
+    LabelPropertyDefinition,
+    EntityOverviewPropertyDefinition
   ]
-  #[PropertyPreDefinedAttr([
+  #[PropertyPreDefinedDefinition([
     [PreDefined::class, 'integer'],
   ])]
   #[SqlFilterEntityReferenceDefinition(

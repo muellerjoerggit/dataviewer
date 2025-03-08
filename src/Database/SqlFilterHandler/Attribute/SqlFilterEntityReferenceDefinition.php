@@ -2,12 +2,10 @@
 
 namespace App\Database\SqlFilterHandler\Attribute;
 
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
-
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class SqlFilterEntityReferenceDefinition extends SqlFilterDefinitionAttr {
+class SqlFilterEntityReferenceDefinition extends SqlFilterDefinition {
 
   public function __construct(
     string $filterHandler,

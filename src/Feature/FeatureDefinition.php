@@ -5,7 +5,7 @@ namespace App\Feature;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-class FeatureAttr {
+class FeatureDefinition {
 
   public function __construct(
     public string $label = '',

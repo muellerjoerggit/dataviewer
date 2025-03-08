@@ -6,14 +6,14 @@ use App\Database\QueryBuilder\QueryBuilderInterface;
 use App\Database\SqlFilter\SqlFilter;
 use App\Database\SqlFilter\SqlFilterHandlerInterface;
 use App\Database\SqlFilter\SqlFilterInterface;
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinition;
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\DaViEntity\Schema\EntitySchema;
 
 class NullFilterHandler implements SqlFilterHandlerInterface{
 
 	public static function getNullFilterDefinition(): SqlFilterDefinitionInterface {
-    return new SqlFilterDefinitionAttr(
+    return new SqlFilterDefinition(
       NullFilterHandler::class,
       'NullFilterHandler',
       'Null filter',

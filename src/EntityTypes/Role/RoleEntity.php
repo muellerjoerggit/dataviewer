@@ -7,7 +7,7 @@ use App\Database\BaseQuery\CommonBaseQuery;
 use App\Database\DaViDatabaseOne;
 use App\DaViEntity\AbstractEntity;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Traits\EntityPropertyTrait;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
@@ -37,17 +37,17 @@ use App\Item\ItemHandler_AdditionalData\AggregationFilterAdditionalDataItemHandl
 use App\Item\ItemHandler_AdditionalData\Attribute\AggregationAdditionalDataHandlerDefinition;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
-use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\LabelPropertyAttr;
-use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
+use App\Item\Property\Attribute\LabelPropertyDefinition;
+use App\Item\Property\Attribute\PropertyDefinition;
+use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Item\Property\PropertyItemInterface;
 
 #[RepositoryDefinition(repositoryClass: RoleRepository::class)]
-#[EntityTypeAttr(name: 'Role', label: 'Role'),
+#[EntityTypeDefinition(name: 'Role', label: 'Rolle'),
 ]
 #[BaseQueryDefinition(baseQueryClass: CommonBaseQuery::class),
   ColumnBuilderDefinition(columnBuilderClass: CommonColumnBuilder::class),
@@ -71,52 +71,56 @@ class RoleEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   /** ########################################################## rol_id */
-    #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
-      EntityOverviewPropertyAttr(rank: 10),
+    #[PropertyDefinition(
+        dataType: ItemInterface::DATA_TYPE_INTEGER,
+        label: 'Rollen ID',
+      ),
+      EntityOverviewPropertyDefinition(rank: 10),
       DatabaseColumnDefinition,
-      UniquePropertyDefinition
+      UniquePropertyDefinition,
     ]
-    #[PropertyPreDefinedAttr([
+    #[PropertyPreDefinedDefinition([
       [PreDefined::class, 'integer'],
     ])]
     private PropertyItemInterface $rol_id;
-  /** ########################################################## */
+  /** ################### */
 
   /** ########################################################## title */
-    #[PropertyAttr(
-      dataType: ItemInterface::DATA_TYPE_STRING
+    #[PropertyDefinition(
+      dataType: ItemInterface::DATA_TYPE_STRING,
+      label: 'Rollentitel',
     ),
-      LabelPropertyAttr,
+      LabelPropertyDefinition,
       SearchPropertyDefinition,
-      EntityOverviewPropertyAttr,
+      EntityOverviewPropertyDefinition,
       DatabaseColumnDefinition,
     ]
-    #[PropertyPreDefinedAttr([
+    #[PropertyPreDefinedDefinition([
       [PreDefined::class, 'string'],
     ])]
     private PropertyItemInterface $title;
-  /** ########################################################## */
+  /** ################### */
 
   /** ########################################################## description */
-    #[PropertyAttr(
+    #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_STRING
     ),
       SearchPropertyDefinition,
-      EntityOverviewPropertyAttr,
+      EntityOverviewPropertyDefinition,
       DatabaseColumnDefinition,
     ]
-    #[PropertyPreDefinedAttr([
+    #[PropertyPreDefinedDefinition([
       [PreDefined::class, 'string'],
     ])]
     private PropertyItemInterface $description;
-  /** ########################################################## */
+  /** ################### */
 
   /** ########################################################## count_users */
-    #[PropertyAttr(
+    #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_INTEGER,
       label: 'Anzahl Benutzer'
     )]
-    #[PropertyPreDefinedAttr([
+    #[PropertyPreDefinedDefinition([
       [PreDefined::class, 'simpleInteger'],
     ])]
     #[AggregationAdditionalDataHandlerDefinition(
@@ -131,14 +135,14 @@ class RoleEntity extends AbstractEntity {
       ],
     )]
     private PropertyItemInterface $count_user;
-  /** ########################################################## */
+  /** ################### */
 
   /** ########################################################## count_user_status */
-    #[PropertyAttr(
+    #[PropertyDefinition(
       dataType: ItemInterface::DATA_TYPE_TABLE,
       label: 'Anzahl Benutzer nach Status'
     )]
-    #[PropertyPreDefinedAttr([
+    #[PropertyPreDefinedDefinition([
       [PreDefined::class, 'table'],
     ])]
     #[AggregationAdditionalDataHandlerDefinition(
@@ -154,6 +158,6 @@ class RoleEntity extends AbstractEntity {
       propertyBlacklist: ['rol_id']
     )]
     private PropertyItemInterface $count_user_status;
-  /** ########################################################## */
+  /** ################### */
 
 }

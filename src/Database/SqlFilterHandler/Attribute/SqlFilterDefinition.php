@@ -5,7 +5,7 @@ namespace App\Database\SqlFilterHandler\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-class SqlFilterDefinitionAttr extends AbstractSqlFilterDefinition implements SqlFilterDefinitionInterface  {
+class SqlFilterDefinition extends AbstractSqlFilterDefinition implements SqlFilterDefinitionInterface  {
 
   public function __construct(
     string $filterHandler,

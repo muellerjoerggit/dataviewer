@@ -9,7 +9,7 @@ use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInter
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
-use App\Item\Property\Attribute\PropertyAttr;
+use App\Item\Property\Attribute\PropertyDefinition;
 use App\Item\Property\Attribute\ItemSettingInterface;
 use Generator;
 use ReflectionProperty;
@@ -18,7 +18,7 @@ class PropertyAttributesContainer {
 
   private PropertyConfiguration $propertyConfiguration;
 
-  private PropertyAttr $propertyAttr;
+  private PropertyDefinition $propertyAttr;
 
   /**
    * @var ItemSettingInterface[]
@@ -63,11 +63,11 @@ class PropertyAttributesContainer {
     return $this->property->getName();
   }
 
-  public function getPropertyAttr(): PropertyAttr {
+  public function getPropertyAttr(): PropertyDefinition {
     return $this->propertyAttr;
   }
 
-  public function setPropertyAttr(PropertyAttr $propertyAttr): PropertyAttributesContainer {
+  public function setPropertyAttr(PropertyDefinition $propertyAttr): PropertyAttributesContainer {
     $this->propertyAttr = $propertyAttr;
     return $this;
   }

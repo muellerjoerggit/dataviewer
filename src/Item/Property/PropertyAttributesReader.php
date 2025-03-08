@@ -11,11 +11,11 @@ use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInter
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
-use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
+use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
 use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\LabelPropertyAttr;
-use App\Item\Property\Attribute\PropertyAttr;
-use App\Item\Property\Attribute\PropertyPreDefinedAttr;
+use App\Item\Property\Attribute\LabelPropertyDefinition;
+use App\Item\Property\Attribute\PropertyDefinition;
+use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\ItemSettingInterface;
 use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
@@ -69,14 +69,14 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     string $name,
     $instance
   ): void {
-    if($instance instanceof PropertyPreDefinedAttr) {
+    if($instance instanceof PropertyPreDefinedDefinition) {
       foreach ($instance->iteratePreDefinedAttributes() as $attribute) {
         $this->processAttribute($propertyContainer, $schemaContainer, $name, $attribute);
       }
-    } elseif($instance instanceof PropertyAttr) {
+    } elseif($instance instanceof PropertyDefinition) {
       $instance->setProperty($name);
       $propertyContainer->setPropertyAttr($instance);
-    } elseif ($instance instanceof LabelPropertyAttr) {
+    } elseif ($instance instanceof LabelPropertyDefinition) {
       $instance->setProperty($name);
       $schemaContainer->addLabelDefinition($instance);
     } elseif ($instance instanceof SearchPropertyDefinition) {
@@ -85,7 +85,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     } elseif ($instance instanceof UniquePropertyDefinition) {
       $instance->setProperty($name);
       $schemaContainer->addUniquePropertyDefinition($instance);
-    } elseif ($instance instanceof EntityOverviewPropertyAttr) {
+    } elseif ($instance instanceof EntityOverviewPropertyDefinition) {
       $instance->setProperty($name);
       $schemaContainer->addEntityOverviewDefinition($instance);
     } elseif ($instance instanceof ExtendedEntityOverviewPropertyAttr) {

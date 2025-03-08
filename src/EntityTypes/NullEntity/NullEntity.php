@@ -4,26 +4,26 @@ namespace App\EntityTypes\NullEntity;
 
 use App\DaViEntity\EntityInterface;
 use App\DaViEntity\EntityKey;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueKey;
 use App\EntityServices\Repository\RepositoryDefinition;
 use App\Item\ItemInterface;
-use App\Item\Property\Attribute\EntityOverviewPropertyAttr;
-use App\Item\Property\Attribute\PropertyAttr;
+use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
+use App\Item\Property\Attribute\PropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PropertyItemInterface;
 use App\Logger\LogItems\LogItemInterface;
 use Generator;
 
-#[EntityTypeAttr(name: 'NullEntity')]
+#[EntityTypeDefinition(name: 'NullEntity')]
 #[RepositoryDefinition(repositoryClass: NullRepository::class)]
 class NullEntity implements EntityInterface {
 
   public const string ENTITY_TYPE = 'NullEntity';
 
-  #[PropertyAttr(dataType: ItemInterface::DATA_TYPE_INTEGER),
-    EntityOverviewPropertyAttr,
+  #[PropertyDefinition(dataType: ItemInterface::DATA_TYPE_INTEGER),
+    EntityOverviewPropertyDefinition,
     UniquePropertyDefinition
   ]
   private int $id;

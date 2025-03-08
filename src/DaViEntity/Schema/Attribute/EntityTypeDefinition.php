@@ -5,7 +5,7 @@ namespace App\DaViEntity\Schema\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityTypeAttr {
+final class EntityTypeDefinition {
 
   public const string NAME_PROPERTY = 'name';
 

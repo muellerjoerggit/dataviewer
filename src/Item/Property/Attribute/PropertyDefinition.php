@@ -7,7 +7,7 @@ use App\Item\ItemConfigurationInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class PropertyAttr extends AbstractPropertyAttribute  {
+class PropertyDefinition extends AbstractPropertyAttribute  {
 
   public function __construct(
     public readonly int $dataType,

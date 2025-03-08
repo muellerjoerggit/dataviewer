@@ -8,7 +8,7 @@ use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityOverviewDefinitionInterface;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Schema\Attribute\ExtEntityOverviewDefinitionInterface;
 use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinitionInterface;
@@ -34,7 +34,7 @@ use Generator;
 
 class SchemaDefinitionsContainer {
 
-  private EntityTypeAttr $entityTypeAttr;
+  private EntityTypeDefinition $entityTypeAttr;
   private DatabaseDefinition $databaseDefinition;
 
   /**
@@ -157,11 +157,11 @@ class SchemaDefinitionsContainer {
    */
   private array $validatorDefinitions = [];
 
-  public function getEntityTypeAttr(): EntityTypeAttr | null {
+  public function getEntityTypeAttr(): EntityTypeDefinition | null {
     return $this->entityTypeAttr ?? null;
   }
 
-  public function setEntityTypeAttr(EntityTypeAttr $entityTypeAttr): SchemaDefinitionsContainer {
+  public function setEntityTypeAttr(EntityTypeDefinition $entityTypeAttr): SchemaDefinitionsContainer {
     $this->entityTypeAttr = $entityTypeAttr;
     return $this;
   }

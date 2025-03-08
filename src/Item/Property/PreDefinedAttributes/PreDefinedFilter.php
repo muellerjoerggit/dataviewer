@@ -2,7 +2,7 @@
 
 namespace App\Item\Property\PreDefinedAttributes;
 
-use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionAttr;
+use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinition;
 use App\Database\SqlFilterHandler\CommonTextFilterHandler;
 use App\Database\SqlFilterHandler\DateTimeFilterHandler;
 use App\Database\SqlFilterHandler\NullCheckFilterHandler;
@@ -11,7 +11,7 @@ class PreDefinedFilter {
 
   public static function commonTextFilter(): array {
     return [
-      new SqlFilterDefinitionAttr(
+      new SqlFilterDefinition(
         CommonTextFilterHandler::class,
         '',
         'Textfilter'
@@ -21,7 +21,7 @@ class PreDefinedFilter {
 
   public static function dateTimeFilter(): array {
     return [
-      new SqlFilterDefinitionAttr(
+      new SqlFilterDefinition(
         DateTimeFilterHandler::class,
         '',
         'Datumsfilter'
@@ -31,7 +31,7 @@ class PreDefinedFilter {
 
   public static function nullCheckFilter(): array {
     return [
-      new SqlFilterDefinitionAttr(
+      new SqlFilterDefinition(
         NullCheckFilterHandler::class,
         '',
         'Nullfilter'

@@ -6,7 +6,7 @@ use App\Database\BaseQuery\BaseQueryDefinitionInterface;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\DaViEntity\EntityTypeAttributesReader;
 use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinitionInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
 use App\EntityServices\ColumnBuilder\ColumnBuilderDefinitionInterface;
@@ -162,7 +162,7 @@ class EntitySchemaBuilder {
   private function fillSchemaBasics(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): bool {
     $attr = $container->getEntityTypeAttr();
 
-    if(!$attr instanceof EntityTypeAttr) {
+    if(!$attr instanceof EntityTypeDefinition) {
       return false;
     }
 

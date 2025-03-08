@@ -18,9 +18,9 @@ use App\DataCollections\ReportElements_Table\ReportTableRow;
 use App\DataCollections\Report_Items\ReportBadgeItem;
 use App\DataCollections\Report_Items\ReportResultItem;
 use App\Feature\AbstractFeatureReport;
-use App\Feature\FeatureAttr;
+use App\Feature\FeatureDefinition;
 
-#[FeatureAttr(
+#[FeatureDefinition(
   label: 'Demo',
   description: 'Demo für alle möglichen Features vom Report',
 )]

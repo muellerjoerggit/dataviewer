@@ -6,7 +6,7 @@ use Attribute;
 use Generator;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class PropertyPreDefinedAttr {
+class PropertyPreDefinedDefinition {
 
   /**
    * @param array $preDefinedCallbacks
