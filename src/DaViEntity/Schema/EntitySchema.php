@@ -224,9 +224,9 @@ class EntitySchema implements EntitySchemaInterface {
   }
 
   /**
-   * @return \Generator<PropertyConfiguration>
+   * @return Generator<PropertyConfiguration>
    */
-  public function iterateProperties(): \Generator {
+  public function iterateProperties(): Generator {
     foreach ($this->properties as $key => $config) {
       yield $key => $config;
     }
@@ -306,7 +306,6 @@ class EntitySchema implements EntitySchemaInterface {
   public function getGroupFilterMappings(): array {
     return $this->groupFilterMapping;
   }
-
 
   public function getUniqueProperties(): array {
     return $this->uniqueIdentifiers ?? [];
@@ -417,7 +416,11 @@ class EntitySchema implements EntitySchemaInterface {
     }
   }
 
-  public function addTableReferenceColumn(TableReferenceDefinitionInterface $tableReference, PropertyConfiguration $referencePropertyConfiguration, string $property): EntitySchemaInterface {
+  public function addTableReferenceColumn(
+    TableReferenceDefinitionInterface $tableReference,
+    PropertyConfiguration $referencePropertyConfiguration,
+    string $property
+  ): EntitySchemaInterface {
     $this->tableReferenceColumns[$tableReference->getName()][$property] = $referencePropertyConfiguration;
     return $this;
   }
