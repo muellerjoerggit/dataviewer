@@ -35,7 +35,7 @@ use Generator;
 
 class SchemaDefinitionsContainer {
 
-  private EntityTypeDefinition $entityTypeAttr;
+  private EntityTypeDefinition $entityTypeDefinition;
   private DatabaseDefinition $databaseDefinition;
 
   /**
@@ -163,12 +163,12 @@ class SchemaDefinitionsContainer {
    */
   private array $availabilityVerdictDefinitions = [];
 
-  public function getEntityTypeAttr(): EntityTypeDefinition | null {
-    return $this->entityTypeAttr ?? null;
+  public function getEntityTypeDefinition(): EntityTypeDefinition | null {
+    return $this->entityTypeDefinition ?? null;
   }
 
-  public function setEntityTypeAttr(EntityTypeDefinition $entityTypeAttr): SchemaDefinitionsContainer {
-    $this->entityTypeAttr = $entityTypeAttr;
+  public function setEntityTypeDefinition(EntityTypeDefinition $entityTypeDefinition): SchemaDefinitionsContainer {
+    $this->entityTypeDefinition = $entityTypeDefinition;
     return $this;
   }
 
@@ -176,13 +176,13 @@ class SchemaDefinitionsContainer {
     return $this->databaseDefinition ?? null;
   }
 
-  public function setDatabaseDefinition(DatabaseDefinition $databaseAttr): SchemaDefinitionsContainer {
-    $this->databaseDefinition = $databaseAttr;
+  public function setDatabaseDefinition(DatabaseDefinition $databaseDefinition): SchemaDefinitionsContainer {
+    $this->databaseDefinition = $databaseDefinition;
     return $this;
   }
 
-  public function addRepositoryDefinition(RepositoryDefinitionInterface $repositoryAttr): SchemaDefinitionsContainer {
-    $this->repositoryDefinitions[] = $repositoryAttr;
+  public function addRepositoryDefinition(RepositoryDefinitionInterface $repositoryDefinition): SchemaDefinitionsContainer {
+    $this->repositoryDefinitions[] = $repositoryDefinition;
     return $this;
   }
 
@@ -307,8 +307,8 @@ class SchemaDefinitionsContainer {
     }
   }
 
-  public function addTableReferenceAttribute(TableReferenceDefinitionInterface $tableReferenceAttr): SchemaDefinitionsContainer {
-    $this->tableReferenceAttributes[] = $tableReferenceAttr;
+  public function addTableReferenceAttribute(TableReferenceDefinitionInterface $tableReferenceDefinition): SchemaDefinitionsContainer {
+    $this->tableReferenceAttributes[] = $tableReferenceDefinition;
     return $this;
   }
 
@@ -316,8 +316,8 @@ class SchemaDefinitionsContainer {
    * @return Generator<TableReferenceDefinitionInterface>
    */
   public function iterateTableReferenceAttributes(): Generator {
-    foreach ($this->tableReferenceAttributes as $tableReferenceAttr) {
-      yield $tableReferenceAttr;
+    foreach ($this->tableReferenceAttributes as $tableReferenceDefinition) {
+      yield $tableReferenceDefinition;
     }
   }
 

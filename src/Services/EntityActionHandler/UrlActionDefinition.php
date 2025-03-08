@@ -7,7 +7,7 @@ use App\Services\Placeholder\PlaceholderDefinitionInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class UrlActionDefinitionAttr extends AbstractEntityActionDefinition implements PlaceholderDefinitionInterface {
+class UrlActionDefinition extends AbstractEntityActionDefinition implements PlaceholderDefinitionInterface {
 
   public function __construct(
     string $handler,

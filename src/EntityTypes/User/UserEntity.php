@@ -47,7 +47,6 @@ use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinition;
 use App\Item\ItemHandler_Formatter\OptionsFormatterItemHandler;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
 use App\Item\ItemHandler_PreRendering\EntityReferencePreRenderingItemHandler;
-use App\Item\ItemInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
 use App\Item\Property\Attribute\LabelPropertyDefinition;
@@ -58,7 +57,7 @@ use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Item\Property\Attribute\UniquePropertyDefinition;
 use App\Item\Property\PreDefinedAttributes\PreDefined;
 use App\Item\Property\PropertyConfiguration;
-use App\Services\EntityActionHandler\UrlActionDefinitionAttr;
+use App\Services\EntityActionHandler\UrlActionDefinition;
 use App\Services\EntityActionHandler\UrlActionHandler;
 
 #[RepositoryDefinition(repositoryClass: UserRepository::class)]
@@ -90,7 +89,7 @@ use App\Services\EntityActionHandler\UrlActionHandler;
   propertyConditions: ['usr_id' => 'usr_id'])
 ]
 
-#[UrlActionDefinitionAttr(
+#[UrlActionDefinition(
   handler: UrlActionHandler::class,
   urlTemplate: 'www.example.com/user/{user}',
   placeholders: ['user' => 'usr_id'],

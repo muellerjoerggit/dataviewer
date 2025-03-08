@@ -71,7 +71,7 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
 
     switch(get_class($attribute)) {
       case EntityTypeDefinition::class:
-        $container->setEntityTypeAttr($attribute);
+        $container->setEntityTypeDefinition($attribute);
         break;
       case DatabaseDefinition::class:
         $container->setDatabaseDefinition($attribute);

@@ -161,7 +161,7 @@ class EntitySchemaBuilder {
   }
 
   private function fillSchemaBasics(EntitySchemaInterface $schema, SchemaDefinitionsContainer $container): bool {
-    $attr = $container->getEntityTypeAttr();
+    $attr = $container->getEntityTypeDefinition();
 
     if(!$attr instanceof EntityTypeDefinition) {
       return false;

@@ -18,7 +18,7 @@ class PropertyAttributesContainer {
 
   private PropertyConfiguration $propertyConfiguration;
 
-  private PropertyDefinition $propertyAttr;
+  private PropertyDefinition $propertyDefinition;
 
   /**
    * @var ItemSettingInterface[]
@@ -63,12 +63,12 @@ class PropertyAttributesContainer {
     return $this->property->getName();
   }
 
-  public function getPropertyAttr(): PropertyDefinition {
-    return $this->propertyAttr;
+  public function getPropertyDefinition(): PropertyDefinition {
+    return $this->propertyDefinition;
   }
 
-  public function setPropertyAttr(PropertyDefinition $propertyAttr): PropertyAttributesContainer {
-    $this->propertyAttr = $propertyAttr;
+  public function setPropertyDefinition(PropertyDefinition $propertyDefinition): PropertyAttributesContainer {
+    $this->propertyDefinition = $propertyDefinition;
     return $this;
   }
 
@@ -164,7 +164,7 @@ class PropertyAttributesContainer {
   }
 
   public function isValid(): bool {
-    return isset($this->propertyAttr);
+    return isset($this->propertyDefinition);
   }
 
 }

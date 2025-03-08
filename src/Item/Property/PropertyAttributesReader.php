@@ -75,7 +75,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
       }
     } elseif($instance instanceof PropertyDefinition) {
       $instance->setProperty($name);
-      $propertyContainer->setPropertyAttr($instance);
+      $propertyContainer->setPropertyDefinition($instance);
     } elseif ($instance instanceof LabelDefinitionInterface) {
       $instance->setProperty($name);
       $schemaContainer->addLabelDefinition($instance);

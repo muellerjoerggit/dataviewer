@@ -44,7 +44,7 @@ class PropertyConfigurationBuilder {
   }
 
   private function fillBasic(PropertyAttributesContainer $container, PropertyConfiguration $propertyConfiguration): void {
-    $propertyAttr = $container->getPropertyAttr();
+    $propertyAttr = $container->getPropertyDefinition();
 
     $propertyConfiguration
       ->setCardinality($propertyAttr->getCardinality())
