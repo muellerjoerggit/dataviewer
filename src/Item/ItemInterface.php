@@ -6,9 +6,6 @@ use Generator;
 
 interface ItemInterface {
 
-  public const int CARDINALITY_SINGLE = 1;
-  public const int CARDINALITY_MULTIPLE = 2;
-
   public function countValues(): int;
 
   public function getValuesAsArray(): array;

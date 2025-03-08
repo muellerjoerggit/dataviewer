@@ -17,7 +17,7 @@ use Generator;
 
 class ItemConfiguration implements ItemConfigurationInterface {
 
-  protected int $cardinality = ItemConfigurationInterface::CARDINALITY_SINGLE;
+  protected int $cardinality = Cardinality::SINGLE;
 
   protected int $dataType;
 
@@ -86,7 +86,7 @@ class ItemConfiguration implements ItemConfigurationInterface {
   }
 
   public function isCardinalityMultiple(): bool {
-    return $this->getCardinality() === ItemConfigurationInterface::CARDINALITY_MULTIPLE;
+    return $this->getCardinality() === Cardinality::MULTIPLE;
   }
 
   public function getCardinality(): int {

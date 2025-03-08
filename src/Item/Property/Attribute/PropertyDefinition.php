@@ -2,6 +2,7 @@
 
 namespace App\Item\Property\Attribute;
 
+use App\Item\Cardinality;
 use App\Item\ItemConfigurationInterface;
 
 use Attribute;
@@ -13,7 +14,7 @@ class PropertyDefinition extends AbstractPropertyAttribute  {
     public readonly int $dataType,
     public readonly string $label = '',
     public readonly string $description = '',
-    public readonly int $cardinality = ItemConfigurationInterface::CARDINALITY_SINGLE,
+    public readonly int $cardinality = Cardinality::SINGLE,
   ) {}
 
   public function getDataType(): int {

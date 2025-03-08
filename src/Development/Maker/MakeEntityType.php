@@ -19,6 +19,7 @@ use App\EntityServices\Refiner\CommonRefiner;
 use App\EntityServices\SimpleSearch\CommonSimpleSearch;
 use App\EntityServices\Validator\ValidatorBase;
 use App\EntityServices\ViewBuilder\CommonViewBuilder;
+use App\Item\Cardinality;
 use App\Item\DataType;
 use App\Item\ItemConfigurationInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
@@ -272,7 +273,7 @@ class MakeEntityType extends AbstractMaker {
 
       $properties[$column->getName()] = [
         'column' => $column->getName(),
-        'cardinality' => ItemConfigurationInterface::CARDINALITY_SINGLE,
+        'cardinality' => Cardinality::SINGLE,
         'isLabel' => $isLabel,
         'isOverview' => $isPrimary || $isLabel,
         'isPrimary' => $isPrimary,

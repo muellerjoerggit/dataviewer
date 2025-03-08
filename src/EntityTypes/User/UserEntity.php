@@ -39,6 +39,7 @@ use App\EntityServices\ViewBuilder\CommonViewBuilder;
 use App\EntityServices\ViewBuilder\ViewBuilderDefinition;
 use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
+use App\Item\Cardinality;
 use App\Item\DataType;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
 use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
@@ -197,7 +198,7 @@ class UserEntity extends AbstractEntity {
   #[PropertyDefinition(
       dataType: DataType::INTEGER,
       label: 'Rollen',
-      cardinality: ItemInterface::CARDINALITY_MULTIPLE
+      cardinality: Cardinality::MULTIPLE
     ),
   ]
   #[TableReferencePropertyDefinition(
