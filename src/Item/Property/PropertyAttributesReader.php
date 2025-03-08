@@ -4,6 +4,9 @@ namespace App\Item\Property;
 
 use App\Database\SqlFilterHandler\Attribute\SqlFilterDefinitionInterface;
 use App\Database\TableReference\TableReferencePropertyDefinition;
+use App\DaViEntity\Schema\Attribute\EntityOverviewDefinitionInterface;
+use App\DaViEntity\Schema\Attribute\ExtEntityOverviewDefinitionInterface;
+use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
 use App\Item\ItemHandler_AdditionalData\Attribute\AdditionalDataHandlerDefinitionInterface;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinitionInterface;
@@ -12,7 +15,7 @@ use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitio
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
 use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
-use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyAttr;
+use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyDefinition;
 use App\Item\Property\Attribute\LabelPropertyDefinition;
 use App\Item\Property\Attribute\PropertyDefinition;
 use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
@@ -33,7 +36,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     }
 
     foreach ($reflection->getProperties() as $property) {
-      if(in_array($property->getName(), ['missingEntity', 'logIndex', 'logItems', 'schema', 'client'])) {
+      if(in_array($property->getName(), ['missingEntity', 'logIndex', 'logItems', 'schema', 'client', 'availability'])) {
         continue;
       }
       $this->processProperty($property, $container);
@@ -76,7 +79,7 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     } elseif($instance instanceof PropertyDefinition) {
       $instance->setProperty($name);
       $propertyContainer->setPropertyAttr($instance);
-    } elseif ($instance instanceof LabelPropertyDefinition) {
+    } elseif ($instance instanceof LabelDefinitionInterface) {
       $instance->setProperty($name);
       $schemaContainer->addLabelDefinition($instance);
     } elseif ($instance instanceof SearchPropertyDefinition) {
@@ -85,10 +88,10 @@ class PropertyAttributesReader extends AbstractAttributesReader {
     } elseif ($instance instanceof UniquePropertyDefinition) {
       $instance->setProperty($name);
       $schemaContainer->addUniquePropertyDefinition($instance);
-    } elseif ($instance instanceof EntityOverviewPropertyDefinition) {
+    } elseif ($instance instanceof EntityOverviewDefinitionInterface) {
       $instance->setProperty($name);
       $schemaContainer->addEntityOverviewDefinition($instance);
-    } elseif ($instance instanceof ExtendedEntityOverviewPropertyAttr) {
+    } elseif ($instance instanceof ExtEntityOverviewDefinitionInterface) {
       $instance->setProperty($name);
       $schemaContainer->addExtendedEntityOverviewDefinition($instance);
     } elseif ($instance instanceof ValidatorItemHandlerDefinitionInterface) {

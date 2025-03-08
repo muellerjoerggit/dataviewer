@@ -10,4 +10,6 @@ interface LabelDefinitionInterface {
 
   public function getRank(): int;
 
+  public function setProperty(string $property): static;
+
 }
