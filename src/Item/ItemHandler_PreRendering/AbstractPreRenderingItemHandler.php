@@ -3,7 +3,7 @@
 namespace App\Item\ItemHandler_PreRendering;
 
 use App\DaViEntity\EntityInterface;
-use App\EntityServices\OverviewBuilder\ExtEntityOverviewEnum;
+use App\EntityServices\OverviewBuilder\ExtEntityOverviewTypes;
 use App\Item\ItemHandler\PreRenderingOptions;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
@@ -68,7 +68,7 @@ abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandle
     if ($itemConfiguration->hasFormatterHandler()) {
       $handler = $this->formatterLocator->getFormatterHandlerFromItem($itemConfiguration);
       return [
-        'type' => ExtEntityOverviewEnum::ADDITIONAL,
+        'type' => ExtEntityOverviewTypes::ADDITIONAL,
         'data' => [
           'text' => $firstValue,
           'additional' => $handler->getValueFormatted($itemConfiguration, $firstValue),
@@ -77,7 +77,7 @@ abstract class AbstractPreRenderingItemHandler implements PreRenderingItemHandle
     }
 
     return [
-      'type' => ExtEntityOverviewEnum::SCALAR,
+      'type' => ExtEntityOverviewTypes::SCALAR,
       'data' => [
         'text' => $firstValue,
       ],
