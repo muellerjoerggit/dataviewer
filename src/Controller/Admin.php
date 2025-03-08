@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Services\DirectoryFileRegister;
+use App\Services\DirectoryFileService;
 use App\SymfonyRepository\FileRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -50,7 +50,7 @@ class Admin extends AbstractController {
 	}
 
 	#[Route(path: '/show-log-dir', name: 'app_admin_show_log_dir')]
-	public function showLogDir(DirectoryFileRegister $directoryFileRegister): Response {
+	public function showLogDir(DirectoryFileService $directoryFileRegister): Response {
 		$logDir = $directoryFileRegister->getLogDir();
 		$ret = [
 			'files' => [],
@@ -89,7 +89,7 @@ class Admin extends AbstractController {
 	}
 
 	#[Route(path: '/show-log/{logFile}', name: 'app_admin_show_log')]
-	public function showLog(DirectoryFileRegister $directoryFileRegister, string $logFile): Response {
+	public function showLog(DirectoryFileService $directoryFileRegister, string $logFile): Response {
 		$fileName = $this->validateLogFile($directoryFileRegister, $logFile);
 		$content = '';
 
@@ -101,7 +101,7 @@ class Admin extends AbstractController {
 	}
 
 	#[Route(path: '/download-log/{logFile}', name: 'app_admin_download_log')]
-	public function downloadLog(DirectoryFileRegister $directoryFileRegister, string $logFile): Response {
+	public function downloadLog(DirectoryFileService $directoryFileRegister, string $logFile): Response {
 		$fileName = $this->validateLogFile($directoryFileRegister, $logFile);
 
 		if(!empty($fileName)) {
@@ -114,7 +114,7 @@ class Admin extends AbstractController {
 		return new Response('Datei nicht gefunden');
 	}
 
-	private function validateLogFile(DirectoryFileRegister $directoryFileRegister, string $logFile): string {
+	private function validateLogFile(DirectoryFileService $directoryFileRegister, string $logFile): string {
 		$fileSystem = new Filesystem();
 		$logDir = $directoryFileRegister->getLogDir();
 		$fileName = $logDir . '/' . $logFile;

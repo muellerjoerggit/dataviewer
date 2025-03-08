@@ -3,9 +3,9 @@
 namespace App\DaViEntity\Schema;
 
 use App\DaViEntity\EntityInterface;
-use App\DaViEntity\Schema\Attribute\EntityTypeAttr;
+use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\Services\AppNamespaces;
-use App\Services\DirectoryFileRegister;
+use App\Services\DirectoryFileService;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Finder\Finder;
@@ -26,7 +26,7 @@ class EntityTypesReader {
   public const string KEY_ENTITY_TYPE = 'entityType';
 
   public function __construct(
-    private readonly DirectoryFileRegister $directoryFileRegister
+    private readonly DirectoryFileService $directoryFileRegister
   ) {}
 
   public function read(): array {
@@ -106,7 +106,7 @@ class EntityTypesReader {
   }
 
   public static function getEntityTypeFromReflection(ReflectionClass $reflectionClass): string {
-    $attributes = $reflectionClass->getAttributes(EntityTypeAttr::class);
+    $attributes = $reflectionClass->getAttributes(EntityTypeDefinition::class);
     return empty($attributes) ? '' : $attributes[0]->getArguments()['name'] ?? '';
   }
 

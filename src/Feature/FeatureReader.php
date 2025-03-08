@@ -3,7 +3,7 @@
 namespace App\Feature;
 
 use App\Services\AppNamespaces;
-use App\Services\DirectoryFileRegister;
+use App\Services\DirectoryFileService;
 use Exception;
 use Iterator;
 use ReflectionClass;
@@ -18,7 +18,7 @@ class FeatureReader {
   private const string PATTERN_PHP_FILE = '/^([a-zA-Z]+)Feature.php/i';
 
 	public function __construct(
-		private readonly DirectoryFileRegister $directoryFileRegister,
+		private readonly DirectoryFileService $directoryFileRegister,
 	){}
 
   private function reflectClass($className): ReflectionClass | null {
@@ -64,7 +64,7 @@ class FeatureReader {
         return [];
       }
 
-      $attributes = $reflection->getAttributes(FeatureAttr::class);
+      $attributes = $reflection->getAttributes(FeatureDefinition::class);
       $attribute = reset($attributes);
 
       if(!$attribute) {
