@@ -28,6 +28,7 @@ use App\Item\Property\Attribute\SearchPropertyDefinition;
 use App\Services\AppNamespaces;
 use App\Services\ClientService;
 use App\Services\DirectoryFileService;
+use App\Services\Validation\ErrorCodesRegister;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Types\BooleanType;
@@ -46,8 +47,8 @@ use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
@@ -88,7 +89,9 @@ class MakeEntityType extends AbstractMaker {
   public function __construct(
     private readonly DatabaseLocator $databaseLocator,
     private readonly DirectoryFileService $directoryFileService,
-    private readonly ClientService $clientService
+    private readonly ClientService $clientService,
+    private readonly EntityTypesRegister $entityTypesRegister,
+    private readonly ErrorCodesRegister $errorCodesRegister,
   ) {}
 
   public static function getCommandName(): string {
@@ -99,28 +102,71 @@ class MakeEntityType extends AbstractMaker {
     return 'Create a new DaVi entity type';
   }
 
-  public function configureCommand(Command $command, InputConfiguration $inputConfig) {
-    $command
-      ->addArgument('entity-type', InputArgument::REQUIRED, 'Choose a name of your entity type class')
-      ->addArgument('entity-type-label', InputArgument::REQUIRED, 'Entity label')
-      ->addArgument('basetable', InputArgument::REQUIRED, 'Input the table name')
-      ->addArgument('database', InputArgument::REQUIRED, 'Database of the table: 1) one 2) two')
-      ->addArgument('abbreviation', InputArgument::REQUIRED, 'Error code abbreviation');
-  }
+  public function configureCommand(Command $command, InputConfiguration $inputConfig) {}
 
   public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator) {
-    $fileSystem = new Filesystem();
-    $entityType = $input->getArgument('entity-type');
-    $entityTypeLabel = $input->getArgument('entity-type-label');
-    $baseTable = $input->getArgument('basetable');
-    $abbreviation = strtoupper($input->getArgument('abbreviation'));
-    $client = $this->clientService->getFirstClientId();
-    if (in_array($input->getArgument('database'), ["1", "2"])) {
-      $database = $input->getArgument('database') == 1 ? DaViDatabaseOne::class : DaViDatabaseTwo::class;
-      $schemaManager = $this->databaseLocator->getDatabase($database)->createSchemaManager($client);
-    } else {
-      $io->text('Database not found');
+    $skeletonDir = $this->directoryFileService->getSrcDir() . '/Development/Maker/Skeleton/';
+    $repositoryTemplatePath = $skeletonDir . 'Repository.tpl.php';
+    $entityTemplatePath = $skeletonDir . 'Entity.tpl.php';
+
+    if (!$repositoryTemplatePath || !$entityTemplatePath) {
+      $io->error('Skeleton Templates don´t exists');
       return;
+    }
+
+    while (true) {
+      $entityType = $io->ask('Choose a name of your entity type class');
+
+      if(empty($entityType)) {
+        $io->error('No entity type specified');
+      } elseif ($this->entityTypesRegister->hasEntityType($entityType)) {
+        $io->error('Entity type already exists');
+      } else {
+        break;
+      }
+    }
+
+    $entityTypeLabel = $io->ask('Entity label', $entityType);
+    $client = $this->clientService->getFirstClientId();
+
+    while (true) {
+      $baseTable = $io->ask('Database table name');
+      $databaseInput = $io->ask('Database of the table: 1) one 2) two');
+
+      $database = null;
+      $schemaManager = null;
+      try{
+        if (in_array($databaseInput, ["1", "2"])) {
+          $database = $databaseInput == 1 ? DaViDatabaseOne::class : DaViDatabaseTwo::class;
+          $schemaManager = $this->databaseLocator->getDatabase($database)->createSchemaManager($client);
+          $error = !$schemaManager->tablesExist([$baseTable]);
+        } else {
+          $error = true;
+        }
+      } catch (ServiceNotFoundException | Exception $exception) {
+        $error = true;
+      }
+
+      if($error | !$database | !$schemaManager) {
+        $io->error('Database or table not found. Please input a valid database and table');
+      } else {
+        break;
+      }
+    }
+
+    while (true) {
+      $abbreviation = $io->ask('Error code abbreviation');
+
+      if(empty($abbreviation)) {
+        $io->error('No abbreviation specified');
+        return;
+      }
+
+      if(!$this->errorCodesRegister->hasAbbreviation($abbreviation)) {
+        break;
+      }
+
+      $io->error('Abbreviation already exists');
     }
 
     $repositoryClassNameDetails = $generator->createClassNameDetails(
@@ -194,7 +240,7 @@ class MakeEntityType extends AbstractMaker {
       $columns = $schemaManager->listTableColumns($baseTable);
       $indexes = $schemaManager->listTableIndexes($baseTable);
     } catch (Exception $exception) {
-      $io->text('Schemamanager Fehler');
+      $io->error('Schemamanager Fehler');
       return;
     }
 
@@ -202,7 +248,7 @@ class MakeEntityType extends AbstractMaker {
     $primaryColumn = '';
 
     if (empty($columns)) {
-      $io->text('No columns');
+      $io->error('No columns');
       return;
     }
 
@@ -237,15 +283,6 @@ class MakeEntityType extends AbstractMaker {
       ];
     }
 
-    $skeletonDir = $this->directoryFileService->getSrcDir() . '/Development/Maker/Skeleton/';
-    $repositoryTemplatePath = $skeletonDir . 'Repository.tpl.php';
-    $entityTemplatePath = $skeletonDir . 'Entity.tpl.php';
-
-    if (!$repositoryTemplatePath || !$entityTemplatePath) {
-      $io->text('Skeleton Templates don´t exists');
-      return;
-    }
-
     $generator->generateController(
       $repositoryClassNameDetails->getFullName(),
       $repositoryTemplatePath,
@@ -278,6 +315,7 @@ class MakeEntityType extends AbstractMaker {
 
     $yaml = Yaml::dump($yaml, 2, 4, 1);
 
+    $fileSystem = new Filesystem();
     $errorCodesPath = $this->directoryFileService->getEntityTypesDir() . '/' . $entityType . '/' . $entityType . 'ErrorCodes.yaml';
     $fileSystem->dumpFile($errorCodesPath, $yaml);
 

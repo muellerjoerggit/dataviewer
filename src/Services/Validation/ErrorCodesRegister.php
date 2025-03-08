@@ -84,6 +84,10 @@ class ErrorCodesRegister {
     return $this->errorCodes[$prefix][$suffix];
   }
 
+  public function hasAbbreviation(string $abbreviation): bool {
+    return isset($this->errorCodes[$abbreviation]);
+  }
+
   private function hasErrorDefinition(string $prefix, int $suffix): bool {
     return isset($this->errorCodes[$prefix][$suffix]);
   }
