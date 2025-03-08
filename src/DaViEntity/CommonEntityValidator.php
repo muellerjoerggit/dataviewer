@@ -31,8 +31,6 @@ class CommonEntityValidator implements EntityValidatorInterface {
     $this->postValidateEntity($entity, $options);
   }
 
-
-
   protected function buildOptions(array $options): array {
     return array_merge([
       self::VALIDATE_ENTITY_TYPE => TRUE,
@@ -53,8 +51,8 @@ class CommonEntityValidator implements EntityValidatorInterface {
       }
 
       if ($itemConfiguration->hasValidatorHandlerDefinition()) {
-        foreach ($itemConfiguration->iterateValidatorHandlers() as $validatorHandler => $handlerSettings) {
-          $handler = $this->validatorHandlerLocator->getHandler($validatorHandler);
+        foreach ($itemConfiguration->iterateValidatorItemHandlerDefinitions() as $definition) {
+          $handler = $this->validatorHandlerLocator->getHandler($definition->getHandlerClass());
           $handler->validateItemFromGivenEntity($entity, $property);
         }
       }
