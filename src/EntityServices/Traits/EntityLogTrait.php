@@ -7,6 +7,7 @@ use App\Item\ItemInterface;
 use App\Logger\LogItems\LogItem;
 use App\Logger\LogItems\LogItemInterface;
 use App\Logger\LogItems\ValidationLogItem;
+use App\Logger\LogLevels;
 use App\Services\Validation\ErrorCodes;
 
 trait EntityLogTrait {
@@ -29,9 +30,9 @@ trait EntityLogTrait {
   }
 
   protected function setItemError(ItemInterface $item, string $level): void {
-    if (in_array($level, LogItemInterface::RED_LOG_LEVELS)) {
+    if (in_array($level, LogLevels::RED_LOG_LEVELS)) {
       $item->setRedError(TRUE);
-    } elseif (in_array($level, LogItemInterface::YELLOW_LOG_LEVELS)) {
+    } elseif (in_array($level, LogLevels::YELLOW_LOG_LEVELS)) {
       $item->setYellowError(TRUE);
     }
   }

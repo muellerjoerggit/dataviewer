@@ -2,11 +2,12 @@
 
 namespace App\Logger\LogItems;
 
+use App\Logger\LogLevels;
 use DateTime;
 
 class SqlLogItem extends LogItem {
 
-  public static function createSqlLogItem(string $sql, string $message = '', $title = '', string $level = LogItemInterface::LOG_LEVEL_INFO, $dateTime = NULL, $rawLogs = []): LogItemInterface {
+  public static function createSqlLogItem(string $sql, string $message = '', $title = '', string $level = LogLevels::INFO, $dateTime = NULL, $rawLogs = []): LogItemInterface {
     if ($dateTime === NULL) {
       $dateTime = new DateTime();
     }

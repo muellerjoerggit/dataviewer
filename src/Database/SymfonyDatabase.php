@@ -5,6 +5,7 @@ namespace App\Database;
 use App\Logger\Logger;
 use App\Logger\LogItems\LogItem;
 use App\Logger\LogItems\LogItemInterface;
+use App\Logger\LogLevels;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -37,7 +38,7 @@ class SymfonyDatabase {
   }
 
   protected function logException(Exception $exception): void {
-    $logItem = LogItem::createLogItem('Datenbank Fehler', '', LogItemInterface::LOG_LEVEL_ERROR);
+    $logItem = LogItem::createLogItem('Datenbank Fehler', '', LogLevels::ERROR);
     $logItem->addRawLogs($exception);
     $this->logger->addLog($logItem);
   }

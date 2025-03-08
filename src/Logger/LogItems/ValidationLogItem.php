@@ -2,11 +2,12 @@
 
 namespace App\Logger\LogItems;
 
+use App\Logger\LogLevels;
 use DateTime;
 
 class ValidationLogItem extends LogItem {
 
-  public static function createValidationLogItem(string $message = '', string $level = LogItemInterface::LOG_LEVEL_INFO, string $code = '', string $title = 'Validierung', ?DateTime $dateTime = NULL): ValidationLogItem {
+  public static function createValidationLogItem(string $message = '', string $level = LogLevels::INFO, string $code = '', string $title = 'Validierung', ?DateTime $dateTime = NULL): ValidationLogItem {
     if ($dateTime === NULL) {
       $dateTime = new DateTime();
     }

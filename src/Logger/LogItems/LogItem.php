@@ -3,6 +3,7 @@
 namespace App\Logger\LogItems;
 
 use App\Logger\LogItemPreRendering\CommonLogItemPreRenderingHandler;
+use App\Logger\LogLevels;
 use DateTime;
 use Exception;
 use Symfony\Component\Uid\Uuid;
@@ -48,7 +49,7 @@ class LogItem implements LogItemInterface {
     return $this->message;
   }
 
-  public static function createLogItem(string $message, $title = '', string $level = LogItemInterface::LOG_LEVEL_INFO, $dateTime = NULL, $rawLogs = []): LogItemInterface {
+  public static function createLogItem(string $message, $title = '', string $level = LogLevels::INFO, $dateTime = NULL, $rawLogs = []): LogItemInterface {
     if ($dateTime === NULL) {
       $dateTime = new DateTime();
     }
@@ -57,7 +58,7 @@ class LogItem implements LogItemInterface {
   }
 
   public static function createAvailabilityLogItem(): LogItemInterface {
-    return new static('Entity is not available anymore', 'Not available', LogItemInterface::LOG_LEVEL_WARNING, new DateTime());
+    return new static('Entity is not available anymore', 'Not available', LogLevels::WARNING, new DateTime());
   }
 
   public static function createExceptionLogItem(Exception $exception, $dateTime = NULL): LogItemInterface {
@@ -65,7 +66,7 @@ class LogItem implements LogItemInterface {
       $dateTime = new DateTime();
     }
 
-    $logItem = new static('', 'Fehler DaVi', LogItemInterface::LOG_LEVEL_ERROR, $dateTime, []);
+    $logItem = new static('', 'Fehler DaVi', LogLevels::ERROR, $dateTime, []);
     $logItem->addRawLogs($exception->getMessage());
     return $logItem;
   }
@@ -75,7 +76,7 @@ class LogItem implements LogItemInterface {
       $dateTime = new DateTime();
     }
 
-    return new static('Entität ist in der Datenbank vorhanden, aber als inaktiv/gelöscht markiert', $title, LogItemInterface::LOG_LEVEL_WARNING, $dateTime, []);
+    return new static('Entität ist in der Datenbank vorhanden, aber als inaktiv/gelöscht markiert', $title, LogLevels::WARNING, $dateTime, []);
   }
 
   public static function getType(): string {

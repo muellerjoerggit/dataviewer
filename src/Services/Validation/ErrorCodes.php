@@ -6,6 +6,7 @@ use App\DaViEntity\EntityInterface;
 use App\Logger\Logger;
 use App\Logger\LogItems\LogItemInterface;
 use App\Logger\LogItems\ValidationLogItem;
+use App\Logger\LogLevels;
 
 class ErrorCodes {
 
@@ -67,8 +68,8 @@ class ErrorCodes {
   private function getLevel(array $errorDefinition): string {
     $level = $errorDefinition['level'] ?? '';
 
-    if (empty($level) || !in_array($level, LogItemInterface::LOG_LEVELS)) {
-      return LogItemInterface::LOG_LEVEL_WARNING;
+    if (empty($level) || !in_array($level, LogLevels::LOG_LEVELS)) {
+      return LogLevels::WARNING;
     } else {
       return $level;
     }
@@ -78,9 +79,9 @@ class ErrorCodes {
     $level = $this->getErrorLevel($code);
     $item = $entity->getPropertyItem($property);
 
-    if (in_array($level, LogItemInterface::RED_LOG_LEVELS)) {
+    if (in_array($level, LogLevels::RED_LOG_LEVELS)) {
       $item->setCriticalError(TRUE);
-    } elseif (in_array($level, LogItemInterface::YELLOW_LOG_LEVELS)) {
+    } elseif (in_array($level, LogLevels::YELLOW_LOG_LEVELS)) {
       $item->setWarningError(TRUE);
     }
   }

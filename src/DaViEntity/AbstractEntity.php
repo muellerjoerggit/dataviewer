@@ -4,6 +4,7 @@ namespace App\DaViEntity;
 
 use App\DaViEntity\Schema\EntitySchema;
 use App\Logger\LogItems\LogItemInterface;
+use App\Logger\LogLevels;
 use Generator;
 
 abstract class AbstractEntity implements EntityInterface {
@@ -152,13 +153,13 @@ abstract class AbstractEntity implements EntityInterface {
 
   public function hasCriticalLogs(): bool {
     return (
-      isset($this->logIndex[EntityInterface::LOG_INDEX_LEVEL][LogItemInterface::LOG_LEVEL_CRITICAL])
-      && count($this->logIndex[EntityInterface::LOG_INDEX_LEVEL][LogItemInterface::LOG_LEVEL_CRITICAL]) > 0
+      isset($this->logIndex[EntityInterface::LOG_INDEX_LEVEL][LogLevels::CRITICAL])
+      && count($this->logIndex[EntityInterface::LOG_INDEX_LEVEL][LogLevels::CRITICAL]) > 0
     );
   }
 
   public function countRedLogs(): int {
-    return $this->countLogs(LogItemInterface::RED_LOG_LEVELS);
+    return $this->countLogs(LogLevels::RED_LOG_LEVELS);
   }
 
   public function countLogs(array $logLevels): int {
@@ -171,7 +172,7 @@ abstract class AbstractEntity implements EntityInterface {
   }
 
   public function countYellowLogs(): int {
-    return $this->countLogs(LogItemInterface::YELLOW_LOG_LEVELS);
+    return $this->countLogs(LogLevels::YELLOW_LOG_LEVELS);
   }
 
   public function iteratePropertyItems(): Generator {

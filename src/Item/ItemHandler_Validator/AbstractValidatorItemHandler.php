@@ -9,6 +9,7 @@ use App\Logger\Logger;
 use App\Logger\LogItems\DaViErrorLogItem;
 use App\Logger\LogItems\LogItemInterface;
 use App\Logger\LogItems\ValidationLogItem;
+use App\Logger\LogLevels;
 use App\Services\Validation\ErrorCodes;
 
 abstract class AbstractValidatorItemHandler implements ValidatorItemHandlerInterface {
@@ -39,7 +40,7 @@ abstract class AbstractValidatorItemHandler implements ValidatorItemHandlerInter
     $logItem = DaViErrorLogItem::createDaViErrorLogItem(
       'Error: Invalid validation result',
       'Invalid validation result',
-      LogItemInterface::LOG_LEVEL_INTERNAL_ERROR
+      LogLevels::INTERNAL_ERROR
     );
     $this->logger->addLog($logItem);
   }
