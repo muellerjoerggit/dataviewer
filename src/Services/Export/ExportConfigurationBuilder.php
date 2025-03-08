@@ -66,9 +66,7 @@ class ExportConfigurationBuilder {
             $class = $this->groupExporterRegister->getExporterClass($groupArray[self::CONFIG_GROUP_EXPORTER]);
             $property = $groupArray[self::CONFIG_PROPERTY];
             $config = new ExportPropertyGroupConfiguration($key, $class, $schema->getProperty($property),);
-            $config
-              ->setLabel($groupArray[self::CONFIG_PROPERTY_LABEL] ?? '')
-              ->setCount($groupArray[self::CONFIG_PROPERTY_COUNT] ?? 0);
+            $config->setLabel($groupArray[self::CONFIG_PROPERTY_LABEL] ?? '');
         }
 
         if(isset($config)) {

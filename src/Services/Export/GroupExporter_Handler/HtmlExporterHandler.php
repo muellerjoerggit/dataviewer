@@ -10,7 +10,7 @@ use App\Services\Export\GroupExporter\GroupExporterHandlerInterface;
 use App\Services\Export\GroupExporter\GroupTypes;
 use App\Services\HtmlService;
 
-class HtmlExporterHandler implements GroupExporterHandlerInterface {
+class HtmlExporterHandler extends AbstractGroupExporterHandler implements GroupExporterHandlerInterface {
 
   public function __construct(
     private readonly HtmlService $htmlService,
@@ -23,7 +23,7 @@ class HtmlExporterHandler implements GroupExporterHandlerInterface {
       return;
     }
 
-    $key = sha1($entity->getFirstEntityKeyAsString());
+    $key = $this->getEntityKeyHash($entity);
     $html = $entity->getPropertyItem($config->getProperty())->getFirstValueAsString();
     $data[$key] = $this->htmlService->htmlToText($html);
     $exportGroup->addData($row, $data);
@@ -39,27 +39,6 @@ class HtmlExporterHandler implements GroupExporterHandlerInterface {
 
   public function getDescription(): string {
     return 'Entfernt HTML-Tags';
-  }
-
-  public function getRowAsArray(ExportRow $row, string $prefix, ExportGroup $exportGroup): array {
-    return [$prefix . $exportGroup->getKey() => $exportGroup->getRowData($row)];
-  }
-
-  public function getRowAsArraySorted(ExportRow $row, string $prefix, ExportGroup $exportGroup): array {
-    $data = $exportGroup->getRowData($row);
-    $ret = [];
-
-    $suffix = 1;
-    if(is_array($data)) {
-      foreach($data as $key => $item) {
-        $ret[$key] = array_merge($ret[$key] ?? [], [$prefix . '_' . $exportGroup->getKey() . '_' . $suffix => $item]);
-        $suffix++;
-      }
-    } else {
-      $ret[$prefix . '_' . $exportGroup->getKey() . '_' . $suffix] = $data;
-    }
-
-    return $ret;
   }
 
   public function getType(): int {

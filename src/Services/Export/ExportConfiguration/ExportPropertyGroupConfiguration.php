@@ -8,7 +8,6 @@ class ExportPropertyGroupConfiguration implements ExportGroupConfigurationInterf
 
   private string $label;
   private array $options;
-  private int $count = 0;
 
   public function __construct(
     private readonly string $key,
@@ -37,15 +36,6 @@ class ExportPropertyGroupConfiguration implements ExportGroupConfigurationInterf
 
   public function setOptions(array $options): ExportPropertyGroupConfiguration {
     $this->options = $options;
-    return $this;
-  }
-
-  public function getCount(): int {
-    return $this->count;
-  }
-
-  public function setCount(int $count): ExportPropertyGroupConfiguration {
-    $this->count = $count;
     return $this;
   }
 

@@ -9,6 +9,7 @@ class PathExport {
 
   /** @var ExportGroup[] */
   private array $exportGroups = [];
+  private int $index;
 
   public function __construct(
     private readonly ExportPathConfigurationInterface $pathConfig,
@@ -24,6 +25,7 @@ class PathExport {
 
   public function addExportGroup(ExportGroup $group): static {
     $this->exportGroups[] = $group;
+    $group->setPathIndex($this->index);
     return $this;
   }
 
@@ -42,6 +44,10 @@ class PathExport {
 
   public function getPathExporterClass(): string {
     return $this->pathConfig->getPathExporterClass();
+  }
+
+  public function setIndex(int $index): void {
+    $this->index = $index;
   }
 
 }

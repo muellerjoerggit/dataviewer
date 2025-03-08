@@ -49,6 +49,7 @@ class ExportData {
 
   public function addEntityPath(PathExport $path): static {
     $this->entityPaths[] = $path;
+    $path->setIndex(array_key_last($this->entityPaths));
     return $this;
   }
 

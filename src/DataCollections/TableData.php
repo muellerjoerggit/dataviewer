@@ -30,7 +30,15 @@ class TableData implements ArrayInterface {
   }
 
   public function toArray(): array {
-    return $this->rows;
+    return array_reduce(
+      $this->rows,
+      function ($result, $row) {
+        return array_merge(
+          $result,
+          array_values($row)
+        );
+      },
+      array_values($this->header));
   }
 
   public function __toString(): string {
@@ -40,12 +48,7 @@ class TableData implements ArrayInterface {
   public function toString(): string {
     return implode(
       ', ',
-      array_map(
-        function($row) {
-          return implode(', ', $row);
-        },
-        $this->rows
-      )
+      $this->toArray()
     );
   }
 

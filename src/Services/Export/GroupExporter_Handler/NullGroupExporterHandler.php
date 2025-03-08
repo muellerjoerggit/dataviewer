@@ -26,16 +26,20 @@ class NullGroupExporterHandler implements GroupExporterHandlerInterface {
     return 'Null Exporter';
   }
 
-  public function getRowAsArray(ExportRow $row, string $prefix, ExportGroup $exportGroup): array {
-    return [$prefix => ''];
+  public function getRowAsArray(ExportRow $row, ExportGroup $exportGroup): array {
+    return [];
   }
 
-  public function getRowAsArraySorted(ExportRow $row, string $prefix, ExportGroup $exportGroup): array {
-    return [$prefix => ''];
+  public function getRowAsArraySorted(ExportRow $row, ExportGroup $exportGroup): array {
+    return [];
   }
 
   public function getType(): int {
     return -1;
+  }
+
+  public function getHeader(ExportGroup $exportGroup): array {
+    return [];
   }
 
 }

@@ -78,23 +78,29 @@ class CsvExport {
 
     foreach ($exportData->iterateRows() as $row) {
       $rowArray = [];
-      foreach ($exportData->iterateExportPath() as $index => $pathData) {
+      foreach ($exportData->iterateExportPath() as $pathData) {
         foreach ($pathData->iterateExportGroups() as $group) {
           $handler = $this->groupExporterLocator->getGroupExporter($group);
-          $rowArray = array_merge_recursive($rowArray, $handler->getRowAsArraySorted($row, (string)$index, $group));
+          $rowArray = array_merge_recursive($rowArray, $handler->getRowAsArraySorted($row, $group));
         }
       }
       $ret[] = $this->flattenArray($rowArray);
     }
 
-//    return array_merge([$header], $ret);
-    return $ret;
+    foreach ($exportData->iterateExportPath() as $pathData) {
+      foreach ($pathData->iterateExportGroups() as $group) {
+        $handler = $this->groupExporterLocator->getGroupExporter($group);
+        $header = array_merge($header, $handler->getHeader($group));
+      }
+    }
+
+    return array_merge([$header], $ret);
   }
 
   private function flattenArray(array $array): array {
     $ret = [];
-    array_walk_recursive($array, function($value) use (&$ret) {
-      $ret[] = $value;
+    array_walk_recursive($array, function($value, $key) use (&$ret) {
+      $ret[$key] = $value;
     });
     return $ret;
   }
