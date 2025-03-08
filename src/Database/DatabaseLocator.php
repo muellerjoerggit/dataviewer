@@ -21,4 +21,8 @@ class DatabaseLocator extends AbstractLocator {
     return $this->get($db);
   }
 
+  public function getDatabase(string $dbClass): DatabaseInterface {
+    return $this->get($dbClass);
+  }
+
 }

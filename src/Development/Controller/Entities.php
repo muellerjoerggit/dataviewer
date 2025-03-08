@@ -18,12 +18,15 @@ class Entities extends AbstractController {
   }
 
   public function getEntityByEntityKey(DaViEntityManager $entityManager): void {
-    $entityKey = EntityKey::createFromString('umbrella::User::usr_id::2');
-    dd($entityManager->loadEntityByEntityKey($entityKey));
+    $entityKey = EntityKey::createFromString('umbrella::Role::rol_id::1');
+    $entity = $entityManager->loadEntityByEntityKey($entityKey);
+//    $item = $entity->getPropertyItem('count_user_status');
+//    dd($item->getRawValues(), $item->getValues());
+    dd($entity);
   }
 
   public function preRenderEntity(DaViEntityManager $entityManager): void {
-    $entityKey = EntityKey::createFromString('umbrella::User::usr_id::10');
+    $entityKey = EntityKey::createFromString('umbrella::Role::rol_id::10');
     dd($entityManager->preRenderEntity($entityKey));
   }
 
