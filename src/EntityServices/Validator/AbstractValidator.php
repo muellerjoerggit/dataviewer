@@ -3,12 +3,15 @@
 namespace App\EntityServices\Validator;
 
 use App\DaViEntity\EntityInterface;
+use App\EntityServices\Traits\EntityLogTrait;
 use App\Item\ItemHandler_Validator\ValidatorItemHandlerLocator;
 use App\Logger\LogItems\LogItemInterface;
 use App\Logger\LogItems\ValidationLogItem;
 use App\Services\Validation\ErrorCodes;
 
 class AbstractValidator implements ValidatorInterface {
+
+  use EntityLogTrait;
 
   public function __construct(
     protected readonly ValidatorItemHandlerLocator $validatorHandlerLocator,
@@ -20,25 +23,12 @@ class AbstractValidator implements ValidatorInterface {
   }
 
   protected function logByCode(EntityInterface $entity, string $code): void {
-    $error = $this->errorCodes->buildError($entity, $code);
-    $logItem = ValidationLogItem::createValidationLogItem($error['message'], $error['level'], $code);
-    $entity->addLogs($logItem);
-  }
-
-  protected function setItemError(EntityInterface $entity, string $property, string $code): void {
-    $level = $this->errorCodes->getErrorLevel($code);
-    $item = $entity->getPropertyItem($property);
-
-    if (in_array($level, LogItemInterface::RED_LOG_LEVELS)) {
-      $item->setRedError(TRUE);
-    } elseif (in_array($level, LogItemInterface::YELLOW_LOG_LEVELS)) {
-      $item->setYellowError(TRUE);
-    }
+    $entity->addLogs($this->createValidationLogItemByCode($this->errorCodes, $entity, $code));
   }
 
   protected function logItemAndEntity(EntityInterface $entity, string $code, string $property): void {
     $this->logByCode($entity, $code);
-    $this->setItemError($entity, $property, $code);
+    $this->setItemErrorByCode($this->errorCodes, $entity, $property, $code);
   }
 
   protected function validateProperties(EntityInterface $entity): void {

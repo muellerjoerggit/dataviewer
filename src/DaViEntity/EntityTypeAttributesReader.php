@@ -11,6 +11,7 @@ use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Schema\SchemaDefinitionsContainer;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinition;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictDefinitionInterface;
 use App\EntityServices\ColumnBuilder\ColumnBuilderDefinition;
 use App\EntityServices\Creator\CreatorDefinition;
 use App\EntityServices\DataProvider\DataProviderDefinition;
@@ -64,6 +65,8 @@ class EntityTypeAttributesReader extends AbstractAttributesReader {
       $container->addLabelCrafterDefinition($attribute);
     } elseif ($attribute instanceof ValidatorDefinitionInterface && $attribute->isValid()) {
       $container->addValidatorDefinition($attribute);
+    } elseif ($attribute instanceof AvailabilityVerdictDefinitionInterface && $attribute->isValid()) {
+      $container->addAvailabilityVerdictDefinition($attribute);
     }
 
     switch(get_class($attribute)) {

@@ -137,4 +137,8 @@ class NullEntity implements EntityInterface {
     return false;
   }
 
+  public function setAvailability(bool $availability): EntityInterface {
+    return $this;
+  }
+
 }

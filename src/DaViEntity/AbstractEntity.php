@@ -17,6 +17,8 @@ abstract class AbstractEntity implements EntityInterface {
 
   protected array $logItems = [];
 
+  protected bool $availability = true;
+
   public function __construct(
     protected readonly EntitySchema $schema,
     protected readonly string $client,
@@ -30,8 +32,13 @@ abstract class AbstractEntity implements EntityInterface {
     return $this->missingEntity;
   }
 
+  public function setAvailability(bool $availability): EntityInterface {
+    $this->availability = $availability;
+    return $this;
+  }
+
   public function isAvailable(): bool {
-    return true;
+    return $this->availability;
   }
 
   public function setMissingEntity(bool $missingEntity): EntityInterface {

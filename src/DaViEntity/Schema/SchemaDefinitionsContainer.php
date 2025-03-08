@@ -14,6 +14,7 @@ use App\DaViEntity\Schema\Attribute\LabelDefinitionInterface;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinitionInterface;
 use App\EntityServices\AdditionalData\AdditionalDataProviderInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictDefinitionInterface;
 use App\EntityServices\ColumnBuilder\ColumnBuilderDefinitionInterface;
 use App\EntityServices\Creator\CreatorDefinitionInterface;
 use App\EntityServices\DataProvider\DataProviderDefinitionInterface;
@@ -156,6 +157,11 @@ class SchemaDefinitionsContainer {
    * @var ValidatorDefinitionInterface[]
    */
   private array $validatorDefinitions = [];
+
+  /**
+   * @var AvailabilityVerdictDefinitionInterface[]
+   */
+  private array $availabilityVerdictDefinitions = [];
 
   public function getEntityTypeAttr(): EntityTypeDefinition | null {
     return $this->entityTypeAttr ?? null;
@@ -524,6 +530,20 @@ class SchemaDefinitionsContainer {
    */
   public function iterateValidatorDefinitions(): Generator {
     foreach ($this->validatorDefinitions as $definition) {
+      yield $definition;
+    }
+  }
+
+  public function addAvailabilityVerdictDefinition(AvailabilityVerdictDefinitionInterface $definition): SchemaDefinitionsContainer {
+    $this->availabilityVerdictDefinitions[] = $definition;
+    return $this;
+  }
+
+  /**
+   * @return Generator<AvailabilityVerdictDefinitionInterface>
+   */
+  public function iterateAvailabilityVerdictDefinitions(): Generator {
+    foreach ($this->availabilityVerdictDefinitions as $definition) {
       yield $definition;
     }
   }

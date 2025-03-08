@@ -3,6 +3,7 @@
 namespace App\EntityServices\Refiner;
 
 use App\DaViEntity\EntityInterface;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictLocator;
 use App\Item\ItemHandler_AdditionalData\AdditionalDataItemHandlerLocator;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\Property\PropertyBuilder;
@@ -12,7 +13,8 @@ class CommonRefiner implements RefinerInterface {
   public function __construct(
     private readonly PropertyBuilder $propertyBuilder,
     private readonly EntityReferenceItemHandlerLocator $referenceHandlerLocator,
-    private readonly AdditionalDataItemHandlerLocator $additionalDataItemHandlerLocator
+    private readonly AdditionalDataItemHandlerLocator $additionalDataItemHandlerLocator,
+    private readonly AvailabilityVerdictLocator $availabilityVerdictLocator,
   ) {}
 
   public function refineEntity(EntityInterface $entity): void {
@@ -37,6 +39,12 @@ class CommonRefiner implements RefinerInterface {
           $item->setRawValues($collection);
         }
       }
+    }
+  }
+
+  public function setAvailability(EntityInterface $entity): void {
+    if($entity->getSchema()->hasAvailabilityVerdictService()) {
+      $this->availabilityVerdictLocator->getAvailabilityVerdictService($entity::class, $entity->getClient())->setAvailability($entity);
     }
   }
 

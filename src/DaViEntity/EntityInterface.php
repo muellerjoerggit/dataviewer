@@ -70,4 +70,6 @@ interface EntityInterface {
 
   public function getPropertyValueAsString(string $property): string;
 
+  public function setAvailability(bool $availability): EntityInterface;
+
 }

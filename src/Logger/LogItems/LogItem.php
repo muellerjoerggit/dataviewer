@@ -56,6 +56,10 @@ class LogItem implements LogItemInterface {
     return new static($message, $title, $level, $dateTime, $rawLogs);
   }
 
+  public static function createAvailabilityLogItem(): LogItemInterface {
+    return new static('Entity is not available anymore', 'Not available', LogItemInterface::LOG_LEVEL_WARNING, new DateTime());
+  }
+
   public static function createExceptionLogItem(Exception $exception, $dateTime = NULL): LogItemInterface {
     if ($dateTime === NULL) {
       $dateTime = new DateTime();

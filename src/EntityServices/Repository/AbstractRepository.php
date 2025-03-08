@@ -12,6 +12,7 @@ use App\DaViEntity\EntityKey;
 use App\DaViEntity\MainRepository;
 use App\DaViEntity\Schema\EntityTypesRegister;
 use App\EntityServices\AdditionalData\AdditionalDataProviderLocator;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictLocator;
 use App\EntityServices\Creator\CreatorLocator;
 use App\EntityServices\DataProvider\DataProviderLocator;
 use App\EntityServices\ListProvider\ListProviderLocator;
@@ -66,6 +67,7 @@ abstract class AbstractRepository implements RepositoryInterface {
     }
 
     $this->mainRepository->addEntity($entity);
+    $this->processAdditionalData($entity);
     $this->refineEntity($entity);
 
     return $entity;
@@ -76,8 +78,9 @@ abstract class AbstractRepository implements RepositoryInterface {
   }
 
   protected function refineEntity(EntityInterface $entity): void {
-    $this->processAdditionalData($entity);
-    $this->entityRefinerLocator->getEntityRefiner($entity::class, $entity->getClient())->refineEntity($entity);
+    $refiner = $this->entityRefinerLocator->getEntityRefiner($entity::class, $entity->getClient());
+    $refiner->refineEntity($entity);
+    $refiner->setAvailability($entity);
     $this->validateEntity($entity);
   }
 

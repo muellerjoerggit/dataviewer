@@ -16,6 +16,7 @@ use App\EntityServices\AdditionalData\AdditionalDataProviderDefinition;
 use App\EntityServices\AdditionalData\AdditionalDataProviderFromTableReferences;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProvider;
 use App\EntityServices\AggregatedData\SqlAggregatedDataProviderDefinition;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictDefinition;
 use App\EntityServices\ColumnBuilder\ColumnBuilderDefinition;
 use App\EntityServices\ColumnBuilder\CommonColumnBuilder;
 use App\EntityServices\Creator\CommonCreator;
@@ -71,6 +72,7 @@ use App\Services\EntityActionHandler\UrlActionHandler;
   SqlAggregatedDataProviderDefinition(aggregatedDataProviderClass: SqlAggregatedDataProvider::class),
   LabelCrafterDefinition(labelCrafterClass: CommonLabelCrafter::class),
   ValidatorDefinition(validatorClass: UserValidator::class),
+  AvailabilityVerdictDefinition(availabilityVerdictClass: UserAvailabilityVerdict::class),
 ]
 #[AdditionalDataProviderDefinition(additionalDataProviderClass: AdditionalDataProviderFromTableReferences::class)]
 #[DatabaseDefinition(

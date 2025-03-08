@@ -11,6 +11,8 @@ use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinition;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinitionInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictDefinitionInterface;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictServiceInterface;
 use App\EntityServices\ColumnBuilder\ColumnBuilderDefinitionInterface;
 use App\EntityServices\Creator\CreatorDefinitionInterface;
 use App\EntityServices\DataProvider\DataProviderDefinitionInterface;
@@ -129,6 +131,11 @@ class EntitySchema implements EntitySchemaInterface {
    * @var LabelCrafterDefinitionInterface[]
    */
   private array $labelCrafterDefinitions = [];
+
+  /**
+   * @var AvailabilityVerdictDefinitionInterface[]
+   */
+  private array $availabilityVerdictDefinitions = [];
 
   public function __construct(
     private readonly string $entityClass,
@@ -649,6 +656,26 @@ class EntitySchema implements EntitySchemaInterface {
         continue;
       }
       return $definition->getAggregatedDataProviderClass();
+    }
+
+    return '';
+  }
+
+  public function addAvailabilityVerdictDefinition(AvailabilityVerdictDefinitionInterface $definition): EntitySchemaInterface {
+    $this->availabilityVerdictDefinitions[] = $definition;
+    return $this;
+  }
+
+  public function hasAvailabilityVerdictService(): bool {
+    return !empty($this->availabilityVerdictDefinitions);
+  }
+
+  public function getAvailabilityVerdictServiceClass(string $version): string {
+    foreach ($this->availabilityVerdictDefinitions as $definition) {
+      if(!$definition->hasVersion($version)) {
+        continue;
+      }
+      return $definition->getAvailabilityVerdictServiceClass();
     }
 
     return '';

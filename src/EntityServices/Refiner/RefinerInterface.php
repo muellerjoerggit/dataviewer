@@ -10,4 +10,6 @@ interface RefinerInterface {
 
   public function refineEntity(EntityInterface $entity): void;
 
+  public function setAvailability(EntityInterface $entity): void;
+
 }

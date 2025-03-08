@@ -9,6 +9,7 @@ use App\DaViEntity\Schema\Attribute\DatabaseDefinition;
 use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\EntityServices\AdditionalData\AdditionalDataProviderDefinitionInterface;
 use App\EntityServices\AggregatedData\AggregatedDataProviderDefinitionInterface;
+use App\EntityServices\AvailabilityVerdict\AvailabilityVerdictDefinitionInterface;
 use App\EntityServices\ColumnBuilder\ColumnBuilderDefinitionInterface;
 use App\EntityServices\Creator\CreatorDefinitionInterface;
 use App\EntityServices\DataProvider\DataProviderDefinitionInterface;
@@ -357,6 +358,15 @@ class EntitySchemaBuilder {
       $list = $this->getVersionList($validatorDefinition);
       $validatorDefinition->setVersionList($list);
       $schema->addValidatorDefinition($validatorDefinition);
+    }
+
+    foreach ($container->iterateAvailabilityVerdictDefinitions() as $availabilityVerdictDefinition) {
+      if(!$availabilityVerdictDefinition instanceof AvailabilityVerdictDefinitionInterface || !$availabilityVerdictDefinition->isValid()) {
+        continue;
+      }
+      $list = $this->getVersionList($availabilityVerdictDefinition);
+      $availabilityVerdictDefinition->setVersionList($list);
+      $schema->addAvailabilityVerdictDefinition($availabilityVerdictDefinition);
     }
   }
 
