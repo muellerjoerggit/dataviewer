@@ -11,7 +11,6 @@ use App\Item\ItemConfigurationInterface;
 use App\Item\ItemHandler_EntityReference\EntityReferenceItemHandlerLocator;
 use App\Item\ItemHandler_Formatter\FormatterItemHandlerLocator;
 use App\Item\ItemInterface;
-use App\Item\ReferenceItemInterface;
 
 class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHandler {
 
@@ -58,7 +57,7 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
 
     $itemConfiguration = $item->getConfiguration();
     $options = $this->getEntityOverviewOptions($itemConfiguration);
-    foreach ($item->iterateEntityKeys() as $entityKey) {
+    foreach ($item->iterateEntityKeyCollection() as $entityKey) {
       $entities[] = $this->buildEntityArray($entityKey, $options);
     }
 
@@ -99,7 +98,7 @@ class EntityReferencePreRenderingItemHandler extends AbstractPreRenderingItemHan
   }
 
   public function getExtendedOverview(ItemInterface $item, array $options): array {
-    if (!$item instanceof ReferenceItemInterface || !$item->hasEntityKeys()) {
+    if (!$item->hasEntityKeys()) {
       return parent::getExtendedOverview($item, $options);
     }
 

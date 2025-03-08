@@ -2,6 +2,7 @@
 
 namespace App\Item;
 
+use App\DaViEntity\EntityKey;
 use Generator;
 
 interface ItemInterface {
@@ -35,5 +36,19 @@ interface ItemInterface {
   public function setYellowError(bool $yellowError): ItemInterface;
 
   public function getValues(): mixed;
+
+  public function iterateEntityKeyCollection(): Generator;
+
+  public function hasEntityKeys(): bool;
+
+  public function getEntityKey(): array|EntityKey;
+
+  public function countEntityKeys(): int;
+
+  public function getFirstEntityKey(): EntityKey;
+
+  public function setRawValues(mixed $value): ItemInterface;
+
+  public function __string(): string;
 
 }

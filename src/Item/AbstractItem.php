@@ -7,18 +7,13 @@ use App\DataCollections\EntityKeyCollection;
 use App\DaViEntity\EntityKey;
 use Generator;
 
-abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
+abstract class AbstractItem implements ItemInterface {
 
   protected mixed $values;
 
   protected bool $redError = FALSE;
 
   protected bool $yellowError = FALSE;
-
-  /**
-   * @deprecated
-   */
-  protected array $entityKeys = [];
 
   public function countValues(): int {
     return count($this->getValuesAsArray());
@@ -146,18 +141,13 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
       return $value;
     }
 
-    switch ($this->getConfiguration()->getDataType()) {
-      case DataType::STRING:
-        return (string) $value;
-      case DataType::INTEGER:
-        return (int) $value;
-      case DataType::BOOL:
-        return (bool) $value;
-      case DataType::FLOAT:
-        return floatval($value);
-      default:
-        return $value;
-    }
+    return match ($this->getConfiguration()->getDataType()) {
+      DataType::STRING => (string) $value,
+      DataType::INTEGER => (int) $value,
+      DataType::BOOL => (bool) $value,
+      DataType::FLOAT => floatval($value),
+      default => $value,
+    };
   }
 
   public function isRedError(): bool {
@@ -176,16 +166,6 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
   public function setYellowError(bool $yellowError): ItemInterface {
     $this->yellowError = $yellowError;
     return $this;
-  }
-
-  public function iterateEntityKeys(): Generator {
-    if($this->hasEntityKeys()) {
-      foreach ($this->values->getAllEntityKeys() as $entityKey) {
-        yield $entityKey;
-      }
-    } else {
-      yield from [];
-    }
   }
 
   public function iterateEntityKeyCollection(): Generator {
@@ -214,25 +194,6 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
 
   public function countEntityKeys(): int {
     return $this->values instanceof EntityKeyCollection ? $this->values->countEntityKeys() : 0;
-  }
-
-  /**
-   * @deprecated
-   */
-  public function addEntityKey(EntityKey|array $entityKeys): ItemInterface {
-    if (is_array($entityKeys)) {
-      foreach ($entityKeys as $entityKey) {
-        if (!($entityKey instanceof EntityKey)) {
-          continue;
-        }
-
-        $this->addEntityKey($entityKey);
-      }
-    } else {
-      $this->entityKeys[$entityKeys->getFirstEntityKeyAsString()] = $entityKeys;
-    }
-
-    return $this;
   }
 
   public function getFirstEntityKey(): EntityKey {

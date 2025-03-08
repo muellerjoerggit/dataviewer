@@ -128,7 +128,7 @@ class DaViEntityManager {
 
     $item = $currentEntity->getPropertyItem($pathSection);
     if ($item->getConfiguration()->hasEntityReferenceHandler() && !empty($path)) {
-      foreach ($item->iterateEntityKeys() as $entityKey) {
+      foreach ($item->iterateEntityKeyCollection() as $entityKey) {
         $ret = array_merge($this->getItemsFromPath($path, $entityKey), $ret);
       }
     } elseif ($item instanceof ItemInterface) {
@@ -164,7 +164,7 @@ class DaViEntityManager {
           return [];
         }
 
-        foreach ($propertyItem->iterateEntityKeys() as $entityKey) {
+        foreach ($propertyItem->iterateEntityKeyCollection() as $entityKey) {
           $entities[] = $this->getEntity($entityKey);
         }
       }

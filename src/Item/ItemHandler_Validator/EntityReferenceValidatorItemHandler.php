@@ -36,7 +36,7 @@ class EntityReferenceValidatorItemHandler extends AbstractValidatorItemHandler i
 
     $referencedEntities = [];
 
-    foreach ($item->iterateEntityKeys() as $entityKey) {
+    foreach ($item->iterateEntityKeyCollection() as $entityKey) {
       if (!$entityKey instanceof EntityKey) {
         continue;
       }

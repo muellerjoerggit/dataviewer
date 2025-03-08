@@ -80,9 +80,9 @@ class ErrorCodes {
     $item = $entity->getPropertyItem($property);
 
     if (in_array($level, LogLevels::RED_LOG_LEVELS)) {
-      $item->setCriticalError(TRUE);
+      $item->setRedError(TRUE);
     } elseif (in_array($level, LogLevels::YELLOW_LOG_LEVELS)) {
-      $item->setWarningError(TRUE);
+      $item->setYellowError(TRUE);
     }
   }
 
