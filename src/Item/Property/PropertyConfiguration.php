@@ -5,7 +5,6 @@ namespace App\Item\Property;
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
 use App\Item\DataType;
 use App\Item\ItemConfiguration;
-use App\Item\ItemInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 

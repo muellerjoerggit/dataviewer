@@ -14,9 +14,6 @@ use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinitionInter
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinitionInterface;
 use App\Item\ItemHandler_Validator\Attribute\ValidatorItemHandlerDefinitionInterface;
 use App\Item\Property\Attribute\DatabaseColumnDefinition;
-use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
-use App\Item\Property\Attribute\ExtendedEntityOverviewPropertyDefinition;
-use App\Item\Property\Attribute\LabelPropertyDefinition;
 use App\Item\Property\Attribute\PropertyDefinition;
 use App\Item\Property\Attribute\PropertyPreDefinedDefinition;
 use App\Item\Property\Attribute\ItemSettingInterface;

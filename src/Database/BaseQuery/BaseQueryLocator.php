@@ -22,7 +22,7 @@ class BaseQueryLocator extends AbstractLocator {
 
   public function getBaseQuery(EntitySchema $entitySchema, string $client): BaseQueryInterface {
     $version = $this->clientService->getClientVersion($client);
-    $class = $entitySchema->getCreatorClass($version);
+    $class = $entitySchema->getBaseQueryClass($version);
 
     if($this->has($class)) {
       return $this->get($class);
