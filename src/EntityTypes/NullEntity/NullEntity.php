@@ -8,6 +8,7 @@ use App\DaViEntity\Schema\Attribute\EntityTypeDefinition;
 use App\DaViEntity\Schema\EntitySchema;
 use App\DaViEntity\UniqueKey;
 use App\EntityServices\Repository\RepositoryDefinition;
+use App\Item\DataType;
 use App\Item\ItemInterface;
 use App\Item\Property\Attribute\EntityOverviewPropertyDefinition;
 use App\Item\Property\Attribute\PropertyDefinition;
@@ -22,7 +23,7 @@ class NullEntity implements EntityInterface {
 
   public const string ENTITY_TYPE = 'NullEntity';
 
-  #[PropertyDefinition(dataType: ItemInterface::DATA_TYPE_INTEGER),
+  #[PropertyDefinition(dataType: DataType::INTEGER),
     EntityOverviewPropertyDefinition,
     UniquePropertyDefinition
   ]

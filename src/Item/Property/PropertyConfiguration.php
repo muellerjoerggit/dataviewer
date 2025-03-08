@@ -3,6 +3,7 @@
 namespace App\Item\Property;
 
 use App\Database\TableReferenceHandler\Attribute\TableReferenceDefinitionInterface;
+use App\Item\DataType;
 use App\Item\ItemConfiguration;
 use App\Item\ItemInterface;
 use Doctrine\DBAL\ArrayParameterType;
@@ -33,19 +34,19 @@ class PropertyConfiguration extends ItemConfiguration {
   public function getQueryParameterType(bool $forceArray = false): int {
     $multiple = $forceArray || $this->isCardinalityMultiple();
     switch ($this->getDataType()) {
-      case ItemInterface::DATA_TYPE_BOOL:
+      case DataType::BOOL:
         if ($multiple) {
           return ArrayParameterType::INTEGER;
         } else {
           return ParameterType::BOOLEAN;
         }
-      case ItemInterface::DATA_TYPE_INTEGER:
+      case DataType::INTEGER:
         if ($multiple) {
           return ArrayParameterType::INTEGER;
         } else {
           return ParameterType::INTEGER;
         }
-      case ItemInterface::DATA_TYPE_FLOAT:
+      case DataType::FLOAT:
       default:
         if ($multiple) {
           return ArrayParameterType::STRING;

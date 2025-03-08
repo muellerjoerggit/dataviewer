@@ -24,6 +24,7 @@ use App\EntityServices\Repository\RepositoryDefinitionInterface;
 use App\EntityServices\SimpleSearch\SimpleSearchDefinitionInterface;
 use App\EntityServices\Validator\ValidatorDefinitionInterface;
 use App\EntityServices\ViewBuilder\ViewBuilderDefinitionInterface;
+use App\Item\DataType;
 use App\Item\ItemInterface;
 use App\Item\Property\PropertyConfiguration;
 use App\Services\EntityAction\EntityActionDefinitionInterface;
@@ -355,7 +356,7 @@ class EntitySchema implements EntitySchemaInterface {
     }
 
     $config = $this->getProperty(reset($firstUniqueProperties));
-    return $config->getDataType() === ItemInterface::DATA_TYPE_INTEGER;
+    return $config->getDataType() === DataType::INTEGER;
   }
 
   public function addAggregation(AggregationDefinitionInterface $aggregationDefinition): EntitySchemaInterface {

@@ -33,6 +33,7 @@ use App\EntityServices\Validator\ValidatorDefinition;
 use App\EntityServices\ViewBuilder\CommonViewBuilder;
 use App\EntityServices\ViewBuilder\ViewBuilderDefinition;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
+use App\Item\DataType;
 use App\Item\ItemHandler_AdditionalData\AggregationFilterAdditionalDataItemHandler;
 use App\Item\ItemHandler_AdditionalData\Attribute\AggregationAdditionalDataHandlerDefinition;
 use App\Item\ItemInterface;
@@ -72,7 +73,7 @@ class RoleEntity extends AbstractEntity {
 
   /** ########################################################## rol_id */
     #[PropertyDefinition(
-        dataType: ItemInterface::DATA_TYPE_INTEGER,
+        dataType: DataType::INTEGER,
         label: 'Rollen ID',
       ),
       EntityOverviewPropertyDefinition(rank: 10),
@@ -87,7 +88,7 @@ class RoleEntity extends AbstractEntity {
 
   /** ########################################################## title */
     #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_STRING,
+      dataType: DataType::STRING,
       label: 'Rollentitel',
     ),
       LabelPropertyDefinition,
@@ -103,7 +104,7 @@ class RoleEntity extends AbstractEntity {
 
   /** ########################################################## description */
     #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_STRING
+      dataType: DataType::STRING
     ),
       SearchPropertyDefinition,
       EntityOverviewPropertyDefinition,
@@ -117,7 +118,7 @@ class RoleEntity extends AbstractEntity {
 
   /** ########################################################## count_users */
     #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_INTEGER,
+      dataType: DataType::INTEGER,
       label: 'Anzahl Benutzer'
     )]
     #[PropertyPreDefinedDefinition([
@@ -139,7 +140,7 @@ class RoleEntity extends AbstractEntity {
 
   /** ########################################################## count_user_status */
     #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_TABLE,
+      dataType: DataType::TABLE,
       label: 'Anzahl Benutzer nach Status'
     )]
     #[PropertyPreDefinedDefinition([

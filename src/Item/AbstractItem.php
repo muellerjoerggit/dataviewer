@@ -147,13 +147,13 @@ abstract class AbstractItem implements ItemInterface, ReferenceItemInterface {
     }
 
     switch ($this->getConfiguration()->getDataType()) {
-      case ItemInterface::DATA_TYPE_STRING:
+      case DataType::STRING:
         return (string) $value;
-      case ItemInterface::DATA_TYPE_INTEGER:
+      case DataType::INTEGER:
         return (int) $value;
-      case ItemInterface::DATA_TYPE_BOOL:
+      case DataType::BOOL:
         return (bool) $value;
-      case ItemInterface::DATA_TYPE_FLOAT:
+      case DataType::FLOAT:
         return floatval($value);
       default:
         return $value;

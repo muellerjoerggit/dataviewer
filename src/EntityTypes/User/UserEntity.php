@@ -39,6 +39,7 @@ use App\EntityServices\ViewBuilder\CommonViewBuilder;
 use App\EntityServices\ViewBuilder\ViewBuilderDefinition;
 use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\RoleUserMap\RoleUserMapEntity;
+use App\Item\DataType;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
 use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
 use App\Item\ItemHandler_Formatter\Attribute\FormatterItemHandlerDefinition;
@@ -100,7 +101,7 @@ class UserEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_INTEGER
+      dataType: DataType::INTEGER
     ),
     DatabaseColumnDefinition
   ]
@@ -115,7 +116,7 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_STRING,
+      dataType: DataType::STRING,
       label: 'Vorname'
     ),
     DatabaseColumnDefinition
@@ -131,7 +132,7 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_STRING,
+      dataType: DataType::STRING,
       label: 'Nachname'
     ),
     DatabaseColumnDefinition
@@ -147,7 +148,7 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_STRING,
+      dataType: DataType::STRING,
       label: 'E-Mail'
     ),
     DatabaseColumnDefinition
@@ -161,7 +162,7 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_BOOL,
+      dataType: DataType::BOOL,
       label: 'Aktiv'
     ),
     DatabaseColumnDefinition
@@ -182,7 +183,7 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_DATE_TIME,
+      dataType: DataType::DATE_TIME,
       label: 'Inaktivierungsdatum'
     ),
     DatabaseColumnDefinition
@@ -194,7 +195,7 @@ class UserEntity extends AbstractEntity {
 
 
   #[PropertyDefinition(
-      dataType: ItemInterface::DATA_TYPE_INTEGER,
+      dataType: DataType::INTEGER,
       label: 'Rollen',
       cardinality: ItemInterface::CARDINALITY_MULTIPLE
     ),

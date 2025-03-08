@@ -41,6 +41,7 @@ use App\EntityServices\ViewBuilder\CommonViewBuilder;
 use App\EntityServices\ViewBuilder\ViewBuilderDefinition;
 use App\EntityTypes\Role\RoleEntity;
 use App\EntityTypes\User\UserEntity;
+use App\Item\DataType;
 use App\Item\ItemHandler_EntityReference\Attribute\EntityReferenceItemHandlerDefinition;
 use App\Item\ItemHandler_EntityReference\CommonEntityReferenceItemHandler;
 use App\Item\ItemHandler_PreRendering\Attribute\PreRenderingItemHandlerDefinition;
@@ -103,7 +104,7 @@ class RoleUserMapEntity extends AbstractEntity {
   use EntityPropertyTrait;
 
   #[PropertyDefinition(
-    dataType: ItemInterface::DATA_TYPE_INTEGER,
+    dataType: DataType::INTEGER,
     label: 'Benutzer ID',
   ),
     DatabaseColumnDefinition
@@ -132,7 +133,7 @@ class RoleUserMapEntity extends AbstractEntity {
   private PropertyItemInterface $usr_id;
 
   #[PropertyDefinition(
-    dataType: ItemInterface::DATA_TYPE_INTEGER,
+    dataType: DataType::INTEGER,
     label: 'Rollen ID'
   ),
     DatabaseColumnDefinition
