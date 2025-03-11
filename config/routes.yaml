@@ -42,6 +42,9 @@ when@dev:
     dev_services_type_reader:
         path: /dev/services/type-reader
         controller: App\Development\Controller\Services::entityTypeReader
+    dev_services_html:
+      path: /dev/services/html
+      controller: App\Development\Controller\Services::extractUri        
 
   # entity types
     dev_entity_types_get:

@@ -4,8 +4,8 @@ namespace App\Services\Export\PathExporter;
 
 use App\Services\AbstractLocator;
 use App\Services\Export\ExportData\PathExport;
-use App\Services\Export\PathExporter_Handler\CommonPathExporter;
-use App\Services\Export\PathExporter_Handler\NullPathExporter;
+use App\Services\Export\PathExport_Handler\CommonPathExportHandler;
+use App\Services\Export\PathExport_Handler\NullPathExportHandler;
 use Generator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -19,19 +19,18 @@ class PathExporterLocator extends AbstractLocator {
     parent::__construct($services);
   }
 
-  public function getPathExporter(PathExport $exportPath): PathExporterHandlerInterface {
-//    $handler = $exportPath->getPathExporterClass();
-    $handler = CommonPathExporter::class;
+  public function getPathExportHandler(PathExport $exportPath): PathExportHandlerInterface {
+    $handler = $exportPath->getPathExporterClass();
 
     if ($handler && $this->has($handler)) {
       return $this->get($handler);
     } else {
-      return $this->get(NullPathExporter::class);
+      return $this->get(NullPathExportHandler::class);
     }
   }
 
   /**
-   * @return Generator<PathExporterHandlerInterface>
+   * @return Generator<PathExportHandlerInterface>
    */
   public function iteratePathExporters(): Generator {
     foreach ($this->getProvidedServices() as $service) {

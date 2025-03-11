@@ -8,7 +8,7 @@ use App\Services\Export\ExportRow;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('exporter.path_handler')]
-interface PathExporterHandlerInterface {
+interface PathExportHandlerInterface {
 
   public function processEntityPath(ExportRow $row, PathExport $exportPath, EntityInterface $baseEntity): void;
 
@@ -17,5 +17,7 @@ interface PathExporterHandlerInterface {
   public function getLabel(): string;
 
   public function getDescription(): string;
+
+  public function getHeader(PathExport $pathExport): array;
 
 }

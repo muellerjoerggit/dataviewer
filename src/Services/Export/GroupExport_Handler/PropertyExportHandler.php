@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Export\GroupExporter_Handler;
+namespace App\Services\Export\GroupExport_Handler;
 
 use App\DaViEntity\EntityInterface;
 use App\Services\Export\ExportConfiguration\ExportPropertyGroupConfiguration;
@@ -8,13 +8,8 @@ use App\Services\Export\ExportData\ExportGroup;
 use App\Services\Export\ExportRow;
 use App\Services\Export\GroupExporter\GroupExporterHandlerInterface;
 use App\Services\Export\GroupExporter\GroupTypes;
-use App\Services\HtmlService;
 
-class HtmlExporterHandler extends AbstractGroupExporterHandler implements GroupExporterHandlerInterface {
-
-  public function __construct(
-    private readonly HtmlService $htmlService,
-  ) {}
+class PropertyExportHandler extends AbstractGroupExportHandler implements GroupExporterHandlerInterface {
 
   public function fillExportGroup(ExportRow $row, ExportGroup $exportGroup, EntityInterface $entity): void {
     $config = $exportGroup->getConfig();
@@ -23,22 +18,20 @@ class HtmlExporterHandler extends AbstractGroupExporterHandler implements GroupE
       return;
     }
 
-    $key = $this->getEntityKeyHash($entity);
-    $html = $entity->getPropertyItem($config->getProperty())->getFirstValueAsString();
-    $data[$key] = $this->htmlService->htmlToText($html);
+    $data[] = $entity->getPropertyItem($config->getProperty())->getValuesAsString();
     $exportGroup->addData($row, $data);
   }
 
   public function getName(): string {
-    return 'HtmlExporter';
+    return 'DefaultPropertyExporter';
   }
 
   public function getLabel(): string {
-    return 'Html entfernen';
+    return 'Standard Export';
   }
 
   public function getDescription(): string {
-    return 'Entfernt HTML-Tags';
+    return 'Standard Export für ein Feld';
   }
 
   public function getType(): int {

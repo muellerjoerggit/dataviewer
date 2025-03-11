@@ -2,7 +2,7 @@
 
 namespace App\Services\Export\PathExporter;
 
-use App\Services\Export\PathExporter_Handler\NullPathExporter;
+use App\Services\Export\PathExport_Handler\NullPathExportHandler;
 
 class PathExporterRegister {
 
@@ -16,7 +16,7 @@ class PathExporterRegister {
 
   private function init(): void {
     foreach ($this->pathExporterLocator->iteratePathExporters() as $pathExporter) {
-      if($pathExporter instanceof NullPathExporter) {
+      if($pathExporter instanceof NullPathExportHandler) {
         continue;
       }
       $this->pathExporterHandlers[$pathExporter->getName()] = [
@@ -29,7 +29,7 @@ class PathExporterRegister {
   }
 
   public function getExporterClass(string $name): string {
-    return $this->pathExporterHandlers[$name]['class'] ?? NullPathExporter::class;
+    return $this->pathExporterHandlers[$name]['class'] ?? NullPathExportHandler::class;
   }
 
 

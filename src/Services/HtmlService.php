@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use InvalidArgumentException;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
 class HtmlService {
@@ -29,6 +31,27 @@ class HtmlService {
 
   public function stripTags(string $html): string {
     return trim(strip_tags(html_entity_decode($html)));
+  }
+
+  public function extractUris(string $html): array {
+    try {
+      $crawler = new Crawler($html);
+    } catch (InvalidArgumentException $exception) {
+      return [];
+    }
+
+    $urls = [];
+    foreach ($crawler as $node) {
+      switch ($node->nodeName) {
+        case 'a':
+          $urls[] = $node->getAttribute('href');
+          break;
+        case 'img':
+          $urls[] = $node->getAttribute('src');
+      }
+    }
+
+    return $urls;
   }
 
 }

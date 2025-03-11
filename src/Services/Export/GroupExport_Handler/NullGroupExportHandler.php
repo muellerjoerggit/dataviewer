@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Services\Export\GroupExporter_Handler;
+namespace App\Services\Export\GroupExport_Handler;
 
 use App\DaViEntity\EntityInterface;
 use App\Services\Export\ExportData\ExportGroup;
 use App\Services\Export\ExportRow;
 use App\Services\Export\GroupExporter\GroupExporterHandlerInterface;
 
-class NullGroupExporterHandler implements GroupExporterHandlerInterface {
+class NullGroupExportHandler implements GroupExporterHandlerInterface {
 
   public function fillExportGroup(ExportRow $row, ExportGroup $exportGroup, EntityInterface $entity): void {
-    $key = sha1($entity->getFirstEntityKeyAsString());
-    $exportGroup->addData($row, [$key =>'']);
+    $exportGroup->addData($row, ['']);
   }
 
   public function getName(): string {
-    return 'NullGroupExporterHandler';
+    return 'NullGroupExportHandler';
   }
 
   public function getLabel(): string {
@@ -30,15 +29,11 @@ class NullGroupExporterHandler implements GroupExporterHandlerInterface {
     return [];
   }
 
-  public function getRowAsArraySorted(ExportRow $row, ExportGroup $exportGroup): array {
-    return [];
-  }
-
   public function getType(): int {
     return -1;
   }
 
-  public function getHeader(ExportGroup $exportGroup): array {
+  public function getHeaderColumn(ExportGroup $exportGroup, string $suffix, bool $firstColumn = FALSE): array {
     return [];
   }
 

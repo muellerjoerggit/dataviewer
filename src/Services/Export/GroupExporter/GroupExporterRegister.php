@@ -2,7 +2,7 @@
 
 namespace App\Services\Export\GroupExporter;
 
-use App\Services\Export\GroupExporter_Handler\NullGroupExporterHandler;
+use App\Services\Export\GroupExport_Handler\NullGroupExportHandler;
 
 class GroupExporterRegister {
 
@@ -17,7 +17,7 @@ class GroupExporterRegister {
 
   private function init(): void {
     foreach ($this->groupExporterLocator->iterateGroupExporters() as $groupExporter) {
-      if($groupExporter instanceof NullGroupExporterHandler) {
+      if($groupExporter instanceof NullGroupExportHandler) {
         continue;
       }
       $this->groupExporterHandlers[$groupExporter->getName()] = [
@@ -31,7 +31,7 @@ class GroupExporterRegister {
   }
 
   public function getExporterClass(string $name): string {
-    return $this->groupExporterHandlers[$name]['class'] ?? NullGroupExporterHandler::class;
+    return $this->groupExporterHandlers[$name]['class'] ?? NullGroupExportHandler::class;
   }
 
   public function getGroupExporterList(int $type = 0): array {

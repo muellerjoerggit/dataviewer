@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Services\Export\PathExporter_Handler;
+namespace App\Services\Export\PathExport_Handler;
 
 use App\DaViEntity\DaViEntityManager;
 use App\DaViEntity\EntityInterface;
 use App\Services\Export\ExportData\PathExport;
 use App\Services\Export\ExportRow;
 use App\Services\Export\GroupExporter\GroupExporterLocator;
-use App\Services\Export\PathExporter\PathExporterHandlerInterface;
+use App\Services\Export\PathExporter\PathExportHandlerInterface;
 
-class CommonPathExporter implements PathExporterHandlerInterface {
+class CommonPathExportHandler extends AbstractPathExportHandler implements PathExportHandlerInterface {
 
   public function __construct(
     private readonly DaViEntityManager $entityManager,
-    private readonly GroupExporterLocator $groupExporterLocator,
-  ) {}
+    GroupExporterLocator $groupExporterLocator,
+  ) {
+    parent::__construct($groupExporterLocator);
+  }
 
   public function processEntityPath(ExportRow $row, PathExport $exportPath, EntityInterface $baseEntity): void {
     if (!$exportPath->hasPath()) {

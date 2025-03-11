@@ -4,7 +4,7 @@ namespace App\Services\Export\GroupExporter;
 
 use App\Services\AbstractLocator;
 use App\Services\Export\ExportData\ExportGroup;
-use App\Services\Export\GroupExporter_Handler\NullGroupExporterHandler;
+use App\Services\Export\GroupExport_Handler\NullGroupExportHandler;
 use Generator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -24,7 +24,7 @@ class GroupExporterLocator extends AbstractLocator {
     if ($handler && $this->has($handler)) {
       return $this->get($handler);
     } else {
-      return $this->get(NullGroupExporterHandler::class);
+      return $this->get(NullGroupExportHandler::class);
     }
   }
 

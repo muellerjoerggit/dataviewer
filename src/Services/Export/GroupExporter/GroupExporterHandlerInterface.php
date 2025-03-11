@@ -20,10 +20,8 @@ interface GroupExporterHandlerInterface {
 
   public function getType(): int;
 
-  public function getHeader(ExportGroup $exportGroup): array;
+  public function getHeaderColumn(ExportGroup $exportGroup, string $suffix, bool $firstColumn = false): array;
 
   public function getRowAsArray(ExportRow $row, ExportGroup $exportGroup): array;
-
-  public function getRowAsArraySorted(ExportRow $row, ExportGroup $exportGroup): array;
 
 }

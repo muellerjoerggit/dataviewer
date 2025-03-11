@@ -17,7 +17,7 @@ class CsvExport {
 
   public function __construct(
     private readonly DaViEntityManager $entityManager,
-    private readonly PathExporterLocator $pathExporterLocator,
+    private readonly PathExporterLocator $pathExportHandlerLocator,
     private readonly GroupExporterLocator $groupExporterLocator,
   ) {}
 
@@ -39,7 +39,7 @@ class CsvExport {
       $row = new ExportRow('row' . $count);
       $exportData->addRow($row);
       foreach ($exportData->iterateExportPath() as $exportPath) {
-        $handler = $this->pathExporterLocator->getPathExporter($exportPath);
+        $handler = $this->pathExportHandlerLocator->getPathExportHandler($exportPath);
         $handler->processEntityPath($row, $exportPath, $entity);
       }
       $count++;
@@ -88,10 +88,8 @@ class CsvExport {
     }
 
     foreach ($exportData->iterateExportPath() as $pathData) {
-      foreach ($pathData->iterateExportGroups() as $group) {
-        $handler = $this->groupExporterLocator->getGroupExporter($group);
-        $header = array_merge($header, $handler->getHeader($group));
-      }
+      $handler = $this->pathExportHandlerLocator->getPathExportHandler($pathData);
+      $header = array_merge($header, $handler->getHeader($pathData));
     }
 
     return array_merge([$header], $ret);

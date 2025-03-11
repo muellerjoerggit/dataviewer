@@ -1,15 +1,21 @@
 <?php
 
-namespace App\Services\Export\GroupExporter_Handler;
+namespace App\Services\Export\GroupExport_Handler;
 
 use App\DaViEntity\EntityInterface;
 use App\Services\Export\ExportConfiguration\ExportPropertyGroupConfiguration;
 use App\Services\Export\ExportData\ExportGroup;
 use App\Services\Export\ExportRow;
-use App\Services\Export\GroupExporter\GroupExporterHandlerInterface;
 use App\Services\Export\GroupExporter\GroupTypes;
+use App\Services\HtmlService;
+use InvalidArgumentException;
+use Symfony\Component\DomCrawler\Crawler;
 
-class PropertyExporterHandler extends AbstractGroupExporterHandler implements GroupExporterHandlerInterface {
+class HtmlUriExtractorGroupExportHandler extends AbstractGroupExportHandler {
+
+  public function __construct(
+    private readonly HtmlService $htmlService,
+  ) {}
 
   public function fillExportGroup(ExportRow $row, ExportGroup $exportGroup, EntityInterface $entity): void {
     $config = $exportGroup->getConfig();
@@ -18,21 +24,26 @@ class PropertyExporterHandler extends AbstractGroupExporterHandler implements Gr
       return;
     }
 
-    $key = $this->getEntityKeyHash($entity);
-    $data[$key] = $entity->getPropertyItem($config->getProperty())->getValuesAsString();
-    $exportGroup->addData($row, $data);
+    $urls = [];
+    $values = $entity->getPropertyItem($config->getProperty())->getValuesAsArray();
+
+    foreach ($values as $html) {
+      $urls = array_merge($urls, $this->htmlService->extractUris($html));
+    }
+
+    $exportGroup->addData($row, $urls);
   }
 
   public function getName(): string {
-    return 'DefaultPropertyExporter';
+    return 'UriExtractor';
   }
 
   public function getLabel(): string {
-    return 'Standard Export';
+    return 'Uri Extractor';
   }
 
   public function getDescription(): string {
-    return 'Standard Export für ein Feld';
+    return 'Extrahiert die URI aus Link- und Image-Tags im HTML';
   }
 
   public function getType(): int {
